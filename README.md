@@ -30,3 +30,11 @@ data
 │   └── fff9b3a5373f_16_mask.gif
 └── train_masks.csv
 ```
+
+## To-dos
+
+- [x] load data
+- [ ] train/val split
+- [ ] prepare small dataset
+- [ ] generate submission
+- [ ] add a simple model
