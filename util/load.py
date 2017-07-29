@@ -24,7 +24,7 @@ def load_data(data_dir, img_names, img_ext):
 
     first_img_path = os.path.join(data_dir, img_names[0] + '.' + img_ext)
     img_height, img_width= get_img_shape(first_img_path)
-    imgs = np.zeros((len(img_names), img_height, img_width)
+    imgs = np.zeros((len(img_names), img_height, img_width))
 
     for i, img_name in numerate(img_names):
         img = load_img(data_dir, img_name, img_ext)

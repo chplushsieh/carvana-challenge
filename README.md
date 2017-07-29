@@ -34,7 +34,7 @@ data
 ## To-dos
 
 - [x] load data
-- [ ] train/val split
+- [x] train/val split
 - [ ] prepare small dataset
 - [ ] generate submission
 - [ ] add a simple model
