@@ -13,7 +13,7 @@ __all__ = [
     'get_small_loader', # TODO use a small dataset for quick experiments
 
     'get_train_loader',
-    'get_val_loader',   # TODO use a random split
+    'get_val_loader',
     'get_test_loader',
 ]
 
@@ -62,25 +62,31 @@ def get_test_loader(batch_size):
                             )
     return test_loader
 
-def get_train_loader(batch_size):
+def get_trainval_loader(batch_size, car_ids):
     DATA_DIR = './data'
     train_dir = os.path.join(DATA_DIR, 'train')
 
-    train_ids = load.list_img_in_dir(train_dir)
+    print('Number of Images:', len(car_ids))
 
-    print('Number of Train Images:', len(train_ids))
-
-    data   = load.load_train(train_dir, train_ids)
-    target = load.load_train_mask(train_mask_dir, train_ids)
+    data   = load.load_train(train_dir, car_ids)
+    target = load.load_train_mask(train_mask_dir, car_ids)
 
     data_tensor   = torch.from_numpy(data)
     target_tensor = torch.from_numpy(target)
-    train_dataset = torch.utils.data.TensorDataset(data_tensor, target_tensor)
+    dataset = torch.utils.data.TensorDataset(data_tensor, target_tensor)
 
-    train_loader = torch.utils.data.dataloader.DataLoader(
-                                train_dataset,
+    loader = torch.utils.data.dataloader.DataLoader(
+                                dataset,
                                 batch_size=batch_size,
                                 shuffle=True,
                                 num_workers=8,
                             )
-    return train_loader
+    return loader
+
+def get_train_loader(batch_size):
+    train_ids = # TODO
+    return get_trainval_loader(batch_size, train_ids)
+
+def get_val_loader(batch_size):
+    val_ids = # TODO
+    return get_trainval_loader(batch_size, val_ids)

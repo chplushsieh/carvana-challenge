@@ -4,6 +4,7 @@ import csv
 
 import numpy as np
 
+import util.const as const
 import util.load as load
 
 def get_car_ids(img_names):
@@ -35,16 +36,15 @@ def save_imageset(img_names, savepath):
         writer.writerows(img_names)
     return
 
-DATA_DIR = './data'
 
-train_imageset_path = os.path.join(DATA_DIR, 'train.csv')
-val_imagest_path   = os.path.join(DATA_DIR, 'val.csv')
+
+train_imageset_path = const.TRAIN_IMAGESET_PATH
+val_imagest_path = const.VAL_IMAGESET_PATH
+train_dir = const.TRAIN_DIR
 
 if os.path.isfile(train_imageset_path) and os.path.isfile(val_imagest_path):
     print("train/val split already exists: {} and {}".format(train_imageset_path, val_imagest_path))
     sys.exit()
-
-train_dir = os.path.join(DATA_DIR, 'train')
 
 img_names = load.list_img_in_dir(train_dir)
 car_ids = get_car_ids(img_names)
