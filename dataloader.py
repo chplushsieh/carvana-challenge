@@ -6,11 +6,12 @@ import random
 import numpy as np
 from PIL import Image
 
+import util.const as const
 import util.load as load
 
 
 __all__ = [
-    'get_small_loader', # TODO use a small dataset for quick experiments
+    'get_small_loader',
 
     'get_train_loader',
     'get_val_loader',
@@ -42,8 +43,7 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
 
 
 def get_test_loader(batch_size):
-    DATA_DIR = './data'
-    test_dir = os.path.join(DATA_DIR, 'test')
+    test_dir = const.TEST_DIR
 
     test_ids = load.list_img_in_dir(test_dir)
 
@@ -63,8 +63,7 @@ def get_test_loader(batch_size):
     return test_loader
 
 def get_trainval_loader(batch_size, car_ids):
-    DATA_DIR = './data'
-    train_dir = os.path.join(DATA_DIR, 'train')
+    train_dir = const.TRAIN_DIR
 
     print('Number of Images:', len(car_ids))
 
@@ -84,9 +83,13 @@ def get_trainval_loader(batch_size, car_ids):
     return loader
 
 def get_train_loader(batch_size):
-    train_ids = # TODO
-    return get_trainval_loader(batch_size, train_ids)
+    train_imgs = load.load_train_imageset()
+    return get_trainval_loader(batch_size, train_imgs)
 
 def get_val_loader(batch_size):
-    val_ids = # TODO
-    return get_trainval_loader(batch_size, val_ids)
+    val_imgs = load.load_val_imageset()
+    return get_trainval_loader(batch_size, val_imgs)
+
+def get_small_loader(batch_size):
+    small_imgs = load.load_small_imageset()
+    return get_trainval_loader(batch_size, small_imgs)

@@ -1,11 +1,35 @@
 
 import os
-import numpy as np
 import csv
 import os.path
 from os import listdir
 from os.path import isfile, join
 from PIL import Image
+
+import numpy as np
+
+
+def load_imageset(imageset_path):
+    img_names = []
+    with open(imageset_path, newline='') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            img_names.append(row[0])
+
+    img_names.sort()
+    return img_names
+
+def load_train_imageset():
+    return load_imageset(const.TRAIN_IMAGESET_PATH)
+
+def load_val_imageset():
+    return load_imageset(const.VAL_IMAGESET_PATH)
+
+def load_small_imageset():
+    small_ids = [
+
+    ]
+    return small_img_names
 
 def load_img(data_dir, img_name, img_ext):
     img_path = os.path.join(data_dir, img_name + '.' + img_ext)
