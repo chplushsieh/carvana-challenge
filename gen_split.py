@@ -7,21 +7,6 @@ import numpy as np
 import util.const as const
 import util.load as load
 
-def get_car_ids(img_names):
-    car_ids = [ img_name.split('_')[0] for img_name in img_names ]
-    car_ids = list(set(car_ids))
-    print("There are {} car ids out of {} images. ".format(len(car_ids), len(img_names)))
-    return car_ids
-
-def get_img_names_from_car_ids(car_ids):
-    img_names = []
-
-    for car_id in car_ids:
-        for i in range(1, 17):
-            img_name = car_id + '_{:02d}'.format(i)
-            img_names.append(img_name)
-
-    return img_names
 
 def save_imageset(img_names, savepath):
 
@@ -47,7 +32,7 @@ if os.path.isfile(train_imageset_path) and os.path.isfile(val_imagest_path):
     sys.exit()
 
 img_names = load.list_img_in_dir(train_dir)
-car_ids = get_car_ids(img_names)
+car_ids = load.get_car_ids(img_names)
 num_cars = len(car_ids)
 
 num_val = int(num_cars / 5)
@@ -56,8 +41,8 @@ val_ids   = car_ids[:num_val]
 train_ids = car_ids[num_val:]
 print("{} cars for Training and {} cars for Validation".format(len(train_ids), len(val_ids)))
 
-train_imgs = get_img_names_from_car_ids(train_ids)
-val_imgs   = get_img_names_from_car_ids(val_ids)
+train_imgs = load.get_img_names_from_car_ids(train_ids)
+val_imgs   = load.get_img_names_from_car_ids(val_ids)
 
 # save into files
 save_imageset(train_imgs, train_imageset_path)

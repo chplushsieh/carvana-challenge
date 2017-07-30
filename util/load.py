@@ -8,6 +8,21 @@ from PIL import Image
 
 import numpy as np
 
+def get_car_ids(img_names):
+    car_ids = [ img_name.split('_')[0] for img_name in img_names ]
+    car_ids = list(set(car_ids))
+    print("There are {} car ids out of {} images. ".format(len(car_ids), len(img_names)))
+    return car_ids
+
+def get_img_names_from_car_ids(car_ids):
+    img_names = []
+
+    for car_id in car_ids:
+        for i in range(1, 17):
+            img_name = car_id + '_{:02d}'.format(i)
+            img_names.append(img_name)
+
+    return img_names
 
 def load_imageset(imageset_path):
     img_names = []
@@ -27,8 +42,18 @@ def load_val_imageset():
 
 def load_small_imageset():
     small_ids = [
-
+        '00087a6bd4dc',
+        '0495dcf27283',
+        '0789bed99cb8',
+        '0795e132d090',
+        '08a646be6b30',
+        '0ce66b539f52',
+        '0d3adbbc9a8b',
+        '0d53224da2b7',
+        '0de66245f268',
+        '0ed6904e1004',
     ]
+    small_img_names = get_img_names_from_car_ids(small_ids)
     return small_img_names
 
 def load_img(data_dir, img_name, img_ext):
