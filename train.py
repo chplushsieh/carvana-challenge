@@ -10,7 +10,6 @@ except ImportError:
     CrayonClient = None
 
 import util.exp as exp
-import util.tool as tool
 from dataloader import *
 import config
 

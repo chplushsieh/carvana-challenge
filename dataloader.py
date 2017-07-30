@@ -1,4 +1,5 @@
 import torch
+import torch.utils.data
 
 import os
 import os.path
@@ -64,11 +65,12 @@ def get_test_loader(batch_size):
 
 def get_trainval_loader(batch_size, car_ids):
     train_dir = const.TRAIN_DIR
+    train_mask_dir = const.TRAIN_MASK_DIR
 
     print('Number of Images:', len(car_ids))
 
-    data   = load.load_train(train_dir, car_ids)
-    target = load.load_train_mask(train_mask_dir, car_ids)
+    data   = load.load_all_train_images(train_dir, car_ids)
+    target = load.load_all_train_masks(train_mask_dir, car_ids)
 
     data_tensor   = torch.from_numpy(data)
     target_tensor = torch.from_numpy(target)
