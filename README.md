@@ -37,5 +37,5 @@ data
 - [x] train/val split
 - [x] prepare small dataset
 - [ ] implement run length encoding
-- [ ]
-- [ ] add a simple model
+- [x] add experiment config loading
+- [ ] try a simple UNet
