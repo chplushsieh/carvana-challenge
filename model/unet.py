@@ -8,7 +8,7 @@ import torch.nn.functional as F
 __all__ = [ 'SmallUNet', 'SimpleSegNet', 'UNet', 'UNet3l', 'UNet2', 'InceptionUNet', 'Inception2UNet', 'DenseUNet', 'DenseNet']
 
 class BaseNet(nn.Module):
-    def __init__(self, n_channels=3, n_classes=5, dropout=0.0, bn=1, activation='relu', filters_base=32):
+    def __init__(self, n_channels=3, n_classes=1, dropout=0.0, bn=1, activation='relu', filters_base=32):
         super().__init__()
 
         self.n_channels = n_channels
@@ -50,7 +50,7 @@ class BasicConv2d(nn.Module):
 
 class SmallUNet(BaseNet):
     def __init__(self):
-
+        super().__init__()
         self.conv1 = nn.Conv2d(self.n_channels, 32, 3, padding=1)
         self.conv2 = nn.Conv2d(32, 32, 3, padding=1)
         self.pool = nn.MaxPool2d(2, 2)
