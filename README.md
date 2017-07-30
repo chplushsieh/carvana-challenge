@@ -35,6 +35,7 @@ data
 
 - [x] load data
 - [x] train/val split
-- [ ] prepare small dataset
-- [ ] generate submission
+- [x] prepare small dataset
+- [ ] implement run length encoding
+- [ ]
 - [ ] add a simple model

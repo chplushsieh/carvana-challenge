@@ -14,13 +14,13 @@ import util.tool as tool
 from dataloader import *
 import config
 
-exp_name = 'denseunet_on_trainval'
+exp_name = 'unet'
 
 cfg = config.load_config_file(exp_name)
 
 net, optimizer, start_epoch = exp.load_exp(exp_name)
 
-data_loader = get_trainval_patch_loader(
+data_loader = get_small_loader(
     cfg['train']['batch_size']
 )
 
@@ -50,14 +50,14 @@ for epoch in range(start_epoch, num_epochs + 1):
     print('Epoch [%d/%d] starts'
           % (epoch, num_epochs))
 
-    for i, (img_name, images, labels) in enumerate(data_loader):
+    for i, (images, targets) in enumerate(data_loader):
         iter_start = time.time()
         # print('Epoch {}, Iter {}, Image {}'.format(epoch, i, img_name))
 
-        images = images.float()  # convert from ByteTensor   to FloatTensor
+        # images = images.float()  # convert from ByteTensor   to FloatTensor
 
         images = Variable(images)
-        labels = Variable(labels)
+        targets = Variable(targets)
 
         if torch.cuda.is_available():
             images = images.cuda()
@@ -65,7 +65,7 @@ for epoch in range(start_epoch, num_epochs + 1):
 
         # Forward + Compute Loss
         outputs = net(images)
-        loss = criterion(outputs, labels)
+        loss = criterion(outputs, targets)
 
         # Backward + Optimize
         optimizer.zero_grad()
@@ -90,4 +90,3 @@ for epoch in range(start_epoch, num_epochs + 1):
 
         if DEBUG:
             print('Epoch {}, Iter {}, Image {}, Loss {}'.format(epoch, i, img_name, loss.data[0]))
-            tool.show_denmap(2, images.data[0].cpu().byte().numpy(), exp_name, labels.data[0].cpu().numpy(), outputs.data[0].cpu().numpy())

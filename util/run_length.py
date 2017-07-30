@@ -8,6 +8,8 @@ https://www.kaggle.com/c/carvana-image-masking-challenge#evaluation
 
 
 # TODO Modify the following encoder for our use:
+# https://www.kaggle.com/stainsby/fast-tested-rle
+# or
 # https://www.kaggle.com/hackerpoet/even-faster-srun-length-encoder
 
 def run_length_encode(mask):
