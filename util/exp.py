@@ -31,8 +31,9 @@ def save_prediction(exp_name, epoch, img_name, pred_maps):
 
 def get_network(exp_name):
     model_name = exp_name.split('_')[0]
-
-    if model_name == 'segnet':
+    if model_name == 'smallunet':
+        model = SmallUNet()
+    elif model_name == 'segnet':
         model = SimpleSegNet()
     elif model_name == 'unet':
         model = UNet()

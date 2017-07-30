@@ -5,7 +5,7 @@ import torch.cuda
 import torch.nn as nn
 import torch.nn.functional as F
 
-__all__ = ['SimpleSegNet', 'UNet', 'UNet3l', 'UNet2', 'InceptionUNet', 'Inception2UNet', 'DenseUNet', 'DenseNet']
+__all__ = [ 'SmallUNet', 'SimpleSegNet', 'UNet', 'UNet3l', 'UNet2', 'InceptionUNet', 'Inception2UNet', 'DenseUNet', 'DenseNet']
 
 class BaseNet(nn.Module):
     def __init__(self, n_channels=3, n_classes=5, dropout=0.0, bn=1, activation='relu', filters_base=32):
@@ -48,6 +48,31 @@ class BasicConv2d(nn.Module):
         x = self.relu(x)
         return x
 
+class SmallUNet(BaseNet):
+    def __init__(self):
+
+        self.conv1 = nn.Conv2d(self.n_channels, 32, 3, padding=1)
+        self.conv2 = nn.Conv2d(32, 32, 3, padding=1)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.upsample = nn.UpsamplingNearest2d(scale_factor=2)
+        self.conv3 = nn.Conv2d(32, 64, 3, padding=1)
+        self.conv4 = nn.Conv2d(64, 64, 3, padding=1)
+        self.conv5 = nn.Conv2d(64, 32, 3, padding=1)
+        self.conv6 = nn.Conv2d(64, 32, 3, padding=1)
+        self.conv7 = nn.Conv2d(32, self.n_classes, 3, padding=1)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        x = F.relu(self.conv2(x))
+        x1 = self.pool(x)
+        x1 = F.relu(self.conv3(x1))
+        x1 = F.relu(self.conv4(x1))
+        x1 = F.relu(self.conv5(x1))
+        x1 = self.upsample(x1)
+        x = torch.cat([x, x1], 1)
+        x = F.relu(self.conv6(x))
+        x = self.conv7(x)
+        return x
 
 
 class SimpleSegNet(BaseNet):
