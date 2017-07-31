@@ -45,6 +45,8 @@ num_epochs = cfg['num_epochs']
 
 # Train the Model
 for epoch in range(start_epoch, num_epochs + 1):
+    epoch_start = time.time()
+    epoch_loss = 0
 
     print('Epoch [%d/%d] starts'
           % (epoch, num_epochs))
@@ -73,6 +75,8 @@ for epoch in range(start_epoch, num_epochs + 1):
         loss.backward()
         optimizer.step()
 
+        epoch_loss += loss.data[0]
+
         if use_tensorboard and (i + 1) % display_iter_interval == 0:
             step = len(data_loader) * (epoch - 1) + (i + 1)
             loss_in_np = loss.data[0]
@@ -91,3 +95,9 @@ for epoch in range(start_epoch, num_epochs + 1):
 
         if DEBUG:
             print('Epoch {}, Iter {}, Loss {}'.format(epoch, i, loss.data[0]))
+
+    epoch_loss /= len(data_loader)
+    epoch_end = time.time()
+
+    print('Epoch [%d/%d], Loss: %.2f Time Spent: %.2f sec'
+          % (epoch, num_epochs, epoch_loss, epoch_end - epoch_start))
