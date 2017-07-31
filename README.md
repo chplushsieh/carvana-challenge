@@ -4,6 +4,7 @@ My Solution for Carvana Image Masking Challenge on Kaggle: https://www.kaggle.co
 ## Requirements
 * python 3.6
 * pytorch
+* pyyaml
 
 ## Usage
 
@@ -30,6 +31,10 @@ data
 │   └── fff9b3a5373f_16_mask.gif
 └── train_masks.csv
 ```
+
+2. Run `python train.py`
+
+3. [Not yet supported] Run `python test.py`
 
 ## To-dos
 
