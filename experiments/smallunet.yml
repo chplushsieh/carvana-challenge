@@ -1,5 +1,9 @@
 
-learning_rate: 1e-4 # 1e-3 leads to explosion
+learning_rate: 1e-2
+# 1e-2 -> 0.28
+# 1e-4 -> 0.28
+# 1e-7 doesn't decrease
+
 momentum: 0.9       # TODO what's in the paper?
 weight_decay: 0 # easier to overfit # 1e-4
 
