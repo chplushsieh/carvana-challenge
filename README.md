@@ -39,3 +39,5 @@ data
 - [ ] implement run length encoding
 - [x] add experiment config loading
 - [ ] try a simple UNet
+- [ ] add DICE validation
+- [ ] make first submission
