@@ -1,15 +1,15 @@
 
-learning_rate: 1e-5 # 1e-3 leads to explosion
+learning_rate: 1e-4 # 1e-3 leads to explosion
 momentum: 0.9       # TODO what's in the paper?
 weight_decay: 0 # easier to overfit # 1e-4
 
-num_epochs: 200
+num_epochs: 151
 
 DEBUG: False
 use_tensorboard: True
-log_iter_interval: 1
+log_iter_interval: 16
 display_iter_interval: 1
-snapshot_epoch_interval: 20
+snapshot_epoch_interval: 25
 
 train:
   batch_size: 1

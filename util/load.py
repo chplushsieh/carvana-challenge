@@ -45,8 +45,6 @@ def load_small_imageset():
         '00087a6bd4dc',
         '0495dcf27283',
         '0789bed99cb8',
-        '0795e132d090',
-        '08a646be6b30',
     ]
     small_img_names = get_img_names_from_car_ids(small_ids)
     return small_img_names
