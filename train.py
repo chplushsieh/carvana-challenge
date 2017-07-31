@@ -28,7 +28,7 @@ if torch.cuda.is_available():
 net.train()
 
 # Loss and Optimizer
-criterion = nn.MSELoss()
+criterion = nn.CrossEntropyLoss2d()
 if torch.cuda.is_available():
     criterion = criterion.cuda()
 
