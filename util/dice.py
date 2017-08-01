@@ -16,8 +16,15 @@ def dice(x, y):
     '''
     assert x.shape == y.shape
 
+    smooth =0            # smooth should be replaced by 1 for stability
+
     dice = None
     # TODO
+    x=x.flatten()
+    y=y.flatten()
+    intersection = sum(x*y)
+    
+    dice= (2. * intersection + smooth) / (x.sum() + y.sum() + smooth)
     return dice
 
 if __name__ == "__main__":
