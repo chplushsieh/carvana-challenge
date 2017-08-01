@@ -5,7 +5,7 @@ import torch.cuda
 import torch.nn as nn
 import torch.nn.functional as F
 
-__all__ = [ 'SmallUNet' ]
+__all__ = [ 'SmallUNet', 'UNet' ]
 
 class BaseNet(nn.Module):
     def __init__(self, n_channels=3, n_classes=1, dropout=0.0, bn=1, activation='relu', filters_base=32):
@@ -75,22 +75,26 @@ class UNetDownBlock(nn.Module):
         self.l1 = Conv3BN(in_, out, bn, activation)
         self.l2 = Conv3BN(out, out, bn, activation)
 
-    def forward(self, x):
+    def forward(self, x, skip):
         x = self.l1(x)
         x = self.l2(x)
         return x
 
-class UNetUpBlock(nn.Module): # TODO
+class UNetUpBlock(nn.Module):
     def __init__(self, in_: int, out: int, *, bn, activation):
         super().__init__()
         self.l1 = Conv3BN(in_, out, bn, activation)
         self.l2 = Conv3BN(out, out, bn, activation)
+        self.upsample = nn.UpsamplingNearest2d(scale_factor=2)
 
-    def forward(self, x):
+    def forward(self, skip, x):
+        x = self.upsample(x)
+        x = torch.cat([up, skip], 1)
+
         x = self.l1(x)
         x = self.l2(x)
-        return x
 
+        return x
 
 class UNet(BaseNet):
     def __init__(self):
@@ -107,13 +111,10 @@ class UNet(BaseNet):
         self.pool3 = nn.MaxPool2d(2)
         self.pool4 = nn.MaxPool2d(2)
 
-        # TODO
-        self.up4 = UNetUpBlock(    ,  64, bn=True, activation='relu')
-        self.up5 = UNetUpBlock(    , 128, bn=True, activation='relu')
-        self.up3 = UNetUpBlock(    , 256, bn=True, activation='relu')
-        self.up1 = UNetUpBlock(    , 512, bn=True, activation='relu')
-
-        self.upsample = nn.UpsamplingNearest2d(scale_factor=2)
+        self.up4 = UNetUpBlock(1024, 512, bn=True, activation='relu')
+        self.up5 = UNetUpBlock( 512, 256, bn=True, activation='relu')
+        self.up3 = UNetUpBlock( 256, 128, bn=True, activation='relu')
+        self.up1 = UNetUpBlock( 128,  64, bn=True, activation='relu')
 
 
     def forward(self, x):

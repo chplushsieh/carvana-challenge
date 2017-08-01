@@ -12,43 +12,13 @@ def create_if_not_exist(dir):
         os.makedirs(dir)
     return dir
 
-# Save predictions
-def save_prediction(exp_name, epoch, img_name, pred_maps):
-
-    pred_maps = pred_maps.astype(np.uint16)
-    # TODO  does 0 to 65535 fit peak values in den maps?
-
-    save_dir = os.path.join('./output', exp_name, str(epoch))
-    create_if_not_exist(save_dir)
-
-    filename = img_name + '.npy'
-    save_path = os.path.join(save_dir, filename)
-
-    np.save(save_path, pred_maps)
-    print("Prediction density maps {} are saved. ".format(filename))
-    return
-
 
 def get_network(exp_name):
     model_name = exp_name.split('_')[0]
     if model_name == 'smallunet':
         model = SmallUNet()
-    elif model_name == 'segnet':
-        model = SimpleSegNet()
     elif model_name == 'unet':
         model = UNet()
-    elif model_name == 'unet3l':
-        model = UNet3l()
-    elif model_name == 'unet2':
-        model = UNet2()
-    elif model_name == 'inceptionunet':
-        model = InceptionUNet()
-    elif model_name == 'inception2unet':
-        model = Inception2UNet()
-    elif model_name == 'denseunet':
-        model = DenseUNet()
-    elif model_name == 'dense':
-        model = DenseNet()
 
     return model
 
