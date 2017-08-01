@@ -12,17 +12,24 @@ https://www.kaggle.com/c/carvana-image-masking-challenge#evaluation
 # or
 # https://www.kaggle.com/hackerpoet/even-faster-srun-length-encoder
 
-def run_length_encode_t(mask):
+def run_length_encode(mask):
     '''
-    the image has been transposed
+    input:
+      mask: a numpy array with only 0's or 1's in it
+            For example: np.array([[0, 1], [0, 1]])
+    output:
+      code: a list of tuples representing encoded input mask using run length encoding
+            For example: [(3, 2)]
+    '''
+    #code = None
+    rle= None
+    mask=np.transpose(mask)
     
-    img: numpy array, 1 - mask, 0 - background
-    Returns run length as string formated
-    '''
     inds = mask.flatten()
     head=inds[0]
     inds[0]=0
     tail=inds[inds.size-1]
+    print(tail)
     inds[inds.size-1]=0
     runs = np.where(inds[1:] != inds[:-1])[0] + 2
     runs[1::2] = runs[1::2] - runs[:-1:2]
@@ -39,43 +46,26 @@ def run_length_encode_t(mask):
         if inds[inds.size-2]==1:
             runs[runs.size-1]+=1
         else :
-            runs=np.append(runs,[1,1])
+            runs=np.append(runs,[1,1])    
     
-    
-    rle = rle + ' '.join([str(r) for r in runs])
+    rle = rle + ' '.join([str(r) for r in runs])    
     
     return rle
 
 
-
-
-
-def run_length_encode(mask):
-    '''
-    input:
-      mask: a numpy array with only 0's or 1's in it
-            For example: np.array([[0, 1], [0, 1]])
-    output:
-      code: a list of tuples representing encoded input mask using run length encoding
-            For example: [(3, 2)]
-    '''
-    code = None
-    # TODO
-    return code
-
-def stringify_code(code):
-    '''
-    input:
-      code: a list of tuples representing encoded input mask using run length encoding
-            Note that it may not be sorted
-            For example: [(4, 2), (1, 1)]
-    output:
-      stringified: a string which is stringified code in sorted order
-                   For example: '1 1 4 2'
-    '''
-    output = None
-    # TODO
-    return output
+#def stringify_code(code):
+#    '''
+#    input:
+#      code: a list of tuples representing encoded input mask using run length encoding
+#            Note that it may not be sorted
+#            For example: [(4, 2), (1, 1)]
+#    output:
+#      stringified: a string which is stringified code in sorted order
+#                   For example: '1 1 4 2'
+#    '''
+#    output = None
+#    # TODO
+#    return output
 
 if __name__ == "__main__":
 
@@ -84,17 +74,9 @@ if __name__ == "__main__":
         [0, 1, 0, 1, 0],
         [1, 1, 0, 1, 0]
     ])
-    
-    
-    #mask = np.array(Image.open('/home/judichunt/Downloads/train_masks/00087a6bd4dc_01_mask.gif'), dtype=np.uint8)
-    print(run_length_encode_t(test_arr))
-    
-    
-    
-"""
-    encoded_output = [(1, 1), (3, 1), (5, 2), (10, 4)]
-    assert encoded_output == run_length_encode(test_arr)
+
+#    encoded_output = [(1, 1), (3, 1), (5, 2), (10, 4)]
+#    assert encoded_output == run_length_encode(test_arr)
 
     stringified_output = '1 1 3 1 5 2 10 4'
-    assert stringified_output == stringify_code(encoded_output)
-"""
+    assert stringified_output == run_length_encode(test_arr)#stringify_code(encoded_output)
