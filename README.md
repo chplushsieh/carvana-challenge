@@ -44,5 +44,6 @@ data
 - [ ] implement run length encoding
 - [x] add experiment config loading
 - [ ] try a simple UNet
-- [ ] add DICE validation
+- [ ] visualize groundtruth and prediction
+- [ ] add DICE validation to test.py
 - [ ] make first submission
