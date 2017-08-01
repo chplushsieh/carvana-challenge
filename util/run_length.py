@@ -12,6 +12,44 @@ https://www.kaggle.com/c/carvana-image-masking-challenge#evaluation
 # or
 # https://www.kaggle.com/hackerpoet/even-faster-srun-length-encoder
 
+def run_length_encode_t(mask):
+    '''
+    the image has been transposed
+    
+    img: numpy array, 1 - mask, 0 - background
+    Returns run length as string formated
+    '''
+    inds = mask.flatten()
+    head=inds[0]
+    inds[0]=0
+    tail=inds[inds.size-1]
+    inds[inds.size-1]=0
+    runs = np.where(inds[1:] != inds[:-1])[0] + 2
+    runs[1::2] = runs[1::2] - runs[:-1:2]
+    
+    rle=''
+    if head==1:
+        if inds[1]==1:
+            runs[0]=1
+            runs[1]+=1
+        else :
+            rle='1 1 '
+        
+    if tail==1:
+        if inds[inds.size-2]==1:
+            runs[runs.size-1]+=1
+        else :
+            runs=np.append(runs,[1,1])
+    
+    
+    rle = rle + ' '.join([str(r) for r in runs])
+    
+    return rle
+
+
+
+
+
 def run_length_encode(mask):
     '''
     input:
@@ -46,9 +84,17 @@ if __name__ == "__main__":
         [0, 1, 0, 1, 0],
         [1, 1, 0, 1, 0]
     ])
-
+    
+    
+    #mask = np.array(Image.open('/home/judichunt/Downloads/train_masks/00087a6bd4dc_01_mask.gif'), dtype=np.uint8)
+    print(run_length_encode_t(test_arr))
+    
+    
+    
+"""
     encoded_output = [(1, 1), (3, 1), (5, 2), (10, 4)]
     assert encoded_output == run_length_encode(test_arr)
 
     stringified_output = '1 1 3 1 5 2 10 4'
     assert stringified_output == stringify_code(encoded_output)
+"""
