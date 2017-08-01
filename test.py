@@ -10,7 +10,7 @@ import util.load as load
 
 from dataloader import *
 import config
-
+import util.dice as dice
 
 exp_name = 'smallunet'
 
@@ -36,7 +36,6 @@ gt_counts_by_img = {}
 
 for i, (images, targets) in enumerate(data_loader):
     iter_start = time.time()
-    print('Iter {}/{}, Image {} with size {}'.format(i, len(data_loader), img_name, images.size()))
 
     images = images.float()  # convert from DoubleTensor   to FloatTensor
     images = Variable(images, volatile=True)
@@ -47,22 +46,8 @@ for i, (images, targets) in enumerate(data_loader):
     outputs = net(images)
     output = outputs.data[0].cpu().numpy()
 
-    # For Validation Dataset
-    if not IS_TEST:
-        label = None
-        # load counts of whole image from annotation
-        gt_counts = load.get_counts_from_annotations(whole_img_name)
-        # ... which can't be directly compared against image patch predicted counts
-
-    # remove border from label and output
-    output = output[:, tile_border:-tile_border, tile_border:-tile_border]
-
-    # Save predictions
-    # exp.save_prediction(exp_name, start_epoch, img_name[0], output)
+    # compute dice
+    score = dice.dice(output, targets)
 
     iter_end = time.time()
-    print("It took {:.2f} sec".format(iter_end - iter_start))
-
-    # compute rmse
-
-    # save after rounding for submission
+    print('Iter {}/{}, Image {}, score:{}, {:.2f} sec spent'.format(i, len(data_loader), img_name, score, iter_end - iter_start))
