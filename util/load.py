@@ -47,45 +47,54 @@ def load_small_imageset():
     small_img_names = get_img_names_from_car_ids(small_ids)
     return small_img_names
 
-def load_img(data_dir, img_name, img_ext):
-    img_path = os.path.join(data_dir, img_name + '.' + img_ext)
-    img = np.asarray(Image.open(img_path)) # img.shape: (height, width, 3)
-    img = np.moveaxis(img, 2, 0) # img.shape: (3, height, width)
-    # print('Image {} Shape: {}'.format(img_name, img.shape))
-    return img
-
-def load_target(data_dir, img_name, img_ext):
-    img_path = os.path.join(data_dir, img_name + '.' + img_ext)
-    img = np.asarray(Image.open(img_path)) # img.shape: (height, width)
-    # print('Target {} Shape: {}'.format(img_name, img.shape))
-    return img
-
-def load_all_train_images(data_dir, img_names):
+def load_train_image(data_dir, img_name, transform=None):
     img_ext = 'jpg'
+    img = load_image(data_dir, img_name, img_ext, transform=transform) # img.shape: (height, width, 3)
+    img = np.moveaxis(img, 2, 0) # img.shape: (3, height, width)
+    return img
 
-    first_img_path = os.path.join(data_dir, img_names[0] + '.' + img_ext)
-    img_height, img_width= get_img_shape(first_img_path)
-    imgs = np.zeros((len(img_names), 3, img_height, img_width))
-
-    for i, img_name in enumerate(img_names):
-        img = load_img(data_dir, img_name, img_ext)
-        imgs[i] = img
-
-    return imgs
-
-def load_all_train_masks(data_dir, img_names):
-    img_names = [ img_name + '_mask' for img_name in img_names ]
+def load_train_mask(data_dir, img_name, transform=None):
+    img_name = img_name + '_mask'
     img_ext = 'gif'
 
-    first_img_path = os.path.join(data_dir, img_names[0] + '.' + img_ext)
-    img_height, img_width= get_img_shape(first_img_path)
-    imgs = np.zeros((len(img_names), img_height, img_width))
+    return load_image_file(data_dir, img_name, img_ext, transform=transform)
 
-    for i, img_name in enumerate(img_names):
-        img = load_target(data_dir, img_name, img_ext)
-        imgs[i] = img
+def load_image_file(data_dir, img_name, img_ext, transform=None):
+    img_path = os.path.join(data_dir, img_name + '.' + img_ext)
+    img = Image.open(img_path)
 
-    return imgs
+    if transform is not None:
+        img = transform(img)
+
+    img = np.asarray(img) # img.shape: (height, width, 3) or (height, width) if mask
+    return img
+
+# def load_all_train_images(data_dir, img_names):
+#     img_ext = 'jpg'
+#
+#     first_img_path = os.path.join(data_dir, img_names[0] + '.' + img_ext)
+#     img_height, img_width= get_img_shape(first_img_path)
+#     imgs = np.zeros((len(img_names), 3, img_height, img_width))
+#
+#     for i, img_name in enumerate(img_names):
+#         img = load_img(data_dir, img_name, img_ext)
+#         imgs[i] = img
+#
+#     return imgs
+#
+# def load_all_train_masks(data_dir, img_names):
+#     img_names = [ img_name + '_mask' for img_name in img_names ]
+#     img_ext = 'gif'
+#
+#     first_img_path = os.path.join(data_dir, img_names[0] + '.' + img_ext)
+#     img_height, img_width= get_img_shape(first_img_path)
+#     imgs = np.zeros((len(img_names), img_height, img_width))
+#
+#     for i, img_name in enumerate(img_names):
+#         img = load_target(data_dir, img_name, img_ext)
+#         imgs[i] = img
+#
+#     return imgs
 
 def get_filename(path):
     base = os.path.basename(path)

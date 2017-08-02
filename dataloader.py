@@ -21,26 +21,37 @@ __all__ = [
 
 
 class LargeDataset(torch.utils.data.dataset.Dataset):
-    def __init__(self, data_dir, ids=None):
-        self._data_dir = data_dir
+    def __init__(self, data_dir, ids=None, mask_dir=None, transform=None):
+        self.data_dir = data_dir
 
         if not ids:
             self.data_files = load.list_img_in_dir(data_dir)
         else:
             self.data_files = ids
 
+        self.mask_dir = mask_dir
+        self.transform = transform
+
         return
+
+    def __len__(self):
+        return len(self.data_files)
 
     def __getitem__(self, idx):
 
         img_name = self.data_files[idx]
-        img   = load.load_img(self._data_dir, img_name, 'jpg')
-        # print('img.shape:', img.shape)
 
-        return img_name, img
+        img = load.load_train_image(self.data_dir, img_name, transform=self.transform)
 
-    def __len__(self):
-        return len(self.data_files)
+        if self.is_test():
+            target = load.load_train_mask(self.mask_dir, img_name, transform=self.transform)
+        else:
+            target = None
+
+        return img_name, img, target
+
+    def is_test(self):
+        return (self.mask_dir is None)
 
 
 def get_test_loader(batch_size):
@@ -50,9 +61,14 @@ def get_test_loader(batch_size):
 
     print('Number of Test Images:', len(test_ids))
 
+    transformations = transforms.Compose([
+        transforms.Pad(padding=[1, 0, 1, 0], fill=0),
+    ])
+
     test_dataset = LargeDataset(
         test_dir,
         ids=test_ids,
+        transform=transformations,
     )
 
     test_loader = torch.utils.data.dataloader.DataLoader(
@@ -69,12 +85,19 @@ def get_trainval_loader(batch_size, car_ids):
 
     print('Number of Images:', len(car_ids))
 
-    data   = load.load_all_train_images(train_dir, car_ids)
-    target = load.load_all_train_masks(train_mask_dir, car_ids)
+    transformations = transforms.Compose([
+        transforms.Pad(padding=[1, 0, 1, 0], fill=0),
+    ])
 
-    data_tensor   = torch.from_numpy(data)
-    target_tensor = torch.from_numpy(target)
-    dataset = torch.utils.data.TensorDataset(data_tensor, target_tensor)
+    # TODO make a parent class CarDataset of LargeDataset
+    # which, unlike LargeDataset, read the entire data in memory for faster access
+    # use that class for trainval use
+    dataset = LargeDataset(
+        train_dir,
+        ids=car_ids,
+        mask_dir=train_mask_dir,
+        transform=transformations,
+    )
 
     loader = torch.utils.data.dataloader.DataLoader(
                                 dataset,
