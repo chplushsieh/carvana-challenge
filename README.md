@@ -50,4 +50,7 @@ Images are all of size 1918 x 1280
 - [x] add DICE validation
 - [x] add data augmentation: padding, random horizontal flipping
 - [ ] try a standard UNet
-- [ ] make first submission
+- [ ] make first submission (complete test.py)
+- [ ] hold the entire dataset in memory for train/val
+- [ ] experimenting with UNet parameters and architectures
+- [ ] try a memory-efficient DenseNet
