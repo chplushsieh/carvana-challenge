@@ -19,7 +19,6 @@ def dice(x, y):
     smooth =0            # smooth should be replaced by 1 for stability
 
     dice = None
-    # TODO
     x=x.flatten()
     y=y.flatten()
     intersection = sum(x*y)
