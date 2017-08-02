@@ -48,7 +48,8 @@ Images are all of size 1918 x 1280
 - [x] try a simple UNet
 - [ ] visualize groundtruth and prediction
 - [x] add DICE validation
-- [x] add data augmentation: padding, random horizontal flipping
+- [x] add data augmentation: random horizontal flipping
+- [ ] add data augmentation: padding
 - [ ] try a standard UNet
 - [ ] make first submission (complete test.py)
 - [ ] hold the entire dataset in memory for train/val
