@@ -32,6 +32,8 @@ data
 └── train_masks.csv
 ```
 
+Images are all of size 1918 x 1280    
+
 2. Run `python train.py`
 
 3. [Not yet supported] Run `python test.py`

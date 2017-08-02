@@ -8,3 +8,9 @@ TEST_DIR = os.path.join(DATA_DIR, 'test')
 
 TRAIN_IMAGESET_PATH = os.path.join(DATA_DIR, 'train.csv')
 VAL_IMAGESET_PATH   = os.path.join(DATA_DIR, 'val.csv')
+
+# Images are of size 1918 * 1280
+
+# 1918 = 2 * 7 * 137
+# 1920 = 2^7 * 3 * 5
+# 1280 = 2^8 * 5
