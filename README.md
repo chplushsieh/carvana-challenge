@@ -48,4 +48,6 @@ Images are all of size 1918 x 1280
 - [x] try a simple UNet
 - [ ] visualize groundtruth and prediction
 - [x] add DICE validation
+- [x] add data augmentation: padding, random horizontal flipping
+- [ ] try a standard UNet
 - [ ] make first submission

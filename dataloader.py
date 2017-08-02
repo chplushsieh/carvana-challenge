@@ -63,7 +63,7 @@ def get_test_loader(batch_size):
 
     transformations = transforms.Compose([
         transforms.Pad(padding=[1, 0, 1, 0], fill=0),
-    ])
+    ])  # No random flipping for inference
 
     test_dataset = LargeDataset(
         test_dir,
@@ -87,6 +87,7 @@ def get_trainval_loader(batch_size, car_ids):
 
     transformations = transforms.Compose([
         transforms.Pad(padding=[1, 0, 1, 0], fill=0),
+        transforms.RandomHorizontalFlip(),
     ])
 
     # TODO make a parent class CarDataset of LargeDataset
