@@ -10,7 +10,7 @@ import util.load as load
 
 from dataloader import *
 import config
-import util.dice as dice
+import util.evaluation as evaluation
 
 exp_name = 'smallunet'
 
@@ -47,7 +47,7 @@ for i, (images, targets) in enumerate(data_loader):
     output = outputs.data[0].cpu().numpy()
 
     # compute dice
-    score = dice.dice(output, targets)
+    score = evaluation.dice(output, targets)
 
     iter_end = time.time()
     print('Iter {}/{}, Image {}, score:{}, {:.2f} sec spent'.format(i, len(data_loader), img_name, score, iter_end - iter_start))

@@ -23,7 +23,7 @@ def dice(x, y):
     x=x.flatten()
     y=y.flatten()
     intersection = sum(x*y)
-    
+
     dice= (2. * intersection + smooth) / (x.sum() + y.sum() + smooth)
     return dice
 

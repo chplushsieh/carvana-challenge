@@ -41,9 +41,9 @@ data
 - [x] load data
 - [x] train/val split
 - [x] prepare small dataset
-- [ ] implement run length encoding
+- [x] implement run length encoding
 - [x] add experiment config loading
-- [ ] try a simple UNet
+- [x] try a simple UNet
 - [ ] visualize groundtruth and prediction
-- [ ] add DICE validation to test.py
+- [x] add DICE validation
 - [ ] make first submission
