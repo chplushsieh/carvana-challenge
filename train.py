@@ -15,7 +15,8 @@ import util.exp as exp
 from dataloader import *
 import config
 
-exp_name = 'smallunet'
+exp_name = 'unet'
+# exp_name = 'smallunet'
 
 cfg = config.load_config_file(exp_name)
 

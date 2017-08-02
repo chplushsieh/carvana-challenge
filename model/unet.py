@@ -75,7 +75,7 @@ class UNetDownBlock(nn.Module):
         self.l1 = Conv3BN(in_, out, bn, activation)
         self.l2 = Conv3BN(out, out, bn, activation)
 
-    def forward(self, x, skip):
+    def forward(self, x):
         x = self.l1(x)
         x = self.l2(x)
         return x
@@ -88,7 +88,7 @@ class UNetUpBlock(nn.Module):
         self.upsample = nn.UpsamplingNearest2d(scale_factor=2)
 
     def forward(self, skip, x):
-        x = self.upsample(x)
+        up = self.upsample(x)
         x = torch.cat([up, skip], 1)
 
         x = self.l1(x)
@@ -112,8 +112,8 @@ class UNet(BaseNet):
         self.pool4 = nn.MaxPool2d(2)
 
         self.up4 = UNetUpBlock(1024, 512, bn=True, activation='relu')
-        self.up5 = UNetUpBlock( 512, 256, bn=True, activation='relu')
-        self.up3 = UNetUpBlock( 256, 128, bn=True, activation='relu')
+        self.up3 = UNetUpBlock( 512, 256, bn=True, activation='relu')
+        self.up2 = UNetUpBlock( 256, 128, bn=True, activation='relu')
         self.up1 = UNetUpBlock( 128,  64, bn=True, activation='relu')
 
 
