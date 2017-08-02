@@ -1,11 +1,6 @@
 import torch
 import torch.utils.data
-
-import os
-import os.path
-import random
-import numpy as np
-from PIL import Image
+from torchvision import transforms
 
 import util.const as const
 import util.load as load
@@ -61,9 +56,7 @@ def get_test_loader(batch_size):
 
     print('Number of Test Images:', len(test_ids))
 
-    transformations = transforms.Compose([
-        transforms.Pad(padding=[1, 0, 1, 0], fill=0),
-    ])  # No random flipping for inference
+    transformations = None # No random flipping for inference
 
     test_dataset = LargeDataset(
         test_dir,
@@ -86,7 +79,6 @@ def get_trainval_loader(batch_size, car_ids):
     print('Number of Images:', len(car_ids))
 
     transformations = transforms.Compose([
-        transforms.Pad(padding=[1, 0, 1, 0], fill=0),
         transforms.RandomHorizontalFlip(),
     ])
 
