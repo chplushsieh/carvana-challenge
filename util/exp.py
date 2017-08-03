@@ -15,12 +15,18 @@ def create_if_not_exist(dir):
 
 def get_network(exp_name):
     model_name = exp_name.split('_')[0]
+
+    # TODO remove hardcoding here by:
+    # https://stackoverflow.com/questions/3061/calling-a-function-of-a-module-from-a-string-with-the-functions-name-in-python
+
     if model_name == 'smallUnet':
         model = SmallUnet()
     elif model_name == 'originalUnet':
         model = OriginalUnet()
     elif model_name == 'betterUnet':
         model = BetterUnet()
+    elif model_name == 'upsamplingUnet':
+        model = UpsamplingUnet()
 
     return model
 
