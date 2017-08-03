@@ -8,6 +8,8 @@ from PIL import Image
 
 import numpy as np
 
+import util.const as const
+
 def get_car_ids(img_names):
     car_ids = [ img_name.split('_')[0] for img_name in img_names ]
     car_ids = list(set(car_ids))
@@ -49,15 +51,29 @@ def load_small_imageset():
 
 def load_train_image(data_dir, img_name, transform=None):
     img_ext = 'jpg'
-    img = load_image(data_dir, img_name, img_ext, transform=transform) # img.shape: (height, width, 3)
+    img = load_image_file(data_dir, img_name, img_ext, transform=transform) # img.shape: (height, width, 3)
+
+    # padding
+    channel_padding = (0, 0)
+    height_padding = (0, 0)
+    width_padding = (1, 1)
+    img = np.lib.pad(img, (height_padding, width_padding, channel_padding), 'constant')
+
     img = np.moveaxis(img, 2, 0) # img.shape: (3, height, width)
     return img
 
 def load_train_mask(data_dir, img_name, transform=None):
     img_name = img_name + '_mask'
     img_ext = 'gif'
+    img = load_image_file(data_dir, img_name, img_ext, transform=transform)
+    # img.shape: (height, width)
 
-    return load_image_file(data_dir, img_name, img_ext, transform=transform)
+    # padding
+    height_padding = (0, 0)
+    width_padding = (1, 1)
+    img = np.lib.pad(img, (height_padding, width_padding), 'constant')
+
+    return img
 
 def load_image_file(data_dir, img_name, img_ext, transform=None):
     img_path = os.path.join(data_dir, img_name + '.' + img_ext)
@@ -67,12 +83,6 @@ def load_image_file(data_dir, img_name, img_ext, transform=None):
         img = transform(img)
 
     img = np.asarray(img) # img.shape: (height, width, 3) or (height, width) if mask
-
-    # padding
-    channel_padding = (0, 0)
-    height_padding  = (0, 0)
-    width_padding   = (1, 1)
-    img = np.lib.pad(img, (channel_padding, height_padding, width_padding), 'constant')
 
     return img
 

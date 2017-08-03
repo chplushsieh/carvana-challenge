@@ -39,9 +39,9 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         img = load.load_train_image(self.data_dir, img_name, transform=self.transform)
 
         if self.is_test():
-            target = load.load_train_mask(self.mask_dir, img_name, transform=self.transform)
+            target = -1
         else:
-            target = None
+            target = load.load_train_mask(self.mask_dir, img_name, transform=self.transform)
 
         return img_name, img, target
 

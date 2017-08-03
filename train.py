@@ -54,7 +54,7 @@ for epoch in range(start_epoch, num_epochs + 1):
     print('Epoch [%d/%d] starts'
           % (epoch, num_epochs))
 
-    for i, (images, targets) in enumerate(data_loader):
+    for i, (img_name, images, targets) in enumerate(data_loader):
         iter_start = time.time()
         # print('Epoch {}, Iter {}, Image {}'.format(epoch, i, img_name))
 
