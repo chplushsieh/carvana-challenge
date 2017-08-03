@@ -2,7 +2,7 @@ import torch.nn.functional as F
 import torch.nn as nn
 
 
-class CrossEntropy2d(nn.Module):
+class CrossEntropy2dLoss(nn.Module):
 
     def __init__(self, size_average=True, ignore_label=255):
         super(CrossEntropy2d, self).__init__()
