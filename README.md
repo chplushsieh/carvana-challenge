@@ -49,8 +49,10 @@ Images are all of size 1918 x 1280
 - [ ] visualize groundtruth and prediction
 - [x] add DICE validation
 - [x] add data augmentation: random horizontal flipping
-- [ ] add data augmentation: padding
-- [ ] try a standard UNet
+- [x] add data augmentation: padding
+- [x] try a standard UNet
+- [ ] add DICE score during training
+- [ ] add validation loss and DICE score during training
 - [ ] make first submission (complete test.py)
 - [ ] hold the entire dataset in memory for train/val
 - [ ] experimenting with UNet parameters and architectures
