@@ -54,6 +54,7 @@ Images are all of size 1918 x 1280
 - [x] try a standard UNet
 - [ ] add DICE score during training
 - [ ] add validation loss and DICE score during training
+- [ ] make crayon optional
 - [ ] make first submission (complete test.py)
 - [ ] hold the entire dataset in memory for train/val
 - [ ] experimenting with UNet parameters and architectures
