@@ -142,9 +142,10 @@ class OriginalUnet(BaseNet):
         up2 = self.up2(down2, up3)
         up1 = self.up1(down1, up2)
 
-        return self.classify(up1)
+        out =  self.classify(up1)
+        return out # No Sigmoid layer
 
-class BetterUnet(BaseNet):
+class BetterUnet(BaseNet): # Improved: add the last Sigmoid layer
     def __init__(self):
         super().__init__()
 
@@ -188,4 +189,5 @@ class BetterUnet(BaseNet):
         up2 = self.up2(down2, up3)
         up1 = self.up1(down1, up2)
 
-        return self.classify(up1)
+        out =  self.classify(up1)
+        return F.sigmoid(out)
