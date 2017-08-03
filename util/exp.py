@@ -15,10 +15,12 @@ def create_if_not_exist(dir):
 
 def get_network(exp_name):
     model_name = exp_name.split('_')[0]
-    if model_name == 'smallunet':
-        model = SmallUNet()
-    elif model_name == 'unet':
-        model = UNet()
+    if model_name == 'smallUnet':
+        model = SmallUnet()
+    elif model_name == 'originalUnet':
+        model = OriginalUnet()
+    elif model_name == 'betterUnet':
+        model = BetterUnet()
 
     return model
 

@@ -51,9 +51,11 @@ Images are all of size 1918 x 1280
 - [x] add DICE validation
 - [x] add data augmentation: random horizontal flipping
 - [x] add data augmentation: padding
-- [x] try a standard UNet
+- [x] try the original UNet
+    - [ ] try Adam or other optimizers
 - [ ] add DICE score during training
 - [ ] add validation loss and DICE score during training
+- [ ] try modified UNet with UpSampling layers
 - [ ] make crayon optional
 - [ ] make first submission (complete test.py)
 - [ ] hold the entire dataset in memory for train/val

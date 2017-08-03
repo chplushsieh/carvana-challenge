@@ -5,7 +5,7 @@ import torch.cuda
 import torch.nn as nn
 import torch.nn.functional as F
 
-__all__ = [ 'SmallUNet', 'UNet' ]
+__all__ = [ 'SmallUnet', 'OriginalUnet', 'BetterUnet' ]
 
 class BaseNet(nn.Module):
     def __init__(self, n_channels=3, n_classes=1, dropout=0.0, bn=1, activation='relu', filters_base=32):
@@ -24,7 +24,7 @@ class BaseNet(nn.Module):
         else:
             self.dropout2d = lambda x: x
 
-class SmallUNet(BaseNet):
+class SmallUnet(BaseNet):
     def __init__(self):
         super().__init__()
         self.conv1 = nn.Conv2d(self.n_channels, 32, 3, padding=1)
@@ -98,7 +98,7 @@ class UNetUpBlock(nn.Module):
 
         return x
 
-class UNet(BaseNet):
+class OriginalUnet(BaseNet):
     def __init__(self):
         super().__init__()
 
@@ -118,7 +118,7 @@ class UNet(BaseNet):
         self.up2 = UNetUpBlock( 256, 128, bn=True, activation='relu')
         self.up1 = UNetUpBlock( 128,  64, bn=True, activation='relu')
 
-        self.final = nn.Conv2d(64, self.n_classes, 1)
+        self.classify = nn.Conv2d(64, self.n_classes, 1)
         return
 
     def forward(self, x):
@@ -142,4 +142,50 @@ class UNet(BaseNet):
         up2 = self.up2(down2, up3)
         up1 = self.up1(down1, up2)
 
-        return self.final(up1)
+        return self.classify(up1)
+
+class BetterUnet(BaseNet):
+    def __init__(self):
+        super().__init__()
+
+        self.down1 = UNetDownBlock(self.n_channels,  64, bn=True, activation='relu')
+        self.down2 = UNetDownBlock(             64, 128, bn=True, activation='relu')
+        self.down3 = UNetDownBlock(            128, 256, bn=True, activation='relu')
+        self.down4 = UNetDownBlock(            256, 512, bn=True, activation='relu')
+        self.down5 = UNetDownBlock(            512,1024, bn=True, activation='relu')
+
+        self.pool1 = nn.MaxPool2d(2)
+        self.pool2 = nn.MaxPool2d(2)
+        self.pool3 = nn.MaxPool2d(2)
+        self.pool4 = nn.MaxPool2d(2)
+
+        self.up4 = UNetUpBlock(1024, 512, bn=True, activation='relu')
+        self.up3 = UNetUpBlock( 512, 256, bn=True, activation='relu')
+        self.up2 = UNetUpBlock( 256, 128, bn=True, activation='relu')
+        self.up1 = UNetUpBlock( 128,  64, bn=True, activation='relu')
+
+        self.classify = nn.Conv2d(64, self.n_classes, 1)
+        return
+
+    def forward(self, x):
+
+        down1 = self.down1(x)
+        x = self.pool1(down1)
+
+        down2 = self.down2(x)
+        x = self.pool2(down2)
+
+        down3 = self.down3(x)
+        x = self.pool3(down3)
+
+        down4 = self.down4(x)
+        x = self.pool4(down4)
+
+        down5 = self.down5(x)
+
+        up4 = self.up4(down4, down5)
+        up3 = self.up3(down3, up4)
+        up2 = self.up2(down2, up3)
+        up1 = self.up1(down1, up2)
+
+        return self.classify(up1)
