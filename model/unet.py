@@ -85,10 +85,12 @@ class UNetUpBlock(nn.Module):
         super().__init__()
         self.l1 = Conv3BN(in_, out, bn, activation)
         self.l2 = Conv3BN(out, out, bn, activation)
-        self.upsample = nn.UpsamplingNearest2d(scale_factor=2)
+
+        self.up = nn.ConvTranspose2d(in_, out, 2)
+        # self.up = nn.UpsamplingNearest2d(scale_factor=2)
 
     def forward(self, skip, x):
-        up = self.upsample(x)
+        up = self.up(x)
         x = torch.cat([up, skip], 1)
 
         x = self.l1(x)
