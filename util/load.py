@@ -67,6 +67,13 @@ def load_image_file(data_dir, img_name, img_ext, transform=None):
         img = transform(img)
 
     img = np.asarray(img) # img.shape: (height, width, 3) or (height, width) if mask
+
+    # padding
+    channel_padding = (0, 0)
+    height_padding  = (0, 0)
+    width_padding   = (1, 1)
+    img = np.lib.pad(img, (channel_padding, height_padding, width_padding), 'constant')
+
     return img
 
 # def load_all_train_images(data_dir, img_names):
