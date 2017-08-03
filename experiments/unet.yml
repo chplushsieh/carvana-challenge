@@ -1,5 +1,5 @@
 
-learning_rate: 1e-3
+learning_rate: 1e-2
 
 momentum: 0.9
 weight_decay: 0 # easier to overfit # 1e-4
