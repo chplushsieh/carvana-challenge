@@ -86,7 +86,7 @@ class UNetUpBlock(nn.Module):
         self.l1 = Conv3BN(in_, out, bn, activation)
         self.l2 = Conv3BN(out, out, bn, activation)
 
-        self.up = nn.ConvTranspose2d(in_, out, 2)
+        self.up = nn.ConvTranspose2d(in_, out, 2, stride=2)
         # self.up = nn.UpsamplingNearest2d(scale_factor=2)
 
     def forward(self, skip, x):
@@ -118,6 +118,8 @@ class UNet(BaseNet):
         self.up2 = UNetUpBlock( 256, 128, bn=True, activation='relu')
         self.up1 = UNetUpBlock( 128,  64, bn=True, activation='relu')
 
+        self.final = nn.Conv2d(64, self.n_classes, 1)
+        return
 
     def forward(self, x):
 
@@ -140,4 +142,4 @@ class UNet(BaseNet):
         up2 = self.up2(down2, up3)
         up1 = self.up1(down1, up2)
 
-        return up1
+        return self.final(up1)
