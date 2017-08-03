@@ -1,10 +1,11 @@
 # carvana-challenge
-My Solution for Carvana Image Masking Challenge on Kaggle: https://www.kaggle.com/c/carvana-image-masking-challenge
+My Solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.com/c/carvana-image-masking-challenge)
 
 ## Requirements
 * python 3.6
 * pytorch
 * pyyaml
+* [crayon](https://github.com/torrvision/crayon)
 
 ## Usage
 
@@ -34,7 +35,7 @@ data
 
 Images are all of size 1918 x 1280    
 
-2. Run `python train.py`
+2. Run `crayon` and then `python train.py`
 
 3. [Not yet supported] Run `python test.py`
 
