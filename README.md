@@ -9,6 +9,7 @@ My Solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.c
 
 ## Usage
 
+### Train/Test
 1. Extract data downloaded from Kaggle to `./data`:
 
 ```
@@ -38,6 +39,12 @@ Images are all of size 1918 x 1280
 2. Run `crayon` and then `python train.py`
 
 3. [Not yet supported] Run `python test.py`
+
+### Other Scripts
+
+* To find numbers that are divislbe by `2^n`, run `python scripts/divisble.py <start_number> <end_number>`
+
+For instance, `python scripts/divisble.py 900 1300`
 
 ## To-dos
 
