@@ -53,10 +53,9 @@ Images are all of size 1918 x 1280
 - [x] add data augmentation: padding
 - [x] try the original UNet
     - [ ] try Adam or other optimizers
-- [ ] add DICE score during training
+- [x] add DICE score during training
 - [ ] add validation loss and DICE score during training
-- [ ] try modified UNet with UpSampling layers
-- [ ] make crayon optional
+- [x] try modified UNet with UpSampling layers
 - [ ] make first submission (complete test.py)
 - [ ] hold the entire dataset in memory for train/val
 - [ ] experimenting with UNet parameters and architectures

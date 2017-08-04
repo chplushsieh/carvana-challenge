@@ -16,7 +16,7 @@ import util.evaluation as evaluation
 from dataloader import *
 import config
 
-exp_name = 'upsamplingUnet'
+exp_name = 'smallerUpsamplingUnet'
 
 cfg = config.load_config_file(exp_name)
 
