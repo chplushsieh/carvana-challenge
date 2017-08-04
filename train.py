@@ -16,7 +16,7 @@ import util.evaluation as evaluation
 from dataloader import *
 import config
 
-exp_name = 'betterUnet'
+exp_name = 'upsamplingUnet'
 
 cfg = config.load_config_file(exp_name)
 
@@ -42,7 +42,6 @@ experiment, use_tensorboard = exp.setup_crayon(use_tensorboard, CrayonClient, ex
 # Training setting
 DEBUG = cfg['DEBUG']
 log_iter_interval     = cfg['log_iter_interval']
-# display_iter_interval = cfg['display_iter_interval'] # TODO remove this param from all .yml files
 snapshot_epoch_interval = cfg['snapshot_epoch_interval']
 num_epochs = cfg['num_epochs']
 
@@ -50,7 +49,7 @@ num_epochs = cfg['num_epochs']
 for epoch in range(start_epoch, num_epochs + 1):
     epoch_start = time.time()
     epoch_train_loss = 0
-    epoch_accuracy   = 0
+    epoch_train_accuracy   = 0
 
     print('Epoch [%d/%d] starts'
           % (epoch, num_epochs))
@@ -76,7 +75,7 @@ for epoch in range(start_epoch, num_epochs + 1):
 
         # generate prediction
         masks = (outputs > 0.5).float()
-        accuracy  = evaluation.dice(masks, targets) # TODO dice takes only 2-dim inputs
+        accuracy  = evaluation.dice( masks.data[0].cpu().numpy(), targets.data.cpu().numpy()) # TODO dice takes only 2-dim inputs
 
         # Backward + Optimize
         optimizer.zero_grad()
@@ -85,7 +84,7 @@ for epoch in range(start_epoch, num_epochs + 1):
 
         # Update epoch stats
         epoch_train_loss += loss.data[0]
-        epoch_accuracy   += accuracy
+        epoch_train_accuracy   += accuracy
 
         # Save the trained model
         if (i + 1) == 1 and epoch % snapshot_epoch_interval == 0:
@@ -102,15 +101,15 @@ for epoch in range(start_epoch, num_epochs + 1):
             print('Epoch {}, Iter {}, Loss {}'.format(epoch, i, loss.data[0]))
 
     epoch_train_loss /= len(data_loader)
-    epoch_accuracy   /= len(data_loader)
+    epoch_train_accuracy   /= len(data_loader)
 
     if use_tensorboard:
         experiment.add_scalar_value('train loss', epoch_train_loss, step=epoch)
         # experiment.add_scalar_value('val loss', epoch_val_loss, step=epoch)
-        experiment.add_scalar_value('accuracy', epoch_accuracy, step=epoch)
+        experiment.add_scalar_value('accuracy', epoch_train_accuracy, step=epoch)
         # experiment.add_scalar_value('learning_rate', lr, step=epoch)
 
     epoch_end = time.time()
 
-    print('Epoch [%d/%d], Loss: %.2f Time Spent: %.2f sec'
-          % (epoch, num_epochs, epoch_train_loss, epoch_end - epoch_start))
+    print('Epoch [%d/%d] Loss: %.2f Accuracy: %.4f Time Spent: %.2f sec'
+          % (epoch, num_epochs, epoch_train_loss, epoch_train_accuracy, epoch_end - epoch_start))

@@ -86,9 +86,9 @@ class UNetUpBlock(nn.Module):
         self.l1 = Conv3BN(in_, out, bn, activation)
         self.l2 = Conv3BN(out, out, bn, activation)
 
-        if up = 'upconv':
+        if up == 'upconv':
             self.up = nn.ConvTranspose2d(in_, out, 2, stride=2)
-        elif up = 'upsample';
+        elif up == 'upsample':
             self.up = nn.UpsamplingNearest2d(scale_factor=2)
 
     def forward(self, skip, x):

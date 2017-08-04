@@ -14,7 +14,6 @@ num_epochs: 151
 DEBUG: False
 use_tensorboard: True
 log_iter_interval: 16
-display_iter_interval: 1
 snapshot_epoch_interval: 25
 
 train:
