@@ -53,6 +53,7 @@ Images are all of size 1918 x 1280
 - [x] add data augmentation: padding
 - [x] try the original UNet
     - [ ] try Adam or other optimizers
+- [ ] train/predict-by-tile
 - [x] add DICE score during training
 - [ ] add validation loss and DICE score during training
 - [x] try modified UNet with UpSampling layers
