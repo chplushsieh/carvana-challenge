@@ -23,7 +23,8 @@ cfg = config.load_config_file(exp_name)
 net, optimizer, start_epoch = exp.load_exp(exp_name)
 
 data_loader = get_small_loader(
-    cfg['train']['batch_size']
+    cfg['train']['batch_size'],
+    cfg['train']['tile_size']
 )
 
 if torch.cuda.is_available():

@@ -16,7 +16,7 @@ __all__ = [
 
 
 class LargeDataset(torch.utils.data.dataset.Dataset):
-    def __init__(self, data_dir, ids=None, mask_dir=None, transform=None):
+    def __init__(self, data_dir, ids=None, mask_dir=None, transform=None, tile_size=None, img_size=(121)):
         self.data_dir = data_dir
 
         if not ids:
@@ -26,6 +26,7 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
 
         self.mask_dir = mask_dir
         self.transform = transform
+        self.tile_size = tile_size # TODO use this
 
         return
 
@@ -49,7 +50,7 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         return (self.mask_dir is None)
 
 
-def get_test_loader(batch_size):
+def get_test_loader(batch_size, tile_size):
     test_dir = const.TEST_DIR
 
     test_ids = load.list_img_in_dir(test_dir)
@@ -62,6 +63,7 @@ def get_test_loader(batch_size):
         test_dir,
         ids=test_ids,
         transform=transformations,
+        tile_size=tile_size,
     )
 
     test_loader = torch.utils.data.dataloader.DataLoader(
@@ -72,7 +74,7 @@ def get_test_loader(batch_size):
                             )
     return test_loader
 
-def get_trainval_loader(batch_size, car_ids):
+def get_trainval_loader(batch_size, car_ids, tile_size):
     train_dir = const.TRAIN_DIR
     train_mask_dir = const.TRAIN_MASK_DIR
 
@@ -90,6 +92,7 @@ def get_trainval_loader(batch_size, car_ids):
         ids=car_ids,
         mask_dir=train_mask_dir,
         transform=transformations,
+        tile_size=tile_size,
     )
 
     loader = torch.utils.data.dataloader.DataLoader(
@@ -100,14 +103,14 @@ def get_trainval_loader(batch_size, car_ids):
                             )
     return loader
 
-def get_train_loader(batch_size):
+def get_train_loader(batch_size, tile_size):
     train_imgs = load.load_train_imageset()
-    return get_trainval_loader(batch_size, train_imgs)
+    return get_trainval_loader(batch_size, train_imgs, tile_size)
 
-def get_val_loader(batch_size):
+def get_val_loader(batch_size, tile_size):
     val_imgs = load.load_val_imageset()
-    return get_trainval_loader(batch_size, val_imgs)
+    return get_trainval_loader(batch_size, val_imgs, tile_size)
 
-def get_small_loader(batch_size):
+def get_small_loader(batch_size, tile_size):
     small_imgs = load.load_small_imageset()
-    return get_trainval_loader(batch_size, small_imgs)
+    return get_trainval_loader(batch_size, small_imgs, tile_size)
