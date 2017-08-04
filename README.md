@@ -52,7 +52,6 @@ Images are all of size 1918 x 1280
 - [x] add data augmentation: random horizontal flipping
 - [x] add data augmentation: padding
 - [x] try the original UNet
-    - [ ] try Adam or other optimizers
 - [ ] train/predict-by-tile
 - [x] add DICE score during training
 - [ ] add validation loss and DICE score during training
@@ -60,4 +59,5 @@ Images are all of size 1918 x 1280
 - [ ] make first submission (complete test.py)
 - [ ] hold the entire dataset in memory for train/val
 - [ ] experimenting with UNet parameters and architectures
+    - [ ] try Adam or other optimizers
 - [ ] try a memory-efficient DenseNet
