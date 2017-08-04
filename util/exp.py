@@ -27,6 +27,8 @@ def get_network(exp_name):
         model = BetterUnet()
     elif model_name == 'upsamplingUnet':
         model = UpsamplingUnet()
+    elif model_name == 'smallerUpsamplingUnet':
+        model = SmallerUpsamplingUnet()
 
     return model
 
