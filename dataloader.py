@@ -4,7 +4,7 @@ from torchvision import transforms
 
 import util.const as const
 import util.load as load
-
+import util.tile as tile
 
 __all__ = [
     'get_small_loader',
@@ -16,7 +16,7 @@ __all__ = [
 
 
 class LargeDataset(torch.utils.data.dataset.Dataset):
-    def __init__(self, data_dir, ids=None, mask_dir=None, transform=None, tile_size=None, img_size=(121)):
+    def __init__(self, data_dir, ids=None, mask_dir=None, transform=None, tile_size=None):
         self.data_dir = data_dir
 
         if not ids:
@@ -24,9 +24,12 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         else:
             self.data_files = ids
 
+        if tile_size:
+            self.data_files = tile.generate_tile_names(self.data_files, tile_size, const.img_size)
+
         self.mask_dir = mask_dir
         self.transform = transform
-        self.tile_size = tile_size # TODO use this
+        self.tile_size = tile_size
 
         return
 
@@ -37,11 +40,13 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
 
         img_name = self.data_files[idx]
 
+         # TODO use self.tile_size, if not None
         img = load.load_train_image(self.data_dir, img_name, transform=self.transform)
 
         if self.is_test():
             target = -1
         else:
+             # TODO use self.tile_size, if not None
             target = load.load_train_mask(self.mask_dir, img_name, transform=self.transform)
 
         return img_name, img, target

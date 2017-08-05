@@ -65,6 +65,6 @@ For instance, `python scripts/divisble.py 900 1300`
 - [x] try modified UNet with UpSampling layers
 - [ ] make first submission (complete test.py)
 - [ ] hold the entire dataset in memory for train/val
-- [ ] experimenting with UNet parameters and architectures
+- [ ] experimenting with UNet parameters and architectures/modules
     - [ ] try Adam or other optimizers
 - [ ] try a memory-efficient DenseNet

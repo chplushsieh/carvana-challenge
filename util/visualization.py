@@ -2,22 +2,19 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
 
-def visualize(image, target):
+def visualize(image, pred, target=None):
     '''
     input:
       image:  a numpy array of shape (num of channels, Height, Width)
+      pred: a numpy array of shape (1, Height, Width) with numbers between 0 and 1 in it
       target: a numpy array of shape (1, Height, Width) with only 1's and 0's in it
     '''
-       
+
     assert image.shape[:-1] == target.shape
-    
 
-
-    
-    
     plt.imshow(target, 'gray', interpolation='none')
     plt.imshow(image, 'gray', interpolation='none', alpha=0.6)
-    plt.show()  
+    plt.show()
 
 
 #example
