@@ -54,7 +54,7 @@ For instance, `python scripts/divisble.py 900 1300`
 - [x] implement run length encoding
 - [x] add experiment config loading
 - [x] try a simple UNet
-- [ ] visualize groundtruth and prediction
+- [x] visualize groundtruth and prediction
 - [x] add DICE validation
 - [x] add data augmentation: random horizontal flipping
 - [x] add data augmentation: padding
