@@ -9,6 +9,7 @@ from PIL import Image
 import numpy as np
 
 import util.const as const
+import util.tile as tile
 
 def get_car_ids(img_names):
     car_ids = [ img_name.split('_')[0] for img_name in img_names ]
@@ -49,9 +50,11 @@ def load_small_imageset():
     small_img_names = get_img_names_from_car_ids(small_ids)
     return small_img_names
 
-def load_train_image(data_dir, img_name, transform=None):
+def load_train_image(data_dir, img_name, transform=None, tile_size=None):
+    img_file_name = tile.get_img_name(img_name)
     img_ext = 'jpg'
-    img = load_image_file(data_dir, img_name, img_ext, transform=transform) # img.shape: (height, width, 3)
+    img = load_image_file(data_dir, img_file_name, img_ext, transform=transform)
+    # img.shape: (height, width, 3)
 
     # padding
     channel_padding = (0, 0)
@@ -59,19 +62,30 @@ def load_train_image(data_dir, img_name, transform=None):
     width_padding = (1, 1)
     img = np.lib.pad(img, (height_padding, width_padding, channel_padding), 'constant')
 
-    img = np.moveaxis(img, 2, 0) # img.shape: (3, height, width)
+    img = np.moveaxis(img, 2, 0)
+    # img.shape: (3, height, width)
+
+    if tile_size not None:
+        img = tile.get_tile(img, img_name, tile_size)
+
     return img
 
-def load_train_mask(data_dir, img_name, transform=None):
-    img_name = img_name + '_mask'
+def load_train_mask(data_dir, img_name, transform=None, tile_size=None):
+    img_file_name = tile.get_img_name(img_name) + '_mask'
     img_ext = 'gif'
-    img = load_image_file(data_dir, img_name, img_ext, transform=transform)
+    img = load_image_file(data_dir, img_file_name, img_ext, transform=transform)
     # img.shape: (height, width)
 
     # padding
     height_padding = (0, 0)
     width_padding = (1, 1)
     img = np.lib.pad(img, (height_padding, width_padding), 'constant')
+
+    img = img[np.newaxis, :, :]
+    # img.shape: (1, height, width)
+
+    if tile_size not None:
+        img = tile.get_tile(img, img_name, tile_size)
 
     return img
 

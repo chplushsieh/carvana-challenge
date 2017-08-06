@@ -40,14 +40,12 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
 
         img_name = self.data_files[idx]
 
-         # TODO use self.tile_size, if not None
-        img = load.load_train_image(self.data_dir, img_name, transform=self.transform)
+        img = load.load_train_image(self.data_dir, img_name, transform=self.transform, tile_size=self.tile_size)
 
         if self.is_test():
             target = -1
         else:
-             # TODO use self.tile_size, if not None
-            target = load.load_train_mask(self.mask_dir, img_name, transform=self.transform)
+            target = load.load_train_mask(self.mask_dir, img_name, transform=self.transform, tile_size=self.tile_size)
 
         return img_name, img, target
 
