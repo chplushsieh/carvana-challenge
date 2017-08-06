@@ -10,18 +10,39 @@ def visualize(image, pred, target=None):
       target: a numpy array of shape (1, Height, Width) with only 1's and 0's in it
     '''
 
-    assert image.shape[:-1] == target.shape
-
-    plt.imshow(target, 'gray', interpolation='none')
-    plt.imshow(image, 'gray', interpolation='none', alpha=0.6)
+    assert image.shape[:-1] == pred.shape
+    
+    plt.figure()
+    plt.subplot(1,2,1)
+    plt.imshow(image, 'gray', interpolation='none')
+    plt.imshow(pred, 'BuGn', interpolation='none', alpha=0.3)
+    
+    
+    plt.subplot(1,2,2)
+    plt.imshow(pred, 'BuGn', interpolation='none')
     plt.show()
-
+    
+    if target!=None:
+        plt.figure()
+        plt.subplot(1,3,1)
+        plt.imshow(image, 'gray', interpolation='none')
+        plt.imshow(pred, 'BuGn', interpolation='none', alpha=0.4)
+        plt.imshow(target, 'Purples', interpolation='none', alpha=0.3)
+        
+        
+        plt.subplot(1,3,2)
+        plt.imshow(pred, 'BuGn', interpolation='none')
+        
+        plt.subplot(1,3,3)
+        plt.imshow(target, 'Purples', interpolation='none')
+        plt.show()
 
 #example
 #input_path='/home/judichunt/Downloads/'
 #target = np.array(Image.open(input_path+'train_masks/00087a6bd4dc_01_mask.gif'), dtype=np.uint8)
 #image = np.array(Image.open(input_path+'train/00087a6bd4dc_01.jpg'), dtype=np.uint8)
-#visualize(image, target)
+#pred = np.array(Image.open(input_path+'train_masks/0cdf5b5d0ce1_01_mask.gif'), dtype=np.uint8)
+#visualize(image, pred, target)
 
     # image, target, image overlaied with target
     # like so: https://kaggle2.blob.core.windows.net/forum-message-attachments/208218/6916/starter-kit.png
