@@ -9,8 +9,14 @@ def visualize(image, pred, target=None):
       pred: a numpy array of shape (1, Height, Width) with numbers between 0 and 1 in it
       target: a numpy array of shape (1, Height, Width) with only 1's and 0's in it
     '''
-
-    assert image.shape[:-1] == pred.shape
+    def change_index_ord(img):
+        img=np.swapaxes(img,0,2)
+        img=np.swapaxes(img,1,2)
+        return img
+    image=change_index_ord(image)
+    pred=change_index_ord(pred)   
+    
+    assert image.shape[:-1] == pred.shape[0:2]  
     
     plt.figure()
     plt.subplot(1,2,1)
@@ -23,6 +29,7 @@ def visualize(image, pred, target=None):
     plt.show()
     
     if target!=None:
+        target=change_index_ord(target)
         plt.figure()
         plt.subplot(1,3,1)
         plt.imshow(image, 'gray', interpolation='none')
