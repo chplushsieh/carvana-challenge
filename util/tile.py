@@ -3,21 +3,38 @@ import numpy as np
 import math
 
 
-def get_tile_overlap(img_dim_length, tile_dim_length, num_tiles_in_dim):
+def get_tile_border(img_dim_length, tile_length, num_tiles):
     '''
     input:
-      img_dim_length:  int representing either image height or width
-      tile_dim_length: int representing either tile height or width
-      num_tiles_in_dim: int representing how many tiles are along this dimension
+      img_length:  int representing either image height or width
+      tile_length: int representing either tile height or width
+      num_tiles: int representing how many tiles are along this dimension
     output:
-      tile_dim_overlap: int representing how much tiles overlap with each other in this dimension
+      tile_border: int
+
+    Their relationships are:
+    Eq. 1
+      padded_img_length == img_length + 2 * tile_border
+    Eq. 2
+      padded_img_length == num_tiles * tile_length - (num_tiles - 1) * 2 * tile_border
+
+    Eq. 3
+      tile_body_length == tile_length - 2 * tile_border
+    Eq. 4
+      padded_img_length == num_tiles * tile_body_length + 2 * tile_border
     '''
 
-    dim_overlap = img_dim_length - num_tiles_in_dim * tile_dim_length
-    tile_dim_overlap = dim_overlap / (num_tiles_in_dim - 1)
-    assert isinstance( tile_dim_overlap, int )
+    # To solve for tile_border, combine and reorganize Eq. 1 and Eq. 2
+    tile_border = (num_tiles * tile_length - img_length) / (num_tiles * 2)
 
-    return tile_dim_overlap
+    assert isinstance( tile_border, int )
+
+    # Verify tile_border we got is right
+    padded_img_length = img_length + 2 * tile_border # Eq. 1
+    tile_body_length = tile_length - 2 * tile_border # Eq. 3
+    assert padded_img_length == num_tiles * tile_body_length + 2 * tile_border # Eq. 4
+
+    return tile_border
 
 def get_tile_layout(tile_size, img_size):
     '''
@@ -26,8 +43,7 @@ def get_tile_layout(tile_size, img_size):
       img_size:  a tuple of ints (height, width) representing the size of a whole image
     output:
       tile_layout:  a tuple of ints (num_of_rows, num_of_cols)
-      tile_overlap: a tuple of ints (height_overlap, width_overlap) representing
-                    how much neighboring tiles overlap with each other
+      tile_border: a tuple of ints (height_border, width_border)
     '''
     tile_height, tile_width = tile_size
     img_height,  img_width  = img_size
@@ -36,11 +52,11 @@ def get_tile_layout(tile_size, img_size):
     num_of_cols = math.ceil(tile_width  / img_width)
     tile_layout = (num_of_rows, num_of_cols)
 
-    height_overlap = get_tile_overlap(img_height, tile_height, num_of_rows)
-    width_overlap  = get_tile_overlap(img_width,  tile_width,  num_of_cols)
-    tile_overlap = (height_overlap, tile_overlap)
+    height_border = get_tile_border(img_height, tile_height, num_of_rows)
+    width_border  = get_tile_border(img_width,  tile_width,  num_of_cols)
+    tile_border = (height_border, width_border)
 
-    return tile_layout, tile_overlap
+    return tile_layout, tile_border
 
 def generate_tile_names(img_names, tile_size, img_size):
     '''
@@ -72,114 +88,66 @@ def get_img_name(tile_name):
     '''
     return tile_name.split('-')[0]
 
-def get_tile(img, tile_name, tile_layout, tile_border): # TODO
-    '''
-    input:
-      img:            of shape (3, height, width)
-      tile_name:  <whole_img_name>_<row_idx>_<col_idx>
-      tile_layout:     (num_of_rows, num_of_cols)
-    '''
-    tile_index = get_tile_index(tile_name)
-    tile_shape = get_tile_shape(img.shape[1:], tile_layout)
+def get_tile_pos(tile_name):
+    tile_row_idx, tile_col_idx = tile_name.split('-')[1], tile_name.split('-')[2]
+    tile_pos = int(tile_row_idx), int(tile_col_idx)
+    return tile_pos
 
-    tile = crop_tile(img, tile_index, tile_shape, tile_layout, tile_border)
+def get_tile(img, tile_name, tile_size, tile_size):
+    tile_layout, tile_border = get_tile_layout(tile_size, img_size)
+
+    tile_pos = get_tile_pos(tile_name)
+
+    tile = crop_tile(img, tile_pos, tile_size, tile_layout, tile_border)
 
     return tile
 
-########
-
-def get_padding_shape(img_shape, zpad_shape):
-    im_h,   im_w = img_shape
-    z_h,   z_w = zpad_shape
-
-    height_padding  = (math.ceil((z_h - im_h)/2), math.floor((z_h - im_h)/2))
-    width_padding   = (math.ceil((z_w - im_w)/2), math.floor((z_w - im_w)/2))
-
-    return height_padding, width_padding
-
-def coords_in_zpad(coords, img_shape, zpad_shape):
-    y, x = coords
-    height_padding, width_padding = get_padding_shape(img_shape, zpad_shape)
-
-    padded_y = y + height_padding[0]
-    padded_x = x + width_padding[0]
-
-    return padded_y, padded_x
-
-def coords_in_which_tile(coords, tile_shape):
-    tile_height, tile_width = tile_shape
-    y, x = coords
-
-    # get tile index
-    row_index = math.ceil(y / tile_height)
-    col_index = math.ceil(x / tile_width)
-    tile_index = (row_index, col_index)
-    return tile_index
-
-def get_tile_index(img_patch_name):
-    tile_row_idx, tile_col_idx = img_patch_name.split('_')[1], img_patch_name.split('_')[2]
-    tile_idx = int(tile_row_idx), int(tile_col_idx)
-    return tile_idx
-
-def get_tile_shape(img_shape, tile_layout):
-    num_of_rows, num_of_cols = tile_layout
-    img_height, img_width = img_shape
-
-    tile_height = int(math.floor(img_height / num_of_rows))
-    tile_width = int(math.floor(img_width / num_of_cols))
-    return (tile_height, tile_width)
 
 def pad_border(img, border):
+    height_border, width_border = border
 
     channel_padding = (0, 0)
-    height_padding  = (border, border)
-    width_padding   = (border, border)
-
+    height_padding  = (height_border, height_border)
+    width_padding   = (width_border, width_border)
+     # TODO how about target?
     padded_img = np.lib.pad(img, (channel_padding, height_padding, width_padding), 'constant')
 
     return padded_img
 
-def crop_tile(img, tile_index, tile_shape, tile_layout, border):
+
+def crop_tile(img, tile_pos, tile_size, tile_layout, tile_border):
+
+    padded_img = pad_border(img, tile_border)
+
+    # unpack inputs
     num_of_rows, num_of_cols = tile_layout
-    _, img_height, img_width = img.shape
-    row_idx, col_idx = tile_index
-    t_h, t_w = tile_shape
-    # print('Before Border Added, Tile Shape: {}'.format(tile_shape))
+    _, img_height, img_width = img.shape # TODO how about target?
+    row_idx, col_idx = tile_pos
+    tile_h, tile_w = tile_size
+    height_border, width_border = tile_border
 
-    y = (row_idx - 1) * t_h
-    x = (col_idx - 1) * t_w
+    t_body_h, t_body_w = tile_h - 2 * height_border, tile_w - 2 * width_border
 
-    padded_img = pad_border(img, border)
+    print('Tile Size: {}, {}'.format(tile_h, tile_w))
+    print('Tile Border: {}, {}'.format(height_border, width_border))
+    print('Tile Body: {}, {}'.format(t_body_h, t_body_w))
 
-    if row_idx == num_of_rows:
-        # tile in last row
+    crop_y_start = (row_idx - 1) * t_body_h
+    crop_x_start = (col_idx - 1) * t_body_w
+
+    if row_idx == num_of_rows: # if the tile is in last row
         # leave all remainder to the last tile
-        crop_h = img_height + 2*border
+        crop_y_end = img_height + 2*height_border
     else:
-        crop_h = y + t_h + 2*border
+        crop_y_end = crop_y_start + t_body_h + 2*height_border
 
 
-    if col_idx == num_of_cols:
-        # tile in last col
+    if col_idx == num_of_cols: # if the tile is in last col
         # leave all remainder to the last tile
-        crop_w = img_width + 2*border
+        crop_x_end = img_width + 2*width_border
     else:
-        crop_w = x + t_w + 2*border
+        crop_x_end = crop_x_start + t_body_w + 2*width_border
 
-    cropped_img   =   padded_img[ :, y:crop_h, x:crop_w ]
+    cropped_img   =   padded_img[ :, crop_y_start:crop_y_end, crop_x_start:crop_x_end ]
 
     return cropped_img
-
-def get_tile(img, img_tile_name, tile_layout, tile_border):
-    '''
-    Input:
-    img:            of shape (3, height, width)
-    img_tile_name:  <whole_img_name>_<row_idx>_<col_idx>
-    tile_layout:     (num_of_rows, num_of_cols)
-    '''
-    tile_index = get_tile_index(img_tile_name)
-    tile_shape = get_tile_shape(img.shape[1:], tile_layout)
-
-    tile = crop_tile(img, tile_index, tile_shape, tile_layout, tile_border)
-
-    return tile
