@@ -59,7 +59,7 @@ For instance, `python scripts/divisble.py 900 1300`
 - [x] add data augmentation: random horizontal flipping
 - [x] add data augmentation: padding
 - [x] try the original UNet
-- [ ] train/predict-by-tile
+- [x] train/predict-by-tile
 - [x] add DICE score during training
 - [ ] add validation loss and DICE score during training
 - [x] try modified UNet with UpSampling layers
