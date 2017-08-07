@@ -45,7 +45,7 @@ def load_val_imageset():
 
 def load_small_imageset():
     small_ids = [
-        '00087a6bd4dc',
+        '0d53224da2b7',
     ]
     small_img_names = get_img_names_from_car_ids(small_ids)
     return small_img_names

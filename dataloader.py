@@ -2,6 +2,8 @@ import torch
 import torch.utils.data
 from torchvision import transforms
 
+import random
+
 import util.const as const
 import util.load as load
 import util.tile as tile
