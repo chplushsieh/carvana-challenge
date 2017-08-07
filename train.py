@@ -16,13 +16,14 @@ from dataloader import *
 from util.visualization import *
 import config
 
-exp_name = 'upsamplingUnet_6G'
+exp_name = 'upsamplingUnet'
 
 cfg = config.load_config_file(exp_name)
 
 net, optimizer, start_epoch = exp.load_exp(exp_name)
 
-data_loader = get_small_loader(
+# data_loader = get_small_loader(
+data_loader = get_train_loader(
     cfg['train']['batch_size'],
     cfg['train']['paddings'],
     cfg['train']['tile_size']

@@ -75,9 +75,13 @@ def load_train_mask(data_dir, img_name, is_hflip=False, paddings=None, tile_size
 def preprocess(img, img_name, is_hflip, paddings, tile_size):
 
     if is_hflip:
-        img = np.fliplr(img).copy()
+        img = np.swapaxes(img, 0, 2) # img.shape: (width, height, num of channels)
+
+        img = np.flipud(img).copy() # reverse values in the first dimension
         # .copy() is added to fixed the following error:
         # https://discuss.pytorch.org/t/torch-from-numpy-not-support-negative-strides/3663/2
+
+        img = np.swapaxes(img, 0, 2)  # img.shape: (num of channels, height, width)
 
     if paddings:
         img = tile.pad_image(img, paddings)
