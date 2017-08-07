@@ -2,9 +2,9 @@
 import numpy as np
 import math
 
-__all__ = [ 'generate_tile_names', 'get_img_name', 'get_tile' ]
+__all__ = [ 'pad_image', 'generate_tile_names', 'get_img_name', 'get_tile' ]
 
-def get_tile_border(img_dim_length, tile_length, num_tiles):
+def get_tile_border(img_length, tile_length, num_tiles):
     '''
     input:
       img_length:  int representing either image height or width
@@ -28,7 +28,8 @@ def get_tile_border(img_dim_length, tile_length, num_tiles):
     # To solve for tile_border, combine and reorganize Eq. 1 and Eq. 2
     tile_border = (num_tiles * tile_length - img_length) / (num_tiles * 2)
 
-    assert isinstance( tile_border, int )
+    assert tile_border > 0 and tile_border % 1 == 0
+    tile_border = int(tile_border)
 
     # Verify tile_border we got is right
     padded_img_length = img_length + 2 * tile_border # Eq. 1
@@ -49,8 +50,8 @@ def get_tile_layout(tile_size, img_size):
     tile_height, tile_width = tile_size
     img_height,  img_width  = img_size
 
-    num_of_rows = math.ceil(tile_height / img_height)
-    num_of_cols = math.ceil(tile_width  / img_width)
+    num_of_rows = math.ceil(img_height / tile_height )
+    num_of_cols = math.ceil(img_width  / tile_width  )
     tile_layout = (num_of_rows, num_of_cols)
 
     height_border = get_tile_border(img_height, tile_height, num_of_rows)
@@ -107,40 +108,35 @@ def get_tile(img, tile_name, tile_size):
 
     return tile
 
-def pad_border(img, border):
-    '''
-    pad image
-    '''
-    height_border, width_border = border
+def pad_image(img, paddings):
+    height_padding, width_padding = paddings
 
     channel_padding = (0, 0)
-    height_padding  = (height_border, height_border)
-    width_padding   = (width_border, width_border)
-     # TODO how about target?
+    height_padding  = (height_padding, height_padding)
+    width_padding   = (width_padding, width_padding)
     padded_img = np.lib.pad(img, (channel_padding, height_padding, width_padding), 'constant')
 
     return padded_img
-
 
 def crop_tile(img, tile_pos, tile_size, tile_layout, tile_border):
     '''
     crop from a image
     '''
 
-    padded_img = pad_border(img, tile_border)
+    padded_img = pad_image(img, tile_border)
 
     # unpack inputs
     num_of_rows, num_of_cols = tile_layout
-    _, img_height, img_width = img.shape # TODO how about target?
+    _, img_height, img_width = img.shape
     row_idx, col_idx = tile_pos
     tile_h, tile_w = tile_size
     height_border, width_border = tile_border
 
     t_body_h, t_body_w = tile_h - 2 * height_border, tile_w - 2 * width_border
 
-    print('Tile Size: {}, {}'.format(tile_h, tile_w))
-    print('Tile Border: {}, {}'.format(height_border, width_border))
-    print('Tile Body: {}, {}'.format(t_body_h, t_body_w))
+    # print('Tile Size: {}, {}'.format(tile_h, tile_w))
+    # print('Tile Border: {}, {}'.format(height_border, width_border))
+    # print('Tile Body: {}, {}'.format(t_body_h, t_body_w))
 
     crop_y_start = (row_idx - 1) * t_body_h
     crop_x_start = (col_idx - 1) * t_body_w
@@ -158,7 +154,6 @@ def crop_tile(img, tile_pos, tile_size, tile_layout, tile_border):
     else:
         crop_x_end = crop_x_start + t_body_w + 2*width_border
 
-    # TODO how about target?
     cropped_img   =   padded_img[ :, crop_y_start:crop_y_end, crop_x_start:crop_x_end ]
 
     return cropped_img

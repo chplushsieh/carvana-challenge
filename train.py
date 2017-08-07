@@ -16,7 +16,7 @@ import util.evaluation as evaluation
 from dataloader import *
 import config
 
-exp_name = 'smallerUpsamplingUnet'
+exp_name = 'upsamplingUnet'
 
 cfg = config.load_config_file(exp_name)
 
@@ -24,6 +24,7 @@ net, optimizer, start_epoch = exp.load_exp(exp_name)
 
 data_loader = get_small_loader(
     cfg['train']['batch_size'],
+    cfg['train']['paddings'],
     cfg['train']['tile_size']
 )
 
@@ -72,11 +73,12 @@ for epoch in range(start_epoch, num_epochs + 1):
 
         # Forward + Compute Loss
         outputs = net(images)
+        # TODO remove tile borders from both outputs and targets
         loss = criterion(outputs, targets)
 
         # generate prediction
         masks = (outputs > 0.5).float()
-        accuracy  = evaluation.dice( masks.data[0].cpu().numpy(), targets.data.cpu().numpy()) # TODO dice takes only 2-dim inputs
+        accuracy  = evaluation.dice( masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
 
         # Backward + Optimize
         optimizer.zero_grad()

@@ -50,41 +50,36 @@ def load_small_imageset():
     small_img_names = get_img_names_from_car_ids(small_ids)
     return small_img_names
 
-def load_train_image(data_dir, img_name, transform=None, tile_size=None):
+def load_train_image(data_dir, img_name, transform=None, paddings=None, tile_size=None):
     img_file_name = tile.get_img_name(img_name)
     img_ext = 'jpg'
     img = load_image_file(data_dir, img_file_name, img_ext, transform=transform)
     # img.shape: (height, width, 3)
 
-    # padding
-    channel_padding = (0, 0)
-    height_padding = (0, 0)
-    width_padding = (1, 1)
-    img = np.lib.pad(img, (height_padding, width_padding, channel_padding), 'constant')
-
     img = np.moveaxis(img, 2, 0)
     # img.shape: (3, height, width)
 
-    if tile_size not None:
+    if paddings:
+        img = tile.pad_image(img, paddings)
+
+    if tile_size:
         img = tile.get_tile(img, img_name, tile_size)
 
     return img
 
-def load_train_mask(data_dir, img_name, transform=None, tile_size=None):
+def load_train_mask(data_dir, img_name, transform=None, paddings=None, tile_size=None):
     img_file_name = tile.get_img_name(img_name) + '_mask'
     img_ext = 'gif'
     img = load_image_file(data_dir, img_file_name, img_ext, transform=transform)
     # img.shape: (height, width)
 
-    # padding
-    height_padding = (0, 0)
-    width_padding = (1, 1)
-    img = np.lib.pad(img, (height_padding, width_padding), 'constant')
-
     img = img[np.newaxis, :, :]
     # img.shape: (1, height, width)
 
-    if tile_size not None:
+    if paddings:
+        img = tile.pad_image(img, paddings)
+
+    if tile_size:
         img = tile.get_tile(img, img_name, tile_size)
 
     return img

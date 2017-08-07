@@ -16,7 +16,7 @@ __all__ = [
 
 
 class LargeDataset(torch.utils.data.dataset.Dataset):
-    def __init__(self, data_dir, ids=None, mask_dir=None, transform=None, tile_size=None):
+    def __init__(self, data_dir, ids=None, mask_dir=None, transform=None, paddings=None, tile_size=None):
         self.data_dir = data_dir
 
         if not ids:
@@ -25,10 +25,13 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
             self.data_files = ids
 
         if tile_size:
-            self.data_files = tile.generate_tile_names(self.data_files, tile_size, const.img_size)
+            img_height, img_width = const.img_size
+            padded_img_size = img_height + 2 * paddings[0], img_width + 2 * paddings[1]
+            self.data_files = tile.generate_tile_names(self.data_files, tile_size, padded_img_size)
 
         self.mask_dir = mask_dir
         self.transform = transform
+        self.paddings = paddings
         self.tile_size = tile_size
 
         return
@@ -40,12 +43,12 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
 
         img_name = self.data_files[idx]
 
-        img = load.load_train_image(self.data_dir, img_name, transform=self.transform, tile_size=self.tile_size)
+        img = load.load_train_image(self.data_dir, img_name, transform=self.transform, paddings=self.paddings, tile_size=self.tile_size)
 
         if self.is_test():
             target = -1
         else:
-            target = load.load_train_mask(self.mask_dir, img_name, transform=self.transform, tile_size=self.tile_size)
+            target = load.load_train_mask(self.mask_dir, img_name, transform=self.transform, paddings=self.paddings, tile_size=self.tile_size)
 
         return img_name, img, target
 
@@ -77,7 +80,7 @@ def get_test_loader(batch_size, tile_size):
                             )
     return test_loader
 
-def get_trainval_loader(batch_size, car_ids, tile_size):
+def get_trainval_loader(batch_size, car_ids, paddings, tile_size):
     train_dir = const.TRAIN_DIR
     train_mask_dir = const.TRAIN_MASK_DIR
 
@@ -95,6 +98,7 @@ def get_trainval_loader(batch_size, car_ids, tile_size):
         ids=car_ids,
         mask_dir=train_mask_dir,
         transform=transformations,
+        paddings=paddings,
         tile_size=tile_size,
     )
 
@@ -106,14 +110,14 @@ def get_trainval_loader(batch_size, car_ids, tile_size):
                             )
     return loader
 
-def get_train_loader(batch_size, tile_size):
+def get_train_loader(batch_size, paddings, tile_size):
     train_imgs = load.load_train_imageset()
-    return get_trainval_loader(batch_size, train_imgs, tile_size)
+    return get_trainval_loader(batch_size, train_imgs, paddings, tile_size)
 
-def get_val_loader(batch_size, tile_size):
+def get_val_loader(batch_size, paddings, tile_size):
     val_imgs = load.load_val_imageset()
-    return get_trainval_loader(batch_size, val_imgs, tile_size)
+    return get_trainval_loader(batch_size, val_imgs, paddings, tile_size)
 
-def get_small_loader(batch_size, tile_size):
+def get_small_loader(batch_size, paddings, tile_size):
     small_imgs = load.load_small_imageset()
-    return get_trainval_loader(batch_size, small_imgs, tile_size)
+    return get_trainval_loader(batch_size, small_imgs, paddings, tile_size)

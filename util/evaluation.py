@@ -16,7 +16,7 @@ def dice(x, y):
     '''
     assert x.shape == y.shape
 
-    smooth =0            # smooth should be replaced by 1 for stability
+    smooth = 1            # for stability
 
     dice = None
     x=x.flatten()
