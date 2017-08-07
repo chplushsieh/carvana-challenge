@@ -101,10 +101,10 @@ for epoch in range(start_epoch, num_epochs + 1):
                   % (epoch, num_epochs, i + 1, len(data_loader), loss.data[0], accuracy, iter_end - iter_start))
 
         if DEBUG:
-            print('Epoch {}, Iter {}, {}, Loss {}'.format(epoch, i, img_name, loss.data[0]))
+            print('Epoch {}, Iter {}, {}: Loss {}, Accuracy: {.4f}'.format(epoch, i, img_name, loss.data[0], accuracy))
             visualize(images.data[0].cpu().numpy(), masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
-            
-            
+
+
 
     epoch_train_loss /= len(data_loader)
     epoch_train_accuracy   /= len(data_loader)

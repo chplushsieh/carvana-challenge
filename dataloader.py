@@ -16,7 +16,7 @@ __all__ = [
 
 
 class LargeDataset(torch.utils.data.dataset.Dataset):
-    def __init__(self, data_dir, ids=None, mask_dir=None, transform=None, paddings=None, tile_size=None):
+    def __init__(self, data_dir, ids=None, mask_dir=None, hflip_enabled=False, paddings=None, tile_size=None):
         self.data_dir = data_dir
 
         if not ids:
@@ -30,7 +30,7 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
             self.data_files = tile.generate_tile_names(self.data_files, tile_size, padded_img_size)
 
         self.mask_dir = mask_dir
-        self.transform = transform
+        self.hflip_enabled = hflip_enabled
         self.paddings = paddings
         self.tile_size = tile_size
 
@@ -43,12 +43,16 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
 
         img_name = self.data_files[idx]
 
-        img = load.load_train_image(self.data_dir, img_name, transform=self.transform, paddings=self.paddings, tile_size=self.tile_size)
+        # decide if we will flip the image and the target
+        is_coin_head = random.random() < 0.5
+        is_hflip = self.hflip_enabled and is_coin_head
+
+        img = load.load_train_image(self.data_dir, img_name, is_hflip=is_hflip, paddings=self.paddings, tile_size=self.tile_size)
 
         if self.is_test():
             target = -1
         else:
-            target = load.load_train_mask(self.mask_dir, img_name, transform=self.transform, paddings=self.paddings, tile_size=self.tile_size)
+            target = load.load_train_mask(self.mask_dir, img_name, is_hflip=is_hflip, paddings=self.paddings, tile_size=self.tile_size)
 
         return img_name, img, target
 
@@ -63,12 +67,10 @@ def get_test_loader(batch_size, tile_size):
 
     print('Number of Test Images:', len(test_ids))
 
-    transformations = None # No random flipping for inference
-
     test_dataset = LargeDataset(
         test_dir,
         ids=test_ids,
-        transform=transformations,
+        hflip_enabled=False, # No random flipping for inference
         tile_size=tile_size,
     )
 
@@ -86,10 +88,6 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size):
 
     print('Number of Images:', len(car_ids))
 
-    transformations = transforms.Compose([
-        transforms.RandomHorizontalFlip(),
-    ])
-
     # TODO make a parent class CarDataset of LargeDataset
     # which, unlike LargeDataset, read the entire data in memory for faster access
     # use that class for trainval use
@@ -97,7 +95,7 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size):
         train_dir,
         ids=car_ids,
         mask_dir=train_mask_dir,
-        transform=transformations,
+        hflip_enabled=True,
         paddings=paddings,
         tile_size=tile_size,
     )

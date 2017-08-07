@@ -50,32 +50,35 @@ def load_small_imageset():
     small_img_names = get_img_names_from_car_ids(small_ids)
     return small_img_names
 
-def load_train_image(data_dir, img_name, transform=None, paddings=None, tile_size=None):
+def load_train_image(data_dir, img_name, is_hflip=False, paddings=None, tile_size=None):
     img_file_name = tile.get_img_name(img_name)
     img_ext = 'jpg'
-    img = load_image_file(data_dir, img_file_name, img_ext, transform=transform)
+    img = load_image_file(data_dir, img_file_name, img_ext)
     # img.shape: (height, width, 3)
 
     img = np.moveaxis(img, 2, 0)
     # img.shape: (3, height, width)
 
-    if paddings:
-        img = tile.pad_image(img, paddings)
+    return preprocess(img, img_name, is_hflip, paddings, tile_size)
 
-    if tile_size:
-        img = tile.get_tile(img, img_name, tile_size)
-
-    return img
-
-def load_train_mask(data_dir, img_name, transform=None, paddings=None, tile_size=None):
+def load_train_mask(data_dir, img_name, is_hflip=False, paddings=None, tile_size=None):
     img_file_name = tile.get_img_name(img_name) + '_mask'
     img_ext = 'gif'
-    img = load_image_file(data_dir, img_file_name, img_ext, transform=transform)
+    img = load_image_file(data_dir, img_file_name, img_ext)
     # img.shape: (height, width)
 
     img = img[np.newaxis, :, :]
     # img.shape: (1, height, width)
 
+    return preprocess(img, img_name, is_hflip, paddings, tile_size)
+
+def preprocess(img, img_name, is_hflip, paddings, tile_size):
+
+    if is_hflip:
+        img = np.fliplr(img).copy()
+        # .copy() is added to fixed the following error:
+        # https://discuss.pytorch.org/t/torch-from-numpy-not-support-negative-strides/3663/2
+
     if paddings:
         img = tile.pad_image(img, paddings)
 
@@ -84,43 +87,13 @@ def load_train_mask(data_dir, img_name, transform=None, paddings=None, tile_size
 
     return img
 
-def load_image_file(data_dir, img_name, img_ext, transform=None):
+def load_image_file(data_dir, img_name, img_ext):
     img_path = os.path.join(data_dir, img_name + '.' + img_ext)
     img = Image.open(img_path)
-
-    if transform is not None:
-        img = transform(img)
 
     img = np.asarray(img) # img.shape: (height, width, 3) or (height, width) if mask
 
     return img
-
-# def load_all_train_images(data_dir, img_names):
-#     img_ext = 'jpg'
-#
-#     first_img_path = os.path.join(data_dir, img_names[0] + '.' + img_ext)
-#     img_height, img_width= get_img_shape(first_img_path)
-#     imgs = np.zeros((len(img_names), 3, img_height, img_width))
-#
-#     for i, img_name in enumerate(img_names):
-#         img = load_img(data_dir, img_name, img_ext)
-#         imgs[i] = img
-#
-#     return imgs
-#
-# def load_all_train_masks(data_dir, img_names):
-#     img_names = [ img_name + '_mask' for img_name in img_names ]
-#     img_ext = 'gif'
-#
-#     first_img_path = os.path.join(data_dir, img_names[0] + '.' + img_ext)
-#     img_height, img_width= get_img_shape(first_img_path)
-#     imgs = np.zeros((len(img_names), img_height, img_width))
-#
-#     for i, img_name in enumerate(img_names):
-#         img = load_target(data_dir, img_name, img_ext)
-#         imgs[i] = img
-#
-#     return imgs
 
 def get_filename(path):
     base = os.path.basename(path)
