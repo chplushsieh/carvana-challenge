@@ -64,7 +64,11 @@ For instance, `python scripts/divisble.py 900 1300`
 - [ ] add validation loss and DICE score during training
 - [x] try modified UNet with UpSampling layers
 - [ ] make first submission (complete test.py)
+- [ ] add data augmentation: random shift
+- [ ] improve tile.py: make it able to cut image into halves
 - [ ] hold the entire dataset in memory for train/val
 - [ ] experimenting with UNet parameters and architectures/modules
+    - [ ] larger UNets
     - [ ] try Adam or other optimizers
+    - [ ] try different losses
 - [ ] try a memory-efficient DenseNet
