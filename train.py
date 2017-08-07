@@ -9,8 +9,7 @@ try:
 except ImportError:
     CrayonClient = None
 
-import model.loss.CrossEntropy2dLoss as CrossEntropy2dLoss
-import model.loss.StableBCELoss as StableBCELoss
+import model.loss as loss
 import util.exp as exp
 import util.evaluation as evaluation
 from dataloader import *
@@ -33,7 +32,7 @@ if torch.cuda.is_available():
 net.train()
 
 # Loss and Optimizer
-criterion = StableBCELoss.StableBCELoss() # TODO a bit verbose; try to simplify
+criterion = loss.StableBCELoss()
 if torch.cuda.is_available():
     criterion = criterion.cuda()
 

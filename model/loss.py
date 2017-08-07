@@ -30,3 +30,12 @@ class CrossEntropy2dLoss(nn.Module):
         predict = predict[target_mask.view(n, h, w, 1).repeat(1, 1, 1, c)].view(-1, c)
         loss = F.cross_entropy(predict, target, weight=weight, size_average=self.size_average)
         return loss
+
+class StableBCELoss(nn.modules.Module):
+    def __init__(self):
+        super(StableBCELoss, self).__init__()
+
+    def forward(self, input, target):
+        neg_abs = - input.abs()
+        loss = input.clamp(min=0) - input * target + (1 + neg_abs.exp()).log()
+        return loss.mean()
