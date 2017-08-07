@@ -11,12 +11,15 @@ def visualize(image, pred, target=None):
     '''
     def change_index_ord(img):
         img=np.swapaxes(img,0,2)
-        img=np.swapaxes(img,1,2)
+        img=np.swapaxes(img,0,1)
         return img
     image=change_index_ord(image)
-    pred=change_index_ord(pred)   
+    pred=np.squeeze(change_index_ord(pred) , axis=2)  
+    #print(image.shape)
+    #print(pred.shape)
     
-    assert image.shape[:-1] == pred.shape[0:2]  
+    
+    assert image.shape[:-1] == pred.shape
     
     plt.figure()
     plt.subplot(1,2,1)
@@ -29,7 +32,7 @@ def visualize(image, pred, target=None):
     plt.show()
     
     if target!=None:
-        target=change_index_ord(target)
+        target=np.squeeze(change_index_ord(target) , axis=2)  
         plt.figure()
         plt.subplot(1,3,1)
         plt.imshow(image, 'gray', interpolation='none')

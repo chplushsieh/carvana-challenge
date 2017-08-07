@@ -13,9 +13,10 @@ import model.loss as loss
 import util.exp as exp
 import util.evaluation as evaluation
 from dataloader import *
+from util.visualization import *
 import config
 
-exp_name = 'upsamplingUnet'
+exp_name = 'upsamplingUnet_6G'
 
 cfg = config.load_config_file(exp_name)
 
@@ -101,6 +102,9 @@ for epoch in range(start_epoch, num_epochs + 1):
 
         if DEBUG:
             print('Epoch {}, Iter {}, Loss {}'.format(epoch, i, loss.data[0]))
+            visualize(images.data[0].cpu().numpy(), masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
+            
+            
 
     epoch_train_loss /= len(data_loader)
     epoch_train_accuracy   /= len(data_loader)
