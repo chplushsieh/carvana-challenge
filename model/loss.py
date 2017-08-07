@@ -39,3 +39,35 @@ class StableBCELoss(nn.modules.Module):
         neg_abs = - input.abs()
         loss = input.clamp(min=0) - input * target + (1 + neg_abs.exp()).log()
         return loss.mean()
+
+class BCELoss2d(nn.Module):
+    '''
+    from https://www.kaggle.com/c/carvana-image-masking-challenge/discussion/37208
+    '''
+    def __init__(self, weight=None, size_average=True):
+        super(BCELoss2d, self).__init__()
+        self.bce_loss = nn.BCELoss(weight, size_average)
+
+    def forward(self, inputs, targets):
+        inputs_flat   = inputs.view (-1)
+        targets_flat = targets.view(-1)
+        return self.bce_loss(inputs_flat, targets_flat)
+
+
+class SoftDiceLoss(nn.Module):
+    '''
+    from https://www.kaggle.com/c/carvana-image-masking-challenge/discussion/37208
+    '''
+    def __init__(self, weight=None, size_average=True):
+        super(SoftDiceLoss, self).__init__()
+
+
+    def forward(self, inputs, targets):
+        num = targets.size(0)
+        m1  = inputs.view(num,-1)
+        m2  = targets.view(num,-1)
+        intersection = (m1 * m2)
+
+        score = 2. * (intersection.sum(1)+1) / (m1.sum(1) + m2.sum(1)+1)
+        score = 1 - score.sum()/num
+        return score
