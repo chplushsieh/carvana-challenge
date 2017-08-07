@@ -5,7 +5,7 @@ import torch.nn as nn
 class CrossEntropy2dLoss(nn.Module):
 
     def __init__(self, size_average=True, ignore_label=255):
-        super(CrossEntropy2d, self).__init__()
+        super(CrossEntropy2dLoss, self).__init__()
         self.size_average = size_average
         self.ignore_label = ignore_label
 
