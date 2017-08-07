@@ -31,7 +31,7 @@ def visualize(image, pred, target=None):
     plt.imshow(pred, 'BuGn', interpolation='none')
     plt.show()
     
-    if target!=None:
+    if target is not None:
         target=np.squeeze(change_index_ord(target) , axis=2)  
         plt.figure()
         plt.subplot(1,3,1)
