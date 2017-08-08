@@ -5,12 +5,11 @@ import numpy as np
 import time
 
 import util.exp as exp
-import util.val as val
-import util.load as load
+import util.evaluation as evaluation
 
 from dataloader import *
 import config
-import util.evaluation as evaluation
+
 
 exp_name = 'smallunet'
 
@@ -19,7 +18,11 @@ cfg = config.load_config_file(exp_name)
 net, _, start_epoch = exp.load_exp(exp_name)
 
 data_loader = get_small_loader(
-    cfg['train']['batch_size']
+# data_loader = get_val_loader(
+# data_loader = get_test_loader(
+    cfg['train']['batch_size'],
+    cfg['train']['paddings'],
+    cfg['train']['tile_size']
 )
 IS_TEST = True
 
