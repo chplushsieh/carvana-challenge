@@ -125,9 +125,10 @@ def trainer(exp_name):
               % (epoch, num_epochs, epoch_train_loss, epoch_train_accuracy, epoch_end - epoch_start))
     return
 
-parser = argparse.ArgumentParser()
-parser.add_argument('exp_name', nargs='?', default='upsamplingUnet')
-args = parser.parse_args()
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('exp_name', nargs='?', default='upsamplingUnet')
+    args = parser.parse_args()
 
-exp_name = args.exp_name
-trainer(exp_name)
+    exp_name = args.exp_name
+    trainer(exp_name)
