@@ -20,21 +20,14 @@ import config
 
 
 
-def trainer(exp_name):
+def trainer(exp_name, data_loader):
     cfg = config.load_config_file(exp_name)
 
     net, optimizer, start_epoch = exp.load_exp(exp_name)
 
-    # data_loader = get_small_loader(
-    data_loader = get_train_loader(
-        cfg['train']['batch_size'],
-        cfg['train']['paddings'],
-        cfg['train']['tile_size']
-    )
-
     if torch.cuda.is_available():
         net.cuda()
-    net.train()
+    net.train()  # Change model to 'train' mode
 
     # Loss and Optimizer
     criterion = loss.StableBCELoss()
@@ -54,6 +47,8 @@ def trainer(exp_name):
     # Train the Model
     for epoch in range(start_epoch, num_epochs + 1):
         epoch_start = time.time()
+
+        # initialize epoch stats
         epoch_train_loss = 0
         epoch_train_accuracy   = 0
 
@@ -62,9 +57,8 @@ def trainer(exp_name):
 
         for i, (img_name, images, targets) in enumerate(data_loader):
             iter_start = time.time()
-            # print('Epoch {}, Iter {}, Image {}'.format(epoch, i, img_name))
 
-            # convert from DoubleTensor to FloatTensor
+            # convert to FloatTensor
             images = images.float()
             targets = targets.float()
 
@@ -75,7 +69,6 @@ def trainer(exp_name):
                 images = images.cuda()
                 targets = targets.cuda()
 
-            # Forward + Compute Loss
             outputs = net(images)
             # TODO remove tile borders from both outputs and targets
             loss = criterion(outputs, targets)
@@ -84,7 +77,7 @@ def trainer(exp_name):
             masks = (outputs > 0.5).float()
             accuracy  = evaluation.dice( masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
 
-            # Backward + Optimize
+            # Backward pass
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -125,10 +118,19 @@ def trainer(exp_name):
               % (epoch, num_epochs, epoch_train_loss, epoch_train_accuracy, epoch_end - epoch_start))
     return
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('exp_name', nargs='?', default='upsamplingUnet')
     args = parser.parse_args()
 
     exp_name = args.exp_name
-    trainer(exp_name)
+
+    # data_loader = get_small_loader(
+    data_loader = get_train_loader(
+        cfg['train']['batch_size'],
+        cfg['train']['paddings'],
+        cfg['train']['tile_size']
+    )
+
+    trainer(exp_name, data_loader)
