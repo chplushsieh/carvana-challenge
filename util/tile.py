@@ -13,6 +13,8 @@ def get_tile_border(img_length, tile_length, num_tiles):
     output:
       tile_border: int
 
+    Note that tile_border can be 0 when img_length == tile_length
+
     Their relationships are:
     Eq. 1
       padded_img_length == img_length + 2 * tile_border
@@ -28,7 +30,7 @@ def get_tile_border(img_length, tile_length, num_tiles):
     # To solve for tile_border, combine and reorganize Eq. 1 and Eq. 2
     tile_border = (num_tiles * tile_length - img_length) / (num_tiles * 2)
 
-    assert tile_border > 0 and tile_border % 1 == 0
+    assert tile_border >= 0 and tile_border % 1 == 0
     tile_border = int(tile_border)
 
     # Verify tile_border we got is right
