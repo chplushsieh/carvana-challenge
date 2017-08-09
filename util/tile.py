@@ -2,7 +2,7 @@
 import numpy as np
 import math
 
-__all__ = [ 'pad_image', 'generate_tile_names', 'get_img_name', 'get_tile' ]
+__all__ = [ 'pad_image', 'generate_tile_names', 'get_img_name', 'get_tile', 'stitch_predictions' ]
 
 def get_tile_border(img_length, tile_length, num_tiles):
     '''
@@ -157,3 +157,15 @@ def crop_tile(img, tile_pos, tile_size, tile_layout, tile_border):
     cropped_img   =   padded_img[ :, crop_y_start:crop_y_end, crop_x_start:crop_x_end ]
 
     return cropped_img
+
+def stitch_predictions(tile_preds):
+    '''
+    input:
+      tile_preds: a dict of numpy arrays, with image tile names as keys and predicted masks as values
+
+    output:
+      img_preds: a dict of numpy arrays, with image names as keys and predicted masks as values
+    '''
+    img_preds = None
+    # TODO
+    return img_preds

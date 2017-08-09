@@ -65,6 +65,7 @@ For instance, `python scripts/divisble.py 900 1300`
 - [ ] add optimizer and loss to experiment setting in .yml
 - [x] try modified UNet with UpSampling layers
 - [ ] improve tile.py: make it able to cut image into halves
+- [ ] complete util/tile.py: stitch_predictions()
 - [ ] complete util/submit.py
 - [ ] add data augmentation: random shift
 - [ ] hold the entire dataset in memory for train/val
