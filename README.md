@@ -62,10 +62,11 @@ For instance, `python scripts/divisble.py 900 1300`
 - [x] train/predict-by-tile
 - [x] add DICE score during training
 - [ ] add validation loss and DICE score during training
+- [ ] add optimizer and loss to experiment setting in .yml
 - [x] try modified UNet with UpSampling layers
-- [ ] make first submission (complete test.py)
-- [ ] add data augmentation: random shift
 - [ ] improve tile.py: make it able to cut image into halves
+- [ ] complete util/submit.py
+- [ ] add data augmentation: random shift
 - [ ] hold the entire dataset in memory for train/val
 - [ ] experimenting with UNet parameters and architectures/modules
     - [ ] larger UNets
