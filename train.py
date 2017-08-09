@@ -29,7 +29,7 @@ def trainer(exp_name, data_loader):
         net.cuda()
     net.train()  # Change model to 'train' mode
 
-    # Loss and Optimizer
+    # Loss
     criterion = loss.StableBCELoss()
     if torch.cuda.is_available():
         criterion = criterion.cuda()

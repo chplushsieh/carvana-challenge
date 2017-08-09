@@ -6,16 +6,18 @@ import time
 
 import util.exp as exp
 import util.evaluation as evaluation
+import util.visualization as viz
+import util.submit as submit
 
 from dataloader import *
 import config
 
 
 
-def tester(exp_name, data_loader):
+def tester(exp_name, data_loader, is_val=False):
     cfg = config.load_config_file(exp_name)
 
-    net, _, _ = exp.load_exp(exp_name)
+    net, _, _ = exp.load_exp(exp_name) # TODO load loss
 
     if torch.cuda.is_available():
         net.cuda()
@@ -25,7 +27,11 @@ def tester(exp_name, data_loader):
     DEBUG = cfg['DEBUG']
 
     # initialize stats
-    val_accuracy = 0
+    if is_val:
+        epoch_val_loss = 0
+        epoch_val_accuracy = 0
+    else:
+        predictions = {}
 
     epoch_start = time.time()
 
@@ -42,21 +48,45 @@ def tester(exp_name, data_loader):
 
         # compute dice
         masks = (outputs > 0.5).float()
-        accuracy = evaluation.dice(masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
 
-        # Update stats
-        val_accuracy += accuracy
+        if is_val:
+            accuracy = evaluation.dice(masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
+            loss = criterion(outputs, targets)
+
+            # Update stats
+            epoch_val_loss     += loss.data[0]
+            epoch_val_accuracy += accuracy
+        else:
+            predictions[img_name] = masks.data[0].cpu().numpy()
 
         iter_end = time.time()
-        print('Iter {}/{}, Image {}, Accuracy:{:.5f}, {:.2f} sec spent'.format(i, len(data_loader), img_name, accuracy, iter_end - iter_start))
 
-    val_accuracy /= len(data_loader)
+        print('Iter {}/{}, Image {}: {:.2f} sec spent'.format(i, len(data_loader), img_name, accuracy, iter_end - iter_start))
+
+        if DEBUG:
+            if val:
+                print('Iter {}, {}: Loss {:.3f}, Accuracy: {:.4f}'.format(i, img_name, loss.data[0], accuracy))
+                viz.visualize(images.data[0].cpu().numpy(), masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
+            else:
+                viz.visualize(images.data[0].cpu().numpy(), masks.data[0].cpu().numpy())
+
+
+    if is_val:
+        epoch_val_loss     /= len(data_loader)
+        epoch_val_accuracy /= len(data_loader)
+        print('Validation Loss: {:.3f} Validation Accuracy:{:.5f}'.format(epoch_val_loss, val_accuracy))
+    else:
+        pass
+        # TODO haven't implement yet:
+        # submit.save_predictions(exp_name, predictions)
 
     epoch_end = time.time()
+    print('{:.2f} sec spent'.format(epoch_end - epoch_start))
 
-    print('Avg. Accuracy:{:.5f}, {:.2f} sec spent'.format(val_accuracy, epoch_end - epoch_start))
-
-    return
+    if is_val:
+        return epoch_val_loss, epoch_val_accuracy
+    else:
+        return
 
 
 if __name__ == "__main__":
@@ -74,4 +104,6 @@ if __name__ == "__main__":
         cfg['train']['tile_size']
     )
 
-    tester(exp_name, data_loader)
+    # TODO load net and pass it to tester
+    # TODO and do the same thing to trainer as well
+    tester(exp_name, data_loader, is_val=False)
