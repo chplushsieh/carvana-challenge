@@ -15,7 +15,7 @@ import config
 
 
 
-def tester(exp_name, data_loader, is_val=False):
+def tester(exp_name, data_loader, is_val=False, DEBUG=False):
     cfg = config.load_config_file(exp_name)
 
     net, _, criterion, _ = exp.load_exp(exp_name)
@@ -24,9 +24,6 @@ def tester(exp_name, data_loader, is_val=False):
         net.cuda()
         criterion = criterion.cuda()
     net.eval()  # Change model to 'eval' mode
-
-    # Testing setting
-    DEBUG = cfg['DEBUG']
 
     # initialize stats
     if is_val:

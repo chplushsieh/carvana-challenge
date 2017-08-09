@@ -20,7 +20,7 @@ import config
 
 
 
-def trainer(exp_name, data_loader):
+def trainer(exp_name, data_loader, DEBUG=False, use_tensorboard=True):
     cfg = config.load_config_file(exp_name)
 
     net, optimizer, criterion, start_epoch = exp.load_exp(exp_name)
@@ -31,11 +31,9 @@ def trainer(exp_name, data_loader):
     net.train()  # Change model to 'train' mode
 
     # set up TensorBoard
-    use_tensorboard = cfg['use_tensorboard']
     experiment, use_tensorboard = exp.setup_crayon(use_tensorboard, CrayonClient, exp_name)
 
     # Training setting
-    DEBUG = cfg['DEBUG']
     log_iter_interval     = cfg['log_iter_interval']
     snapshot_epoch_interval = cfg['snapshot_epoch_interval']
     num_epochs = cfg['num_epochs']
@@ -82,10 +80,6 @@ def trainer(exp_name, data_loader):
             epoch_train_loss += loss.data[0]
             epoch_train_accuracy   += accuracy
 
-            # Save the trained model
-            if (i + 1) == 1 and epoch % snapshot_epoch_interval == 0:
-                exp.save_checkpoint(exp_name, epoch, net.state_dict(), optimizer.state_dict())
-
             iter_end = time.time()
 
             # Log Training Progress
@@ -108,6 +102,10 @@ def trainer(exp_name, data_loader):
             experiment.add_scalar_value('accuracy', epoch_train_accuracy, step=epoch)
             # experiment.add_scalar_value('learning_rate', lr, step=epoch)
 
+        # Save the trained model
+        if epoch % snapshot_epoch_interval == 0:
+            exp.save_checkpoint(exp_name, epoch, net.state_dict(), optimizer.state_dict())
+        
         epoch_end = time.time()
 
         print('Epoch [%d/%d] Loss: %.2f Accuracy: %.4f Time Spent: %.2f sec'

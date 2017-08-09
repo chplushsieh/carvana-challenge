@@ -112,8 +112,9 @@ def load_exp(exp_name):
         os.makedirs(save_dir)
 
     ckpt_path = get_latest_ckpt(save_dir)
-    model, optimizer, criterion, start_epoch = load_checkpoint(exp_name, ckpt_path)
-
+    model, optimizer, criterion, saved_epoch = load_checkpoint(exp_name, ckpt_path)
+    start_epoch = saved_epoch + 1
+    
     return model, optimizer, criterion, start_epoch
 
 def load_checkpoint(exp_name, ckpt_path):
@@ -129,19 +130,19 @@ def load_checkpoint(exp_name, ckpt_path):
         optimizer = get_optimizer(model, exp_name)
         optimizer.load_state_dict(checkpoint['optimizer'])
 
-        start_epoch = checkpoint['epoch']
+        saved_epoch = checkpoint['epoch']
 
         print("=> loaded checkpoint '{}' (epoch {})"
-              .format(ckpt_path, start_epoch))
+              .format(ckpt_path, saved_epoch))
 
     else:
         model = get_network(exp_name)
         optimizer = get_optimizer(model, exp_name)
-        start_epoch = 1
+        saved_epoch = 0
 
     criterion = get_criterion(exp_name)
 
-    return model, optimizer, criterion, start_epoch
+    return model, optimizer, criterion, saved_epoch
 
 
 def setup_crayon(use_tensorboard, CrayonClient,exp_name):

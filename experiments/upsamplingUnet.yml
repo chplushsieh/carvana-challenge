@@ -6,8 +6,6 @@ weight_decay: 1e-4
 
 num_epochs: 101
 
-DEBUG: False
-use_tensorboard: True
 log_iter_interval: 100
 snapshot_epoch_interval: 1
 
