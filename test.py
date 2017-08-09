@@ -8,6 +8,7 @@ import util.exp as exp
 import util.evaluation as evaluation
 import util.visualization as viz
 import util.submit as submit
+import util.tile as tile
 
 from dataloader import *
 import config
@@ -78,6 +79,7 @@ def tester(exp_name, data_loader, is_val=False):
     else:
         pass
         # TODO haven't implement yet:
+        # predictions = tile.stitch_predictions(predictions)
         # submit.save_predictions(exp_name, predictions)
 
     epoch_end = time.time()
