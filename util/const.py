@@ -9,6 +9,8 @@ TEST_DIR = os.path.join(DATA_DIR, 'test')
 TRAIN_IMAGESET_PATH = os.path.join(DATA_DIR, 'train.csv')
 VAL_IMAGESET_PATH   = os.path.join(DATA_DIR, 'val.csv')
 
+OUTPUT_DIR = './output'
+
 # Images are of size 1918 * 1280
 img_size = (1280, 1918) # (height, width)
 

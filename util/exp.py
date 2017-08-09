@@ -4,6 +4,8 @@ import numpy as np
 import os
 from datetime import datetime
 
+import util.const as const
+
 import config
 from model.unet import *
 
@@ -55,7 +57,7 @@ def save_checkpoint(exp_name, epoch, model_state_dict, optimizer_state_dict):
     }
 
     filename = str(epoch) + '.pth.tar'
-    save_path = os.path.join('./output', exp_name, filename)
+    save_path = os.path.join(const.OUTPUT_DIR, exp_name, filename)
 
     torch.save(state, save_path)
     return
@@ -77,7 +79,7 @@ def get_latest_ckpt(save_dir):
     return latest_path
 
 def load_exp(exp_name):
-    save_dir = os.path.join('./output', exp_name)
+    save_dir = os.path.join(const.OUTPUT_DIR, exp_name)
 
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
