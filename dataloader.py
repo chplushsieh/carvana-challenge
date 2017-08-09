@@ -84,7 +84,7 @@ def get_test_loader(batch_size, tile_size):
                             )
     return test_loader
 
-def get_trainval_loader(batch_size, car_ids, paddings, tile_size):
+def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=False):
     train_dir = const.TRAIN_DIR
     train_mask_dir = const.TRAIN_MASK_DIR
 
@@ -97,7 +97,7 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size):
         train_dir,
         ids=car_ids,
         mask_dir=train_mask_dir,
-        hflip_enabled=True,
+        hflip_enabled=hflip_enabled,
         paddings=paddings,
         tile_size=tile_size,
     )
@@ -112,12 +112,12 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size):
 
 def get_train_loader(batch_size, paddings, tile_size):
     train_imgs = load.load_train_imageset()
-    return get_trainval_loader(batch_size, train_imgs, paddings, tile_size)
+    return get_trainval_loader(batch_size, train_imgs, paddings, tile_size, hflip_enabled=True)
 
 def get_val_loader(batch_size, paddings, tile_size):
     val_imgs = load.load_val_imageset()
-    return get_trainval_loader(batch_size, val_imgs, paddings, tile_size)
+    return get_trainval_loader(batch_size, val_imgs, paddings, tile_size, hflip_enabled=False)
 
 def get_small_loader(batch_size, paddings, tile_size):
     small_imgs = load.load_small_imageset()
-    return get_trainval_loader(batch_size, small_imgs, paddings, tile_size)
+    return get_trainval_loader(batch_size, small_imgs, paddings, tile_size, hflip_enabled=False)
