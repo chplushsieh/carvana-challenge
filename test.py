@@ -18,10 +18,11 @@ import config
 def tester(exp_name, data_loader, is_val=False):
     cfg = config.load_config_file(exp_name)
 
-    net, _, _ = exp.load_exp(exp_name) # TODO load loss
+    net, _, criterion, _ = exp.load_exp(exp_name)
 
     if torch.cuda.is_available():
         net.cuda()
+        criterion = criterion.cuda()
     net.eval()  # Change model to 'eval' mode
 
     # Testing setting

@@ -8,7 +8,7 @@ import util.const as const
 
 import config
 import model.unet as unet
-
+import model.loss as loss
 
 def create_if_not_exist(dir):
     if not os.path.exists(dir):
@@ -19,8 +19,8 @@ def create_if_not_exist(dir):
 def get_network(exp_name):
     model_name = exp_name.split('_')[0]
 
-    model = getattr(unet, model_name)
-    net = model()
+    model_type = getattr(unet, model_name)
+    model = model_type()
 
     # TODO remove the following previous working code:
     # if model_name == 'smallUnet':
@@ -34,7 +34,7 @@ def get_network(exp_name):
     # elif model_name == 'smallerUpsamplingUnet':
     #     model = unet.SmallerUpsamplingUnet()
 
-    return net
+    return model
 
 def get_optimizer(model, exp_name):
 
@@ -60,6 +60,19 @@ def get_optimizer(model, exp_name):
     return optimizer
 
 
+def get_criterion(exp_name):
+
+    cfg = config.load_config_file(exp_name)
+
+    criterion_name = cfg['criterion']
+    loss_method = getattr(loss, criterion_name)
+    criterion = loss_method()
+    # TODO remove the following previous working code:
+    # criterion = loss.StableBCELoss()
+
+    return criterion
+
+
 def save_checkpoint(exp_name, epoch, model_state_dict, optimizer_state_dict):
 
     state = {
@@ -80,7 +93,8 @@ def get_latest_ckpt(save_dir):
     ckpt_names = [ckpt.split('.')[0] for ckpt in ckpts if ckpt.endswith('.pth.tar')]
 
     if not ckpt_names:
-        return '-1'
+        print("No checkpoints found. It's a new experiment. ")
+        return None
 
     print("All checkpoints:")
     print(ckpt_names)
@@ -98,12 +112,12 @@ def load_exp(exp_name):
         os.makedirs(save_dir)
 
     ckpt_path = get_latest_ckpt(save_dir)
-    model, optimizer, start_epoch = load_checkpoint(exp_name, ckpt_path)
+    model, optimizer, criterion, start_epoch = load_checkpoint(exp_name, ckpt_path)
 
-    return model, optimizer, start_epoch
+    return model, optimizer, criterion, start_epoch
 
 def load_checkpoint(exp_name, ckpt_path):
-    if os.path.isfile(ckpt_path):
+    if ckpt_path is not None and os.path.isfile(ckpt_path):
         print("=> loading checkpoint '{}'".format(ckpt_path))
         checkpoint = torch.load(ckpt_path)
 
@@ -121,13 +135,13 @@ def load_checkpoint(exp_name, ckpt_path):
               .format(ckpt_path, start_epoch))
 
     else:
-        print("=> no checkpoint found at '{}'".format(ckpt_path))
-
         model = get_network(exp_name)
         optimizer = get_optimizer(model, exp_name)
         start_epoch = 1
 
-    return model, optimizer, start_epoch
+    criterion = get_criterion(exp_name)
+
+    return model, optimizer, criterion, start_epoch
 
 
 def setup_crayon(use_tensorboard, CrayonClient,exp_name):

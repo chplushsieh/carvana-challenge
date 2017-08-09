@@ -23,16 +23,12 @@ import config
 def trainer(exp_name, data_loader):
     cfg = config.load_config_file(exp_name)
 
-    net, optimizer, start_epoch = exp.load_exp(exp_name)
+    net, optimizer, criterion, start_epoch = exp.load_exp(exp_name)
 
     if torch.cuda.is_available():
         net.cuda()
-    net.train()  # Change model to 'train' mode
-
-    # Loss
-    criterion = loss.StableBCELoss()
-    if torch.cuda.is_available():
         criterion = criterion.cuda()
+    net.train()  # Change model to 'train' mode
 
     # set up TensorBoard
     use_tensorboard = cfg['use_tensorboard']
