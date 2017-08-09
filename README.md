@@ -61,7 +61,7 @@ For instance, `python scripts/divisble.py 900 1300`
 - [x] try the original UNet
 - [x] train/predict-by-tile
 - [x] add DICE score during training
-- [ ] add validation loss and DICE score during training
+- [x] add validation loss and DICE score during training
 - [x] add optimizer and loss to experiment setting in .yml
 - [x] try modified UNet with UpSampling layers
 - [ ] improve tile.py: make it able to cut image into halves

@@ -15,10 +15,7 @@ import config
 
 
 
-def tester(exp_name, data_loader, is_val=False, DEBUG=False):
-    cfg = config.load_config_file(exp_name)
-
-    net, _, criterion, _ = exp.load_exp(exp_name)
+def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
 
     if torch.cuda.is_available():
         net.cuda()
@@ -48,6 +45,9 @@ def tester(exp_name, data_loader, is_val=False, DEBUG=False):
         # compute dice
         masks = (outputs > 0.5).float()
 
+
+        iter_end = time.time()
+
         if is_val:
             accuracy = evaluation.dice(masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
             loss = criterion(outputs, targets)
@@ -57,10 +57,7 @@ def tester(exp_name, data_loader, is_val=False, DEBUG=False):
             epoch_val_accuracy += accuracy
         else:
             predictions[img_name] = masks.data[0].cpu().numpy()
-
-        iter_end = time.time()
-
-        print('Iter {}/{}, Image {}: {:.2f} sec spent'.format(i, len(data_loader), img_name, accuracy, iter_end - iter_start))
+            print('Iter {}/{}, Image {}: {:.2f} sec spent'.format(i, len(data_loader), img_name, accuracy, iter_end - iter_start))
 
         if DEBUG:
             if val:
@@ -68,7 +65,7 @@ def tester(exp_name, data_loader, is_val=False, DEBUG=False):
                 viz.visualize(images.data[0].cpu().numpy(), masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
             else:
                 viz.visualize(images.data[0].cpu().numpy(), masks.data[0].cpu().numpy())
-
+    # for loop ends
 
     if is_val:
         epoch_val_loss     /= len(data_loader)
@@ -84,6 +81,8 @@ def tester(exp_name, data_loader, is_val=False, DEBUG=False):
     print('{:.2f} sec spent'.format(epoch_end - epoch_start))
 
     if is_val:
+        # TODO is this needed?
+        net.train()  # Change model bacl to 'train' mode
         return epoch_val_loss, epoch_val_accuracy
     else:
         return
@@ -96,6 +95,7 @@ if __name__ == "__main__":
 
     exp_name = args.exp_name
 
+    cfg = config.load_config_file(exp_name)
     data_loader = get_small_loader(
     # data_loader = get_val_loader(
     # data_loader = get_test_loader(
@@ -104,6 +104,6 @@ if __name__ == "__main__":
         cfg['train']['tile_size']
     )
 
-    # TODO load net and pass it to tester
-    # TODO and do the same thing to trainer as well
-    tester(exp_name, data_loader, is_val=False)
+    net, _, criterion, _ = exp.load_exp(exp_name)
+
+    tester(exp_name, data_loader, net, criterion)

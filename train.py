@@ -17,12 +17,10 @@ import util.visualization as viz
 import model.loss as loss
 from dataloader import *
 import config
+import test
 
 
-
-def trainer(exp_name, data_loader, DEBUG=False, use_tensorboard=True):
-    cfg = config.load_config_file(exp_name)
-
+def trainer(exp_name, train_data_loader, cfg, val_data_loader=None, DEBUG=False, use_tensorboard=True):
     net, optimizer, criterion, start_epoch = exp.load_exp(exp_name)
 
     if torch.cuda.is_available():
@@ -49,7 +47,7 @@ def trainer(exp_name, data_loader, DEBUG=False, use_tensorboard=True):
         print('Epoch [%d/%d] starts'
               % (epoch, num_epochs))
 
-        for i, (img_name, images, targets) in enumerate(data_loader):
+        for i, (img_name, images, targets) in enumerate(train_data_loader):
             iter_start = time.time()
 
             # convert to FloatTensor
@@ -77,39 +75,47 @@ def trainer(exp_name, data_loader, DEBUG=False, use_tensorboard=True):
             optimizer.step()
 
             # Update epoch stats
-            epoch_train_loss += loss.data[0]
-            epoch_train_accuracy   += accuracy
+            epoch_train_loss     += loss.data[0]
+            epoch_train_accuracy += accuracy
 
             iter_end = time.time()
-
             # Log Training Progress
             if (i + 1) % log_iter_interval == 0:
                 print('Epoch [%d/%d] Iter [%d/%d] Loss: %.2f Accuracy: %.4f Time Spent: %.2f sec'
-                      % (epoch, num_epochs, i + 1, len(data_loader), loss.data[0], accuracy, iter_end - iter_start))
+                      % (epoch, num_epochs, i + 1, len(train_data_loader), loss.data[0], accuracy, iter_end - iter_start))
 
             if DEBUG:
                 print('Epoch {}, Iter {}, {}: Loss {:.3f}, Accuracy: {:.4f}'.format(epoch, i, img_name, loss.data[0], accuracy))
                 viz.visualize(images.data[0].cpu().numpy(), masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
+        # inner for loop ends
 
+        epoch_train_loss     /= len(train_data_loader)
+        epoch_train_accuracy /= len(train_data_loader)
 
-
-        epoch_train_loss /= len(data_loader)
-        epoch_train_accuracy   /= len(data_loader)
+        # Validate
+        if val_data_loader is not None:
+            epoch_val_loss, epoch_val_accuracy = test.tester(exp_name, val_data_loader, net, criterion, is_val=True)
 
         if use_tensorboard:
             experiment.add_scalar_value('train loss', epoch_train_loss, step=epoch)
-            # experiment.add_scalar_value('val loss', epoch_val_loss, step=epoch)
-            experiment.add_scalar_value('accuracy', epoch_train_accuracy, step=epoch)
+            experiment.add_scalar_value('train accuracy', epoch_train_accuracy, step=epoch)
+
+            if val_data_loader is not None:
+                experiment.add_scalar_value('val loss', epoch_val_loss, step=epoch)
+                experiment.add_scalar_value('val accuracy', epoch_val_accuracy, step=epoch)
+
             # experiment.add_scalar_value('learning_rate', lr, step=epoch)
 
         # Save the trained model
         if epoch % snapshot_epoch_interval == 0:
             exp.save_checkpoint(exp_name, epoch, net.state_dict(), optimizer.state_dict())
-        
-        epoch_end = time.time()
 
+        epoch_end = time.time()
         print('Epoch [%d/%d] Loss: %.2f Accuracy: %.4f Time Spent: %.2f sec'
               % (epoch, num_epochs, epoch_train_loss, epoch_train_accuracy, epoch_end - epoch_start))
+
+    # outer for loop ends
+
     return
 
 
@@ -120,11 +126,18 @@ if __name__ == "__main__":
 
     exp_name = args.exp_name
 
+    cfg = config.load_config_file(exp_name)
     # data_loader = get_small_loader(
-    data_loader = get_train_loader(
+    train_data_loader = get_train_loader(
         cfg['train']['batch_size'],
         cfg['train']['paddings'],
         cfg['train']['tile_size']
     )
 
-    trainer(exp_name, data_loader)
+    val_data_loader = get_val_loader(
+        cfg['train']['batch_size'],
+        cfg['train']['paddings'],
+        cfg['train']['tile_size']
+    )
+
+    trainer(exp_name, train_data_loader, cfg, val_data_loader=val_data_loader)
