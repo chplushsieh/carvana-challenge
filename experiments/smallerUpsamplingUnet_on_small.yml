@@ -1,4 +1,4 @@
-
+optimizer: SGD
 learning_rate: 1e-3
 
 momentum: 0.9

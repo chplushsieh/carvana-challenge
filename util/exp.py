@@ -7,7 +7,8 @@ from datetime import datetime
 import util.const as const
 
 import config
-from model.unet import *
+import model.unet as unet
+
 
 def create_if_not_exist(dir):
     if not os.path.exists(dir):
@@ -18,32 +19,44 @@ def create_if_not_exist(dir):
 def get_network(exp_name):
     model_name = exp_name.split('_')[0]
 
-    # TODO remove hardcoding here by:
-    # https://stackoverflow.com/questions/3061/calling-a-function-of-a-module-from-a-string-with-the-functions-name-in-python
+    model = getattr(unet, model_name)
+    net = model()
 
-    if model_name == 'smallUnet':
-        model = SmallUnet()
-    elif model_name == 'originalUnet':
-        model = OriginalUnet()
-    elif model_name == 'betterUnet':
-        model = BetterUnet()
-    elif model_name == 'upsamplingUnet':
-        model = UpsamplingUnet()
-    elif model_name == 'smallerUpsamplingUnet':
-        model = SmallerUpsamplingUnet()
+    # TODO remove the following previous working code:
+    # if model_name == 'smallUnet':
+    #     model = unet.SmallUnet()
+    # elif model_name == 'originalUnet':
+    #     model = unet.OriginalUnet()
+    # elif model_name == 'betterUnet':
+    #     model = unet.BetterUnet()
+    # elif model_name == 'upsamplingUnet':
+    #     model = unet.UpsamplingUnet()
+    # elif model_name == 'smallerUpsamplingUnet':
+    #     model = unet.SmallerUpsamplingUnet()
 
-    return model
+    return net
 
 def get_optimizer(model, exp_name):
 
     cfg = config.load_config_file(exp_name)
 
-    optimizer = torch.optim.SGD(
+    optimizer_name = cfg['optimizer']
+
+    optimizer_method = getattr(torch.optim, optimizer_name)
+    optimizer = optimizer_method(
         model.parameters(),
         lr=cfg['learning_rate'],
         momentum=cfg['momentum'],
         weight_decay=cfg['weight_decay']
     )
+    # TODO remove the following previous working code:
+    # optimizer = torch.optim.SGD(
+    #     model.parameters(),
+    #     lr=cfg['learning_rate'],
+    #     momentum=cfg['momentum'],
+    #     weight_decay=cfg['weight_decay']
+    # )
+
     return optimizer
 
 
