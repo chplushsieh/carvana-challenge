@@ -169,17 +169,81 @@ def stitch_predictions(tile_preds):
       img_preds: a dict of numpy arrays, with image names as keys and predicted masks as values
     '''
     tile_names = tile_preds.keys()
+    tiles_by_imgs, max_tile_pos = organize_tiles(tile_names)
+
+    img_preds = {}
+    img_names = tiles.keys()
+    for img_name in img_names:
+        cur_img_tiles = tiles_by_imgs[img_name]
+        cur_tile_preds = create_dict_from_dict(cur_img_tiles, tile_preds)
+        img_preds[img_name] = merge_tiles(cur_tile_preds, max_tile_pos)
+
+    return img_preds
+
+def organize_tiles(tile_names):
+    '''
+    input:
+      tile_names: a list of strings, tile names of all images
+    output:
+      tiles_by_imgs: a dict with image names as keys and tile names of a image as values
+      max_tile_pos: a tuple of ints, which should be equivalent to tile_layout
+    '''
 
     max_tile_pos = (-1, -1)
+    tiles_by_imgs = {}
 
     for tile_name in tile_names:
         img_name = get_img_name(tile_name)
         tile_pos = get_tile_pos(tile_name)
 
-        max_tile_pos
+        max_tile_pos = max(tile_pos, max_tile_pos)
 
-        # TODO
-        img_preds[img_name]
+        if img_name not in tiles:
+            tiles_by_imgs[img_name] = [tile_name]
+        else:
+            tiles_by_imgs[img_name].append(tile_name)
 
-    img_preds = {} # TODO
-    return img_preds
+    print("Max Tile Position: {}".format(max_tile_pos))
+    return tiles_by_imgs, max_tile_pos
+
+def create_dict_from_dict(some_keys, large_dict):
+    '''
+    from:
+    https://stackoverflow.com/questions/3420122/filter-dict-to-contain-only-certain-keys
+    '''
+    small_dict = { a_key: large_dict[a_key] for a_key in some_keys }
+    return small_dict
+
+def merge_tiles(tile_masks, tile_layout):
+    '''
+    input:
+      tile_masks:  a dict of numpy arrays, with tile names of a certain image as keys and their predicted masks as values
+      tile_layout: a tuple of ints
+
+    output:
+      img_mask: a numpy array
+
+    '''
+
+    tile_names = tile_masks.keys()
+    num_of_rows, num_of_cols = tile_layout
+
+    assert len(tile_names) == num_of_rows * num_of_cols
+
+    tile_height, tile_width = tile_masks[tile_names[0]].shape
+    img_mask = np.zeros(num_of_rows * tile_height, num_of_cols * tile_width)
+
+    for tile_name in tile_names:
+        tile_row_idx, tile_col_idx = get_tile_pos(tile_name)
+
+        start_y = (tile_row_idx - 1) * tile_height
+        start_x = (tile_col_idx - 1) * tile_width
+
+        end_y = tile_row_idx * tile_height
+        end_x = tile_col_idx * tile_width
+
+        img_mask[start_y:end_y, start_x:end_x] = tile_masks[tile_name]
+
+    # TODO call viz.visulize() to see if this works
+
+    return img_mask
