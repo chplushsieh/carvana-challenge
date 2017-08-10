@@ -71,7 +71,6 @@ For instance, `python scripts/divisble.py 900 1300`
     - [ ] verify it work
 - [ ] [Lai] complete util/submit.py
 - [ ] [Lai] add data augmentation: random shift
-- [ ] [Hsieh] hold the entire dataset in memory for train/val
 - [ ] experimenting with UNet parameters and architectures/modules
     - [ ] larger UNets
     - [ ] try Adam or other optimizers
