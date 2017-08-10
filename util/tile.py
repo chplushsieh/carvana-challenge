@@ -168,6 +168,18 @@ def stitch_predictions(tile_preds):
     output:
       img_preds: a dict of numpy arrays, with image names as keys and predicted masks as values
     '''
-    img_preds = None
-    # TODO
+    tile_names = tile_preds.keys()
+
+    max_tile_pos = (-1, -1)
+
+    for tile_name in tile_names:
+        img_name = get_img_name(tile_name)
+        tile_pos = get_tile_pos(tile_name)
+
+        max_tile_pos
+
+        # TODO
+        img_preds[img_name]
+
+    img_preds = {} # TODO
     return img_preds

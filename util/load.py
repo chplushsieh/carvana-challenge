@@ -73,6 +73,10 @@ def load_train_mask(data_dir, img_name, is_hflip=False, paddings=None, tile_size
     return preprocess(img, img_name, is_hflip, paddings, tile_size)
 
 def preprocess(img, img_name, is_hflip, paddings, tile_size):
+    '''
+    input:
+      img: has shape (1, height, width) or (3, height, width)
+    '''
 
     if is_hflip:
         img = np.swapaxes(img, 0, 2) # img.shape: (width, height, num of channels)
@@ -82,6 +86,8 @@ def preprocess(img, img_name, is_hflip, paddings, tile_size):
         # https://discuss.pytorch.org/t/torch-from-numpy-not-support-negative-strides/3663/2
 
         img = np.swapaxes(img, 0, 2)  # img.shape: (num of channels, height, width)
+
+    # TODO add random shifting here
 
     if paddings:
         img = tile.pad_image(img, paddings)
