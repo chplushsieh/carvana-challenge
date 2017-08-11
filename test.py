@@ -35,10 +35,14 @@ def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
         iter_start = time.time()
 
         images = images.float()  # convert to FloatTensor
+        targets = targets.float()
+
         images = Variable(images, volatile=True) # no need to compute gradients
+        targets = Variable(targets, volatile=True)
 
         if torch.cuda.is_available():
             images = images.cuda()
+            targets = targets.cuda()
 
         outputs = net(images)
 
@@ -49,7 +53,7 @@ def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
         iter_end = time.time()
 
         if is_val:
-            accuracy = evaluation.dice(masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
+            accuracy = evaluation.dice(masks.data[0].cpu().numpy(), targets[0].numpy())
             loss = criterion(outputs, targets)
 
             # Update stats
