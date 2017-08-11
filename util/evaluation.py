@@ -14,13 +14,12 @@ def dice(x, y):
     output:
       dice: Dice coefficient for x and y, which is a decimal number between 0 and 1
     '''
-    assert x.shape == y.shape
-
     smooth = 1            # for stability
 
     dice = None
     x=x.flatten()
     y=y.flatten()
+    assert x.shape == y.shape
     intersection = sum(x*y)
 
     dice= (2. * intersection + smooth) / (x.sum() + y.sum() + smooth)
