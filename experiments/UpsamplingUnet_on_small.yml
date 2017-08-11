@@ -1,21 +1,19 @@
 optimizer: SGD
-learning_rate: 1e-3
+learning_rate: 1e-2
 
-# For 3 cars,
-# 1e-2 -> 0.28
-# 1e-4 -> 0.28
-# 1e-7 doesn't decrease
-
-momentum: 0.9       # TODO what's in the paper?
+momentum: 0.9
 weight_decay: 0 # easier to overfit # 1e-4
+criterion: StableBCELoss
 
-num_epochs: 151
+num_epochs: 101
 
 log_iter_interval: 16
 snapshot_epoch_interval: 25
 
 train:
   batch_size: 1
+  paddings:  !!python/tuple [0, 1]
+  tile_size: !!python/tuple [768, 1024] # (height, width)
 
 test:
   batch_size: 1  # for easier visualize
