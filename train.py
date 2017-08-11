@@ -111,7 +111,7 @@ def trainer(exp_name, train_data_loader, cfg, val_data_loader=None, DEBUG=False,
             exp.save_checkpoint(exp_name, epoch, net.state_dict(), optimizer.state_dict())
 
         epoch_end = time.time()
-        print('Epoch [%d/%d] Loss: %.2f Accuracy: %.4f Time Spent: %.2f sec'
+        print('Epoch [%d/%d] Loss: %.3f Accuracy: %.4f Time Spent: %.2f sec'
               % (epoch, num_epochs, epoch_train_loss, epoch_train_accuracy, epoch_end - epoch_start))
 
     # outer for loop ends
@@ -121,19 +121,20 @@ def trainer(exp_name, train_data_loader, cfg, val_data_loader=None, DEBUG=False,
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('exp_name', nargs='?', default='upsamplingUnet')
+    parser.add_argument('exp_name', nargs='?', default='UpsamplingUnet')
     args = parser.parse_args()
 
     exp_name = args.exp_name
 
     cfg = config.load_config_file(exp_name)
-    # data_loader = get_small_loader(
+    # train_data_loader = get_small_loader(
     train_data_loader = get_train_loader(
         cfg['train']['batch_size'],
         cfg['train']['paddings'],
         cfg['train']['tile_size']
     )
 
+    # val_data_loader = get_small_loader(
     val_data_loader = get_val_loader(
         cfg['train']['batch_size'],
         cfg['train']['paddings'],
