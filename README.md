@@ -3,9 +3,12 @@ My Solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.c
 
 ## Requirements
 * python 3.6
+* numpy
 * pytorch
+* pandas
 * pyyaml
 * [crayon](https://github.com/torrvision/crayon)
+
 
 ## Usage
 
