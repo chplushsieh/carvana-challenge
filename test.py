@@ -3,6 +3,7 @@ from torch.autograd import Variable
 import numpy as np
 
 import time
+import argparse
 
 import util.exp as exp
 import util.evaluation as evaluation
@@ -53,7 +54,7 @@ def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
         iter_end = time.time()
 
         if is_val:
-            accuracy = evaluation.dice(masks.data[0].cpu().numpy(), targets[0].numpy())
+            accuracy = evaluation.dice(masks.data[0].cpu().numpy(), targets[0].data[0].cpu().numpy())
             loss = criterion(outputs, targets)
 
             # Update stats
@@ -64,7 +65,7 @@ def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
             print('Iter {}/{}, Image {}: {:.2f} sec spent'.format(i, len(data_loader), img_name, accuracy, iter_end - iter_start))
 
         if DEBUG:
-            if val:
+            if is_val:
                 print('Iter {}, {}: Loss {:.3f}, Accuracy: {:.4f}'.format(i, img_name, loss.data[0], accuracy))
                 viz.visualize(images.data[0].cpu().numpy(), masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
             else:
@@ -74,7 +75,7 @@ def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
     if is_val:
         epoch_val_loss     /= len(data_loader)
         epoch_val_accuracy /= len(data_loader)
-        print('Validation Loss: {:.3f} Validation Accuracy:{:.5f}'.format(epoch_val_loss, val_accuracy))
+        print('Validation Loss: {:.3f} Validation Accuracy:{:.5f}'.format(epoch_val_loss, epoch_val_accuracy))
     else:
         pass
         # TODO haven't implement yet:
