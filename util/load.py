@@ -10,6 +10,7 @@ import numpy as np
 
 import util.const as const
 import util.tile as tile
+from random import randrange
 
 def get_car_ids(img_names):
     car_ids = [ img_name.split('_')[0] for img_name in img_names ]
@@ -50,7 +51,7 @@ def load_small_imageset():
     small_img_names = get_img_names_from_car_ids(small_ids)
     return small_img_names
 
-def load_train_image(data_dir, img_name, is_hflip=False, paddings=None, tile_size=None):
+def load_train_image(data_dir, img_name, is_hflip=False, paddings=None, tile_size=None, is_shift=False):
     img_file_name = tile.get_img_name(img_name)
     img_ext = 'jpg'
     img = load_image_file(data_dir, img_file_name, img_ext)
@@ -61,7 +62,7 @@ def load_train_image(data_dir, img_name, is_hflip=False, paddings=None, tile_siz
 
     return preprocess(img, img_name, is_hflip, paddings, tile_size)
 
-def load_train_mask(data_dir, img_name, is_hflip=False, paddings=None, tile_size=None):
+def load_train_mask(data_dir, img_name, is_hflip=False, paddings=None, tile_size=None, is_shift=False):
     img_file_name = tile.get_img_name(img_name) + '_mask'
     img_ext = 'gif'
     img = load_image_file(data_dir, img_file_name, img_ext)
@@ -70,9 +71,9 @@ def load_train_mask(data_dir, img_name, is_hflip=False, paddings=None, tile_size
     img = img[np.newaxis, :, :]
     # img.shape: (1, height, width)
 
-    return preprocess(img, img_name, is_hflip, paddings, tile_size)
+    return preprocess(img, img_name, is_hflip, paddings, tile_size, is_shift)
 
-def preprocess(img, img_name, is_hflip, paddings, tile_size):
+def preprocess(img, img_name, is_hflip, paddings, tile_size, is_shift):
     '''
     input:
       img: has shape (1, height, width) or (3, height, width)
@@ -88,6 +89,12 @@ def preprocess(img, img_name, is_hflip, paddings, tile_size):
         img = np.swapaxes(img, 0, 2)  # img.shape: (num of channels, height, width)
 
     # TODO add random shifting here
+    if is_shift:
+        shift_length = randrange(0,50)
+
+        img = np.roll(img, shift_length,axis=2).copy()
+
+
 
     if paddings:
         img = tile.pad_image(img, paddings)
