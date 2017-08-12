@@ -90,9 +90,13 @@ def preprocess(img, img_name, is_hflip, paddings, tile_size, is_shift):
 
     # TODO add random shifting here
     if is_shift:
-        shift_length = randrange(0,50)
+        horizontal_shift_length = randrange(0,50)
 
-        img = np.roll(img, shift_length,axis=2).copy()
+        img = np.roll(img, horizontal_shift_length,axis=2).copy()
+
+        vertical_shift_length = randrange(-120, 120)
+
+        img = np.roll(img, vertical_shift_length, axis=1).copy()
 
 
 

@@ -130,14 +130,18 @@ if __name__ == "__main__":
     train_data_loader = get_train_loader(
         cfg['train']['batch_size'],
         cfg['train']['paddings'],
-        cfg['train']['tile_size']
+        cfg['train']['tile_size'],
+        cfg['train']['hflip'],
+        cfg['train']['shift']
     )
 
     # val_data_loader = get_small_loader(
     val_data_loader = get_val_loader(
         cfg['train']['batch_size'],
         cfg['train']['paddings'],
-        cfg['train']['tile_size']
+        cfg['train']['tile_size'],
+        cfg['train']['hflip'],
+        cfg['train']['shift']
     )
 
     trainer(exp_name, train_data_loader, cfg, val_data_loader=val_data_loader, DEBUG=False)

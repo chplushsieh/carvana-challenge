@@ -114,14 +114,14 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=
                             )
     return loader
 
-def get_train_loader(batch_size, paddings, tile_size):
+def get_train_loader(batch_size, paddings, tile_size, hflip, shift):
     train_imgs = load.load_train_imageset()
-    return get_trainval_loader(batch_size, train_imgs, paddings, tile_size, hflip_enabled=True, shift_enabled=True)
+    return get_trainval_loader(batch_size, train_imgs, paddings, tile_size, hflip_enabled=hflip, shift_enabled=shift)
 
-def get_val_loader(batch_size, paddings, tile_size):
+def get_val_loader(batch_size, paddings, tile_size, hflip, shift):
     val_imgs = load.load_val_imageset()
-    return get_trainval_loader(batch_size, val_imgs, paddings, tile_size, hflip_enabled=False, shift_enabled=False)
+    return get_trainval_loader(batch_size, val_imgs, paddings, tile_size, hflip_enabled=hflip, shift_enabled=shift)
 
-def get_small_loader(batch_size, paddings, tile_size):
+def get_small_loader(batch_size, paddings, tile_size, hflip, shift):
     small_imgs = load.load_small_imageset()
     return get_trainval_loader(batch_size, small_imgs, paddings, tile_size, hflip_enabled=False, shift_enabled=False)
