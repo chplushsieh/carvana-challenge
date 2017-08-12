@@ -172,7 +172,7 @@ def stitch_predictions(tile_preds):
     tiles_by_imgs, max_tile_pos = organize_tiles(tile_names)
 
     img_preds = {}
-    img_names = tiles.keys()
+    img_names = tiles_by_imgs.keys()
     for img_name in img_names:
         cur_img_tiles = tiles_by_imgs[img_name]
         cur_tile_preds = create_dict_from_dict(cur_img_tiles, tile_preds)
@@ -198,7 +198,7 @@ def organize_tiles(tile_names):
 
         max_tile_pos = max(tile_pos, max_tile_pos)
 
-        if img_name not in tiles:
+        if img_name not in tiles_by_imgs:
             tiles_by_imgs[img_name] = [tile_name]
         else:
             tiles_by_imgs[img_name].append(tile_name)
@@ -225,13 +225,13 @@ def merge_tiles(tile_masks, tile_layout):
 
     '''
 
-    tile_names = tile_masks.keys()
+    tile_names = list(tile_masks.keys())
     num_of_rows, num_of_cols = tile_layout
 
     assert len(tile_names) == num_of_rows * num_of_cols
 
-    tile_height, tile_width = tile_masks[tile_names[0]].shape
-    img_mask = np.zeros(num_of_rows * tile_height, num_of_cols * tile_width)
+    _, tile_height, tile_width = tile_masks[tile_names[0]].shape
+    img_mask = np.zeros((num_of_rows * tile_height, num_of_cols * tile_width))
 
     for tile_name in tile_names:
         tile_row_idx, tile_col_idx = get_tile_pos(tile_name)

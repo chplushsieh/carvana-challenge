@@ -61,8 +61,10 @@ def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
             epoch_val_loss     += loss.data[0]
             epoch_val_accuracy += accuracy
         else:
+            # assuming batch size == 1
+            img_name = img_name[0]
             predictions[img_name] = masks.data[0].cpu().numpy()
-            print('Iter {}/{}, Image {}: {:.2f} sec spent'.format(i, len(data_loader), img_name, accuracy, iter_end - iter_start))
+            print('Iter {}/{}, Image {}: {:.2f} sec spent'.format(i, len(data_loader), img_name, iter_end - iter_start))
 
         if DEBUG:
             if is_val:
@@ -77,8 +79,6 @@ def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
         epoch_val_accuracy /= len(data_loader)
         print('Validation Loss: {:.3f} Validation Accuracy:{:.5f}'.format(epoch_val_loss, epoch_val_accuracy))
     else:
-        pass
-        # TODO haven't implement yet:
         predictions = tile.stitch_predictions(predictions)
         submit.save_predictions(exp_name, predictions)
 
