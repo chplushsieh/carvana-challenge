@@ -197,7 +197,7 @@ class DynamicUnet(BaseNet):
     def __init__(self, nums_filters = [64, 128, 256, 512, 1024]):
         super().__init__()
 
-        self.down = [ UNetDownBlock(self.n_channels,  nums_filters[0]) ]
+        self.down = nn.ModuleList([ UNetDownBlock(self.n_channels,  nums_filters[0]) ])
         for i in range(len(nums_filters)-1):
             self.down.append(UNetDownBlock(nums_filters[i],  nums_filters[i+1]))
         # self.down1 = UNetDownBlock(self.n_channels,  64)
@@ -206,15 +206,15 @@ class DynamicUnet(BaseNet):
         # self.down4 = UNetDownBlock(            256, 512)
         # self.down5 = UNetDownBlock(            512,1024)
 
-        self.pool = [ nn.MaxPool2d(2) for i in range(4) ]
+        self.pool = nn.ModuleList([ nn.MaxPool2d(2) for i in range(4) ])
         # self.pool1 = nn.MaxPool2d(2)
         # self.pool2 = nn.MaxPool2d(2)
         # self.pool3 = nn.MaxPool2d(2)
         # self.pool4 = nn.MaxPool2d(2)
 
-        self.up = []
+        self.up = nn.ModuleList([])
         for i in range(len(nums_filters)-1):
-            self.up.append(UNetUpBlock(nums_filters[i] + nums_filters[i+1], nums_filters[i]))
+            self.up.append(UNetUpBlock(nums_filters[i] + nums_filters[i+1], nums_filters[i],  up='upsample'))
         # self.up4 = UNetUpBlock(512+1024, 512, up='upsample')
         # self.up3 = UNetUpBlock( 256+512, 256, up='upsample')
         # self.up2 = UNetUpBlock( 128+256, 128, up='upsample')
@@ -231,7 +231,7 @@ class DynamicUnet(BaseNet):
             down_output = self.down[i](x)
             down_outputs.append(down_output)
 
-            if i < len(pool):
+            if i < len(self.pool):
                 x = self.pool[i](down_output)
 
         # down1 = self.down1(x)
@@ -246,9 +246,9 @@ class DynamicUnet(BaseNet):
         # down4 = self.down4(x)
         # x = self.pool4(down4)
         #
-        # down5 = self.down[-1](x)
+        # down5 = self.down5(x)
 
-        up_outputs = []
+
         x = down_outputs[-1]
         for i in reversed(range(len(self.up))):
             x = self.up[i](down_outputs[i], x)
