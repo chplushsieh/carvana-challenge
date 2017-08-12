@@ -200,28 +200,14 @@ class DynamicUnet(BaseNet):
         self.down = nn.ModuleList([ UNetDownBlock(self.n_channels,  nums_filters[0]) ])
         for i in range(len(nums_filters)-1):
             self.down.append(UNetDownBlock(nums_filters[i],  nums_filters[i+1]))
-        # self.down1 = UNetDownBlock(self.n_channels,  64)
-        # self.down2 = UNetDownBlock(             64, 128)
-        # self.down3 = UNetDownBlock(            128, 256)
-        # self.down4 = UNetDownBlock(            256, 512)
-        # self.down5 = UNetDownBlock(            512,1024)
 
         self.pool = nn.ModuleList([ nn.MaxPool2d(2) for i in range(4) ])
-        # self.pool1 = nn.MaxPool2d(2)
-        # self.pool2 = nn.MaxPool2d(2)
-        # self.pool3 = nn.MaxPool2d(2)
-        # self.pool4 = nn.MaxPool2d(2)
 
         self.up = nn.ModuleList([])
         for i in range(len(nums_filters)-1):
             self.up.append(UNetUpBlock(nums_filters[i] + nums_filters[i+1], nums_filters[i],  up='upsample'))
-        # self.up4 = UNetUpBlock(512+1024, 512, up='upsample')
-        # self.up3 = UNetUpBlock( 256+512, 256, up='upsample')
-        # self.up2 = UNetUpBlock( 128+256, 128, up='upsample')
-        # self.up1 = UNetUpBlock(  64+128,  64, up='upsample')
 
         self.classify = nn.Conv2d(nums_filters[0], self.n_classes, 1)
-        # self.classify = nn.Conv2d(64, self.n_classes, 1)
         return
 
     def forward(self, x):
@@ -234,33 +220,11 @@ class DynamicUnet(BaseNet):
             if i < len(self.pool):
                 x = self.pool[i](down_output)
 
-        # down1 = self.down1(x)
-        # x = self.pool1(down1)
-        #
-        # down2 = self.down2(x)
-        # x = self.pool2(down2)
-        #
-        # down3 = self.down3(x)
-        # x = self.pool3(down3)
-        #
-        # down4 = self.down4(x)
-        # x = self.pool4(down4)
-        #
-        # down5 = self.down5(x)
-
-
         x = down_outputs[-1]
         for i in reversed(range(len(self.up))):
             x = self.up[i](down_outputs[i], x)
 
         out =  self.classify(x)
-
-        # up4 = self.up4(down4, down5)
-        # up3 = self.up3(down3, up4)
-        # up2 = self.up2(down2, up3)
-        # up1 = self.up1(down1, up2)
-        #
-        # out =  self.classify(up1)
         return F.sigmoid(out)
 
 class SmallerUpsamplingUnet(BaseNet):
