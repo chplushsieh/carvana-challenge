@@ -47,10 +47,9 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         img_name = self.data_files[idx]
 
         # decide if we will flip the image and the target
-        is_coin_head = random.random() < 0.5
-        is_hflip = self.hflip_enabled and is_coin_head
+        is_hflip = self.hflip_enabled and (random.random() < 0.5)
 
-        is_shift = self.shift_enabled and is_coin_head
+        is_shift = self.shift_enabled and (random.random() < 0.5)
 
         img = load.load_train_image(self.data_dir, img_name, is_hflip=is_hflip, is_shift=is_shift, paddings=self.paddings, tile_size=self.tile_size)
 
