@@ -14,7 +14,6 @@ import util.exp as exp
 import util.evaluation as evaluation
 import util.visualization as viz
 
-import model.loss as loss
 from dataloader import *
 import config
 import test
@@ -121,7 +120,7 @@ def trainer(exp_name, train_data_loader, cfg, val_data_loader=None, DEBUG=False,
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('exp_name', nargs='?', default='UpsamplingUnet')
+    parser.add_argument('exp_name', nargs='?', default='UpsamplingUnet_on_half')
     args = parser.parse_args()
 
     exp_name = args.exp_name
@@ -141,4 +140,4 @@ if __name__ == "__main__":
         cfg['train']['tile_size']
     )
 
-    trainer(exp_name, train_data_loader, cfg, val_data_loader=val_data_loader)
+    trainer(exp_name, train_data_loader, cfg, val_data_loader=val_data_loader, DEBUG=False)

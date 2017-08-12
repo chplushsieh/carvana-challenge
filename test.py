@@ -79,8 +79,8 @@ def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
     else:
         pass
         # TODO haven't implement yet:
-        # predictions = tile.stitch_predictions(predictions)
-        # submit.save_predictions(exp_name, predictions)
+        predictions = tile.stitch_predictions(predictions)
+        submit.save_predictions(exp_name, predictions)
 
     epoch_end = time.time()
     print('{:.2f} sec spent'.format(epoch_end - epoch_start))
@@ -95,7 +95,7 @@ def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('exp_name', nargs='?', default='upsamplingUnet')
+    parser.add_argument('exp_name', nargs='?', default='UpsamplingUnet_on_half')
     args = parser.parse_args()
 
     exp_name = args.exp_name

@@ -48,6 +48,7 @@ def visualize(image, pred, target=None):
         plt.subplot(1,3,3)
         plt.imshow(target, 'Purples', interpolation='none')
         plt.show()
+        return
 
 #example
 #input_path='/home/judichunt/Downloads/'
