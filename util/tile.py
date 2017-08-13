@@ -4,7 +4,7 @@ import math
 
 __all__ = [ 'pad_image', 'generate_tile_names', 'get_tile_layout', 'get_img_name', 'get_tile', 'stitch_predictions' ]
 
-def remove_tile_borders(self, image_with_border, tile_borders):
+def remove_tile_borders(image_with_border, tile_borders):
     '''
     input:
       image_with_border: a numy array of shape (num_channels, height, width)

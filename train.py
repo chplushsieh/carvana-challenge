@@ -13,6 +13,7 @@ except ImportError:
 import util.exp as exp
 import util.evaluation as evaluation
 import util.visualization as viz
+import util.tile as tile
 
 from dataloader import *
 import config
