@@ -13,7 +13,15 @@ def remove_tile_borders(image_with_border, tile_borders):
       image: a numy array of shape (num_channels, height - 2 * tile_height_border, width - 2 * tile_width_border)
     '''
     tile_height_border, tile_width_border = tile_borders
-    image  =  image_with_border[:, tile_height_border:-tile_height_border, tile_width_border:-tile_width_border]
+
+    assert tile_height_border >= 0
+    if tile_height_border > 0: # No need to remove border if it's 0
+        image = image_with_border[:, tile_height_border:-tile_height_border, :]
+
+    assert tile_width_border >= 0
+    if tile_width_border > 0: # No need to remove border if it's 0
+        image  =  image[:, :, tile_width_border:-tile_width_border]
+
     return image
 
 def get_tile_border(img_length, tile_length, num_tiles):
