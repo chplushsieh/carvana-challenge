@@ -30,6 +30,7 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
             img_height, img_width = const.img_size
             padded_img_size = img_height + 2 * paddings[0], img_width + 2 * paddings[1]
             self.data_files = tile.generate_tile_names(self.data_files, tile_size, padded_img_size)
+            _, self.tile_borders = tile.get_tile_layout(tile_size, padded_img_size)
 
         self.mask_dir = mask_dir
         self.hflip_enabled = hflip_enabled
@@ -38,6 +39,17 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         self.tile_size = tile_size
 
         return
+
+    def remove_tile_borders(self, image_with_border):
+        '''
+        input:
+          image_with_border: a numy array of shape (num_channels, height, width)
+        output:
+          image: a numy array of shape (num_channels, height - 2 * tile_height_border, width - 2 * tile_width_border)
+        '''
+        tile_height_border, tile_width_border = self.tile_borders
+        image  =  image_with_border[:, tile_height_border:-tile_height_border, tile_width_border:-tile_width_border]
+        return image
 
     def __len__(self):
         return len(self.data_files)

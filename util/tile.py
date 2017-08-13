@@ -2,7 +2,7 @@
 import numpy as np
 import math
 
-__all__ = [ 'pad_image', 'generate_tile_names', 'get_img_name', 'get_tile', 'stitch_predictions' ]
+__all__ = [ 'pad_image', 'generate_tile_names', 'get_tile_layout', 'get_img_name', 'get_tile', 'stitch_predictions' ]
 
 def get_tile_border(img_length, tile_length, num_tiles):
     '''

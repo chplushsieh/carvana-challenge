@@ -61,12 +61,22 @@ def trainer(exp_name, train_data_loader, cfg, val_data_loader=None, DEBUG=False,
                 targets = targets.cuda()
 
             outputs = net(images)
-            # TODO remove tile borders from both outputs and targets
             loss = criterion(outputs, targets)
 
             # generate prediction
             masks = (outputs > 0.5).float()
-            accuracy  = evaluation.dice( masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
+
+            # convert to numpy array
+            assert batch_size == 1
+            image = images.data[0].cpu().numpy()
+            mask = masks.data[0].cpu().numpy()
+            target = targets.data[0].cpu().numpy()
+
+            # remove tile borders
+            image = train_data_loader.remove_tile_borders(image)
+            mask = train_data_loader.remove_tile_borders(mask)
+            target = train_data_loader.remove_tile_borders(target)
+            accuracy  = evaluation.dice(mask, target)
 
             # Backward pass
             optimizer.zero_grad()
@@ -85,7 +95,7 @@ def trainer(exp_name, train_data_loader, cfg, val_data_loader=None, DEBUG=False,
 
             if DEBUG:
                 print('Epoch {}, Iter {}, {}: Loss {:.3f}, Accuracy: {:.4f}'.format(epoch, i, img_name, loss.data[0], accuracy))
-                viz.visualize(images.data[0].cpu().numpy(), masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
+                viz.visualize(image, mask, target)
         # inner for loop ends
 
         epoch_train_loss     /= len(train_data_loader)

@@ -50,11 +50,21 @@ def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
         # compute dice
         masks = (outputs > 0.5).float()
 
+        # convert to numpy array
+        assert batch_size == 1
+        image = images.data[0].cpu().numpy()
+        mask = masks.data[0].cpu().numpy()
+        target = targets.data[0].cpu().numpy()
+
+        # remove tile borders
+        image = data_loader.remove_tile_borders(image)
+        mask = data_loader.remove_tile_borders(mask)
+        target = data_loader.remove_tile_borders(target)
 
         iter_end = time.time()
 
         if is_val:
-            accuracy = evaluation.dice(masks.data[0].cpu().numpy(), targets[0].data[0].cpu().numpy())
+            accuracy = evaluation.dice(mask, target)
             loss = criterion(outputs, targets)
 
             # Update stats
@@ -63,15 +73,15 @@ def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
         else:
             # assuming batch size == 1
             img_name = img_name[0]
-            predictions[img_name] = masks.data[0].cpu().numpy()
+            predictions[img_name] = mask
             print('Iter {}/{}, Image {}: {:.2f} sec spent'.format(i, len(data_loader), img_name, iter_end - iter_start))
 
         if DEBUG:
             if is_val:
                 print('Iter {}, {}: Loss {:.3f}, Accuracy: {:.4f}'.format(i, img_name, loss.data[0], accuracy))
-                viz.visualize(images.data[0].cpu().numpy(), masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
+                viz.visualize(image, mask, target)
             else:
-                viz.visualize(images.data[0].cpu().numpy(), masks.data[0].cpu().numpy())
+                viz.visualize(image, mask)
     # for loop ends
 
     if is_val:
