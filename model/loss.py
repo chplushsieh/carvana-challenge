@@ -74,7 +74,7 @@ class SoftDiceLoss(nn.Module):
 
 class HengLoss(nn.Module):
     def __init__(self):
-        super(MixedLoss, self).__init__()
+        super(HengLoss, self).__init__()
         self.dice = SoftDiceLoss()
         self.bce = BCELoss2d()
 
