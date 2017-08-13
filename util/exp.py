@@ -21,18 +21,6 @@ def get_network(exp_name):
     model_type = getattr(unet, model_name)
     model = model_type()
 
-    # TODO remove the following previous working code:
-    # if model_name == 'smallUnet':
-    #     model = unet.SmallUnet()
-    # elif model_name == 'originalUnet':
-    #     model = unet.OriginalUnet()
-    # elif model_name == 'betterUnet':
-    #     model = unet.BetterUnet()
-    # elif model_name == 'upsamplingUnet':
-    #     model = unet.UpsamplingUnet()
-    # elif model_name == 'smallerUpsamplingUnet':
-    #     model = unet.SmallerUpsamplingUnet()
-
     return model
 
 def get_optimizer(model, exp_name):
@@ -48,13 +36,6 @@ def get_optimizer(model, exp_name):
         momentum=cfg['momentum'],
         weight_decay=cfg['weight_decay']
     )
-    # TODO remove the following previous working code:
-    # optimizer = torch.optim.SGD(
-    #     model.parameters(),
-    #     lr=cfg['learning_rate'],
-    #     momentum=cfg['momentum'],
-    #     weight_decay=cfg['weight_decay']
-    # )
 
     return optimizer
 
@@ -66,8 +47,6 @@ def get_criterion(exp_name):
     criterion_name = cfg['criterion']
     loss_method = getattr(loss, criterion_name)
     criterion = loss_method()
-    # TODO remove the following previous working code:
-    # criterion = loss.StableBCELoss()
 
     return criterion
 
@@ -113,7 +92,7 @@ def load_exp(exp_name):
     ckpt_path = get_latest_ckpt(save_dir)
     model, optimizer, criterion, saved_epoch = load_checkpoint(exp_name, ckpt_path)
     start_epoch = saved_epoch + 1
-    
+
     return model, optimizer, criterion, start_epoch
 
 def load_checkpoint(exp_name, ckpt_path):
