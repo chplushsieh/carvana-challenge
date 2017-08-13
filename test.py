@@ -16,7 +16,7 @@ import config
 
 
 
-def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
+def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DEBUG=False):
 
     if torch.cuda.is_available():
         net.cuda()
@@ -57,9 +57,9 @@ def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
         target = targets.data[0].cpu().numpy()
 
         # remove tile borders
-        image = data_loader.remove_tile_borders(image)
-        mask = data_loader.remove_tile_borders(mask)
-        target = data_loader.remove_tile_borders(target)
+        image = tile.remove_tile_borders(image, tile_borders)
+        mask = tile.remove_tile_borders(mask, tile_borders)
+        target = tile.remove_tile_borders(target, tile_borders)
 
         iter_end = time.time()
 
@@ -111,9 +111,9 @@ if __name__ == "__main__":
     exp_name = args.exp_name
 
     cfg = config.load_config_file(exp_name)
-    # data_loader = get_small_loader(
-    # data_loader = get_val_loader(
-    data_loader = get_test_loader(
+    # data_loader, tile_borders = get_small_loader(
+    data_loader, tile_borders = get_val_loader(
+    # data_loader, tile_borders = get_test_loader(
         cfg['test']['batch_size'],
         cfg['test']['paddings'],
         cfg['test']['tile_size'],
@@ -123,4 +123,4 @@ if __name__ == "__main__":
 
     net, _, criterion, _ = exp.load_exp(exp_name)
 
-    tester(exp_name, data_loader, net, criterion)
+    tester(exp_name, data_loader, tile_borders, net, criterion)

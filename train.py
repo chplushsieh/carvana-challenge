@@ -19,7 +19,7 @@ import config
 import test
 
 
-def trainer(exp_name, train_data_loader, cfg, val_data_loader=None, DEBUG=False, use_tensorboard=True):
+def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loader=None, val_tile_borders=None, DEBUG=False, use_tensorboard=True):
     net, optimizer, criterion, start_epoch = exp.load_exp(exp_name)
 
     if torch.cuda.is_available():
@@ -72,9 +72,9 @@ def trainer(exp_name, train_data_loader, cfg, val_data_loader=None, DEBUG=False,
             target = targets.data[0].cpu().numpy()
 
             # remove tile borders
-            image = train_data_loader.remove_tile_borders(image)
-            mask = train_data_loader.remove_tile_borders(mask)
-            target = train_data_loader.remove_tile_borders(target)
+            image = tile.remove_tile_borders(image, train_tile_borders)
+            mask = tile.remove_tile_borders(mask, train_tile_borders)
+            target = tile.remove_tile_borders(target, train_tile_borders)
             accuracy  = evaluation.dice(mask, target)
 
             # Backward pass
@@ -102,7 +102,7 @@ def trainer(exp_name, train_data_loader, cfg, val_data_loader=None, DEBUG=False,
 
         # Validate
         if val_data_loader is not None:
-            epoch_val_loss, epoch_val_accuracy = test.tester(exp_name, val_data_loader, net, criterion, is_val=True)
+            epoch_val_loss, epoch_val_accuracy = test.tester(exp_name, val_data_loader, val_tile_borders, net, criterion, is_val=True)
 
         if use_tensorboard:
             experiment.add_scalar_value('train loss', epoch_train_loss, step=epoch)
@@ -135,8 +135,8 @@ if __name__ == "__main__":
     exp_name = args.exp_name
 
     cfg = config.load_config_file(exp_name)
-    # train_data_loader = get_small_loader(
-    train_data_loader = get_train_loader(
+    # train_data_loader, train_tile_borders = get_small_loader(
+    train_data_loader, train_tile_borders = get_train_loader(
         cfg['train']['batch_size'],
         cfg['train']['paddings'],
         cfg['train']['tile_size'],
@@ -144,8 +144,8 @@ if __name__ == "__main__":
         cfg['train']['shift']
     )
 
-    # val_data_loader = get_small_loader(
-    val_data_loader = get_val_loader(
+    # val_data_loader, val_tile_borders = get_small_loader(
+    val_data_loader, val_tile_borders = get_val_loader(
         cfg['test']['batch_size'],
         cfg['test']['paddings'],
         cfg['test']['tile_size'],
@@ -154,4 +154,4 @@ if __name__ == "__main__":
     )
 
     assert cfg['train']['batch_size'] == 1
-    trainer(exp_name, train_data_loader, cfg, val_data_loader=val_data_loader, DEBUG=False)
+    trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loader=val_data_loader, val_tile_borders=val_tile_borders, DEBUG=False)

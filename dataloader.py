@@ -40,16 +40,17 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
 
         return
 
-    def remove_tile_borders(self, image_with_border):
-        '''
-        input:
-          image_with_border: a numy array of shape (num_channels, height, width)
-        output:
-          image: a numy array of shape (num_channels, height - 2 * tile_height_border, width - 2 * tile_width_border)
-        '''
-        tile_height_border, tile_width_border = self.tile_borders
-        image  =  image_with_border[:, tile_height_border:-tile_height_border, tile_width_border:-tile_width_border]
-        return image
+    def get_tile_borders(self, image_with_border):
+        # '''
+        # input:
+        #   image_with_border: a numy array of shape (num_channels, height, width)
+        # output:
+        #   image: a numy array of shape (num_channels, height - 2 * tile_height_border, width - 2 * tile_width_border)
+        # '''
+        # tile_height_border, tile_width_border = self.tile_borders
+        # image  =  image_with_border[:, tile_height_border:-tile_height_border, tile_width_border:-tile_width_border]
+        # return image
+        return self.tile_borders
 
     def __len__(self):
         return len(self.data_files)
@@ -117,6 +118,7 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=
         paddings=paddings,
         tile_size=tile_size,
     )
+    tile_borders = dataset.get_tile_borders()
 
     loader = torch.utils.data.dataloader.DataLoader(
                                 dataset,
@@ -124,7 +126,7 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=
                                 shuffle=True,
                                 num_workers=8,
                             )
-    return loader
+    return loader, tile_borders
 
 def get_train_loader(batch_size, paddings, tile_size, hflip, shift):
     train_imgs = load.load_train_imageset()
