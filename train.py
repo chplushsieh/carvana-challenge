@@ -67,7 +67,6 @@ def trainer(exp_name, train_data_loader, cfg, val_data_loader=None, DEBUG=False,
             masks = (outputs > 0.5).float()
 
             # convert to numpy array
-            assert batch_size == 1
             image = images.data[0].cpu().numpy()
             mask = masks.data[0].cpu().numpy()
             target = targets.data[0].cpu().numpy()
@@ -154,4 +153,5 @@ if __name__ == "__main__":
         cfg['test']['shift']
     )
 
+    assert cfg['train']['batch_size'] == 1
     trainer(exp_name, train_data_loader, cfg, val_data_loader=val_data_loader, DEBUG=False)
