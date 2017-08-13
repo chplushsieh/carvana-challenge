@@ -227,6 +227,9 @@ class DynamicUnet(BaseNet):
         out =  self.classify(x)
         return F.sigmoid(out)
 
+def AndresUnet():
+    return DynamicUnet(nums_filters = [32, 64, 128, 256, 512])
+
 class SmallerUpsamplingUnet(BaseNet):
     def __init__(self):
         super().__init__()
