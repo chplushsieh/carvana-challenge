@@ -194,18 +194,18 @@ class UpsamplingUnet(BaseNet):
         return F.sigmoid(out)
 
 class DynamicUnet(BaseNet):
-    def __init__(self, nums_filters = [64, 128, 256, 512, 1024]):
+    def __init__(self, DownBlock=UNetDownBlock, UpBlock=UNetUpBlock, nums_filters = [64, 128, 256, 512, 1024]):
         super().__init__()
 
-        self.down = nn.ModuleList([ UNetDownBlock(self.n_channels,  nums_filters[0]) ])
+        self.down = nn.ModuleList([ DownBlock(self.n_channels,  nums_filters[0]) ])
         for i in range(len(nums_filters)-1):
-            self.down.append(UNetDownBlock(nums_filters[i],  nums_filters[i+1]))
+            self.down.append(DownBlock(nums_filters[i],  nums_filters[i+1]))
 
         self.pool = nn.ModuleList([ nn.MaxPool2d(2) for i in range(4) ])
 
         self.up = nn.ModuleList([])
         for i in range(len(nums_filters)-1):
-            self.up.append(UNetUpBlock(nums_filters[i] + nums_filters[i+1], nums_filters[i],  up='upsample'))
+            self.up.append(UpBlock(nums_filters[i] + nums_filters[i+1], nums_filters[i],  up='upsample'))
 
         self.classify = nn.Conv2d(nums_filters[0], self.n_classes, 1)
         return
