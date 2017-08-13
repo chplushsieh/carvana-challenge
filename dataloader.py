@@ -40,16 +40,11 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
 
         return
 
-    def get_tile_borders(self, image_with_border):
-        # '''
-        # input:
-        #   image_with_border: a numy array of shape (num_channels, height, width)
-        # output:
-        #   image: a numy array of shape (num_channels, height - 2 * tile_height_border, width - 2 * tile_width_border)
-        # '''
-        # tile_height_border, tile_width_border = self.tile_borders
-        # image  =  image_with_border[:, tile_height_border:-tile_height_border, tile_width_border:-tile_width_border]
-        # return image
+    def get_tile_borders(self):
+        '''
+        output:
+          tile_borders: a tuple of ints (height_border, width_border)
+        '''
         return self.tile_borders
 
     def __len__(self):
