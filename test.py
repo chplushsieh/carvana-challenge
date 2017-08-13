@@ -95,18 +95,20 @@ def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('exp_name', nargs='?', default='UpsamplingUnet_on_half')
+    parser.add_argument('exp_name', nargs='?', default='DynamicUnet')
     args = parser.parse_args()
 
     exp_name = args.exp_name
 
     cfg = config.load_config_file(exp_name)
-    data_loader = get_small_loader(
+    # data_loader = get_small_loader(
     # data_loader = get_val_loader(
-    # data_loader = get_test_loader(
-        cfg['train']['batch_size'],
-        cfg['train']['paddings'],
-        cfg['train']['tile_size']
+    data_loader = get_test_loader(
+        cfg['test']['batch_size'],
+        cfg['test']['paddings'],
+        cfg['test']['tile_size'],
+        cfg['test']['hflip'],
+        cfg['test']['shift']
     )
 
     net, _, criterion, _ = exp.load_exp(exp_name)

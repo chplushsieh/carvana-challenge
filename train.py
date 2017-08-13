@@ -120,7 +120,7 @@ def trainer(exp_name, train_data_loader, cfg, val_data_loader=None, DEBUG=False,
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('exp_name', nargs='?', default='UpsamplingUnet_on_half')
+    parser.add_argument('exp_name', nargs='?', default='DynamicUnet')
     args = parser.parse_args()
 
     exp_name = args.exp_name
@@ -137,11 +137,11 @@ if __name__ == "__main__":
 
     # val_data_loader = get_small_loader(
     val_data_loader = get_val_loader(
-        cfg['train']['batch_size'],
-        cfg['train']['paddings'],
-        cfg['train']['tile_size'],
-        cfg['train']['hflip'],
-        cfg['train']['shift']
+        cfg['test']['batch_size'],
+        cfg['test']['paddings'],
+        cfg['test']['tile_size'],
+        cfg['test']['hflip'],
+        cfg['test']['shift']
     )
 
     trainer(exp_name, train_data_loader, cfg, val_data_loader=val_data_loader, DEBUG=False)

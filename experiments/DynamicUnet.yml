@@ -7,8 +7,8 @@ criterion: StableBCELoss
 
 num_epochs: 101
 
-log_iter_interval: 16
-snapshot_epoch_interval: 25
+log_iter_interval: 100
+snapshot_epoch_interval: 1
 
 train:
   batch_size: 1
