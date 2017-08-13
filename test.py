@@ -50,8 +50,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
         # compute dice
         masks = (outputs > 0.5).float()
 
-        # convert to numpy array
-        assert batch_size == 1
+        # convert to numpy arra
         image = images.data[0].cpu().numpy()
         mask = masks.data[0].cpu().numpy()
         target = targets.data[0].cpu().numpy()
