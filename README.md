@@ -65,15 +65,13 @@ For instance, `python scripts/divisble.py 900 1300`
 - [x] train/predict-by-tile
 - [x] add DICE score during training
 - [x] add validation loss and DICE score during training
-    - [ ] verify it work
 - [x] add optimizer and loss to experiment setting in .yml
 - [x] try modified UNet with UpSampling layers
 - [x] improve tile.py: make it able to cut image into halves
-    - [ ] verify it work
 - [x] complete util/tile.py: stitch_predictions()
     - [ ] verify it work
-- [ ] [Lai] complete util/submit.py
-- [ ] [Lai] add data augmentation: random shift
+- [x] complete util/submit.py
+- [x] add data augmentation: random shift
 - [ ] experimenting with UNet parameters and architectures/modules
     - [ ] larger UNets
     - [ ] try Adam or other optimizers
