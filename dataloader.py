@@ -30,6 +30,7 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
             img_height, img_width = const.img_size
             padded_img_size = img_height + 2 * paddings[0], img_width + 2 * paddings[1]
             self.data_files = tile.generate_tile_names(self.data_files, tile_size, padded_img_size)
+            _, self.tile_borders = tile.get_tile_layout(tile_size, padded_img_size)
 
         self.mask_dir = mask_dir
         self.hflip_enabled = hflip_enabled
@@ -38,6 +39,13 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         self.tile_size = tile_size
 
         return
+
+    def get_tile_borders(self):
+        '''
+        output:
+          tile_borders: a tuple of ints (height_border, width_border)
+        '''
+        return self.tile_borders
 
     def __len__(self):
         return len(self.data_files)
@@ -105,6 +113,7 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=
         paddings=paddings,
         tile_size=tile_size,
     )
+    tile_borders = dataset.get_tile_borders()
 
     loader = torch.utils.data.dataloader.DataLoader(
                                 dataset,
@@ -112,7 +121,7 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=
                                 shuffle=True,
                                 num_workers=8,
                             )
-    return loader
+    return loader, tile_borders
 
 def get_train_loader(batch_size, paddings, tile_size, hflip, shift):
     train_imgs = load.load_train_imageset()

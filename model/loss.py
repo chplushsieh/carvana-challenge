@@ -71,3 +71,13 @@ class SoftDiceLoss(nn.Module):
         score = 2. * (intersection.sum(1)+1) / (m1.sum(1) + m2.sum(1)+1)
         score = 1 - score.sum()/num
         return score
+
+class HengLoss(nn.Module):
+    def __init__(self):
+        super(HengLoss, self).__init__()
+        self.dice = SoftDiceLoss()
+        self.bce = BCELoss2d()
+
+
+    def forward(self, inputs, targets):
+        return self.dice(inputs, targets) + self.bce(inputs, targets)

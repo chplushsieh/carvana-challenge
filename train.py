@@ -13,13 +13,14 @@ except ImportError:
 import util.exp as exp
 import util.evaluation as evaluation
 import util.visualization as viz
+import util.tile as tile
 
 from dataloader import *
 import config
 import test
 
 
-def trainer(exp_name, train_data_loader, cfg, val_data_loader=None, DEBUG=False, use_tensorboard=True):
+def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loader=None, val_tile_borders=None, DEBUG=False, use_tensorboard=True):
     net, optimizer, criterion, start_epoch = exp.load_exp(exp_name)
 
     if torch.cuda.is_available():
@@ -61,12 +62,21 @@ def trainer(exp_name, train_data_loader, cfg, val_data_loader=None, DEBUG=False,
                 targets = targets.cuda()
 
             outputs = net(images)
-            # TODO remove tile borders from both outputs and targets
             loss = criterion(outputs, targets)
 
             # generate prediction
             masks = (outputs > 0.5).float()
-            accuracy  = evaluation.dice( masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
+
+            # convert to numpy array
+            image = images.data[0].cpu().numpy()
+            mask = masks.data[0].cpu().numpy()
+            target = targets.data[0].cpu().numpy()
+
+            # remove tile borders
+            image = tile.remove_tile_borders(image, train_tile_borders)
+            mask = tile.remove_tile_borders(mask, train_tile_borders)
+            target = tile.remove_tile_borders(target, train_tile_borders)
+            accuracy  = evaluation.dice(mask, target)
 
             # Backward pass
             optimizer.zero_grad()
@@ -85,7 +95,7 @@ def trainer(exp_name, train_data_loader, cfg, val_data_loader=None, DEBUG=False,
 
             if DEBUG:
                 print('Epoch {}, Iter {}, {}: Loss {:.3f}, Accuracy: {:.4f}'.format(epoch, i, img_name, loss.data[0], accuracy))
-                viz.visualize(images.data[0].cpu().numpy(), masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
+                viz.visualize(image, mask, target)
         # inner for loop ends
 
         epoch_train_loss     /= len(train_data_loader)
@@ -93,7 +103,7 @@ def trainer(exp_name, train_data_loader, cfg, val_data_loader=None, DEBUG=False,
 
         # Validate
         if val_data_loader is not None:
-            epoch_val_loss, epoch_val_accuracy = test.tester(exp_name, val_data_loader, net, criterion, is_val=True)
+            epoch_val_loss, epoch_val_accuracy = test.tester(exp_name, val_data_loader, val_tile_borders, net, criterion, is_val=True)
 
         if use_tensorboard:
             experiment.add_scalar_value('train loss', epoch_train_loss, step=epoch)
@@ -126,8 +136,8 @@ if __name__ == "__main__":
     exp_name = args.exp_name
 
     cfg = config.load_config_file(exp_name)
-    # train_data_loader = get_small_loader(
-    train_data_loader = get_train_loader(
+    # train_data_loader, train_tile_borders = get_small_loader(
+    train_data_loader, train_tile_borders = get_train_loader(
         cfg['train']['batch_size'],
         cfg['train']['paddings'],
         cfg['train']['tile_size'],
@@ -135,8 +145,8 @@ if __name__ == "__main__":
         cfg['train']['shift']
     )
 
-    # val_data_loader = get_small_loader(
-    val_data_loader = get_val_loader(
+    # val_data_loader, val_tile_borders = get_small_loader(
+    val_data_loader, val_tile_borders = get_val_loader(
         cfg['test']['batch_size'],
         cfg['test']['paddings'],
         cfg['test']['tile_size'],
@@ -144,4 +154,5 @@ if __name__ == "__main__":
         cfg['test']['shift']
     )
 
-    trainer(exp_name, train_data_loader, cfg, val_data_loader=val_data_loader, DEBUG=False)
+    assert cfg['train']['batch_size'] == 1
+    trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loader=val_data_loader, val_tile_borders=val_tile_borders, DEBUG=False)

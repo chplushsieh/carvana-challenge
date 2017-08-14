@@ -16,7 +16,7 @@ import config
 
 
 
-def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
+def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DEBUG=False):
 
     if torch.cuda.is_available():
         net.cuda()
@@ -50,11 +50,20 @@ def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
         # compute dice
         masks = (outputs > 0.5).float()
 
+        # convert to numpy arra
+        image = images.data[0].cpu().numpy()
+        mask = masks.data[0].cpu().numpy()
+        target = targets.data[0].cpu().numpy()
+
+        # remove tile borders
+        image = tile.remove_tile_borders(image, tile_borders)
+        mask = tile.remove_tile_borders(mask, tile_borders)
+        target = tile.remove_tile_borders(target, tile_borders)
 
         iter_end = time.time()
 
         if is_val:
-            accuracy = evaluation.dice(masks.data[0].cpu().numpy(), targets[0].data[0].cpu().numpy())
+            accuracy = evaluation.dice(mask, target)
             loss = criterion(outputs, targets)
 
             # Update stats
@@ -63,15 +72,15 @@ def tester(exp_name, data_loader, net, criterion, is_val=False, DEBUG=False):
         else:
             # assuming batch size == 1
             img_name = img_name[0]
-            predictions[img_name] = masks.data[0].cpu().numpy()
+            predictions[img_name] = mask
             print('Iter {}/{}, Image {}: {:.2f} sec spent'.format(i, len(data_loader), img_name, iter_end - iter_start))
 
         if DEBUG:
             if is_val:
                 print('Iter {}, {}: Loss {:.3f}, Accuracy: {:.4f}'.format(i, img_name, loss.data[0], accuracy))
-                viz.visualize(images.data[0].cpu().numpy(), masks.data[0].cpu().numpy(), targets.data[0].cpu().numpy())
+                viz.visualize(image, mask, target)
             else:
-                viz.visualize(images.data[0].cpu().numpy(), masks.data[0].cpu().numpy())
+                viz.visualize(image, mask)
     # for loop ends
 
     if is_val:
@@ -101,9 +110,9 @@ if __name__ == "__main__":
     exp_name = args.exp_name
 
     cfg = config.load_config_file(exp_name)
-    # data_loader = get_small_loader(
-    # data_loader = get_val_loader(
-    data_loader = get_test_loader(
+    # data_loader, tile_borders = get_small_loader(
+    data_loader, tile_borders = get_val_loader(
+    # data_loader, tile_borders = get_test_loader(
         cfg['test']['batch_size'],
         cfg['test']['paddings'],
         cfg['test']['tile_size'],
@@ -113,4 +122,4 @@ if __name__ == "__main__":
 
     net, _, criterion, _ = exp.load_exp(exp_name)
 
-    tester(exp_name, data_loader, net, criterion)
+    tester(exp_name, data_loader, tile_borders, net, criterion)
