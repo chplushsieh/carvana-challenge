@@ -78,6 +78,14 @@ class HengLoss(nn.Module):
         self.dice = SoftDiceLoss()
         self.bce = BCELoss2d()
 
-
     def forward(self, inputs, targets):
         return self.dice(inputs, targets) + self.bce(inputs, targets)
+
+class StableHengLoss(nn.Module):
+    def __init__(self):
+        super(StableHengLoss, self).__init__()
+        self.dice = SoftDiceLoss()
+        self.stable_bce = StableBCELoss()
+
+    def forward(self, inputs, targets):
+        return self.dice(inputs, targets) + self.stable_bce(inputs, targets)
