@@ -60,6 +60,8 @@ def load_train_image(data_dir, img_name, is_hflip=False, paddings=None, tile_siz
     img = np.moveaxis(img, 2, 0)
     # img.shape: (3, height, width)
 
+    # TODO img = color.transform(img)
+
     return preprocess(img, img_name, is_hflip, paddings, tile_size, is_shift)
 
 def load_train_mask(data_dir, img_name, is_hflip=False, paddings=None, tile_size=None, is_shift=False):
