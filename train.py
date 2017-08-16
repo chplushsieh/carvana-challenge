@@ -93,7 +93,7 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
                 print('Epoch [%d/%d] Iter [%d/%d] Loss: %.2f Accuracy: %.4f Time Spent: %.2f sec'
                       % (epoch, num_epochs, i + 1, len(train_data_loader), loss.data[0], accuracy, iter_end - iter_start))
 
-            if DEBUG:
+            if DEBUG and accuracy < 0.8:
                 print('Epoch {}, Iter {}, {}: Loss {:.3f}, Accuracy: {:.4f}'.format(epoch, i, img_name, loss.data[0], accuracy))
                 viz.visualize(image, mask, target)
         # inner for loop ends

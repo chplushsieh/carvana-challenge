@@ -75,7 +75,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
             predictions[img_name] = mask
             print('Iter {}/{}, Image {}: {:.2f} sec spent'.format(i, len(data_loader), img_name, iter_end - iter_start))
 
-        if DEBUG:
+        if DEBUG and accuracy < 0.8:
             if is_val:
                 print('Iter {}, {}: Loss {:.3f}, Accuracy: {:.4f}'.format(i, img_name, loss.data[0], accuracy))
                 viz.visualize(image, mask, target)
@@ -123,3 +123,4 @@ if __name__ == "__main__":
     net, _, criterion, _ = exp.load_exp(exp_name)
 
     tester(exp_name, data_loader, tile_borders, net, criterion)
+    # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True)
