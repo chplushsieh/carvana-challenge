@@ -59,12 +59,17 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
 
         is_shift = self.shift_enabled and (random.random() < 0.5)
 
-        img = load.load_train_image(self.data_dir, img_name, is_hflip=is_hflip, is_shift=is_shift, paddings=self.paddings, tile_size=self.tile_size)
+        if shift_enabled:
+            hshift, vshift = randrange(-25, 25), randrange(-120, 120)
+        else:
+            hshift, vshift = 0, 0
+
+        img = load.load_train_image(self.data_dir, img_name, is_hflip=is_hflip, hshift=hshift, vshift=vshift, paddings=self.paddings, tile_size=self.tile_size)
 
         if self.is_test():
             target = -1
         else:
-            target = load.load_train_mask(self.mask_dir, img_name, is_hflip=is_hflip, is_shift=is_shift, paddings=self.paddings, tile_size=self.tile_size)
+            target = load.load_train_mask(self.mask_dir, img_name, is_hflip=is_hflip, hshift=hshift, vshift=vshift, paddings=self.paddings, tile_size=self.tile_size)
 
         return img_name, img, target
 
