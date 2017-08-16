@@ -3,6 +3,7 @@ import torch.utils.data
 from torchvision import transforms
 
 import random
+from random import randrange
 
 import util.const as const
 import util.load as load
@@ -59,7 +60,7 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
 
         is_shift = self.shift_enabled and (random.random() < 0.5)
 
-        if shift_enabled:
+        if self.shift_enabled:
             hshift, vshift = randrange(-25, 25), randrange(-120, 120)
         else:
             hshift, vshift = 0, 0
