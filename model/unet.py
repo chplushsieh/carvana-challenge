@@ -231,8 +231,8 @@ def AndresUnet():
     return DynamicUnet(nums_filters = [32, 64, 128, 256, 512])
 
 def AndresUnet_without_bn():
-    UNetDownBlock_without_bn = lambda x y: UNetDownBlock(x, y, bn=False)
-    UNetUpBlock_without_bn   = lambda x y: UNetUpBlock(x, y, bn=False)
+    UNetDownBlock_without_bn = lambda x, y: UNetDownBlock(x, y, bn=False)
+    UNetUpBlock_without_bn   = lambda x, y: UNetUpBlock(x, y, bn=False)
     return DynamicUnet(DownBlock=UNetDownBlock_without_bn, UpBlock=UNetUpBlock_without_bn, nums_filters = [32, 64, 128, 256, 512])
 
 class SmallerUpsamplingUnet(BaseNet):
