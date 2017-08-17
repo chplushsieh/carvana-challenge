@@ -58,8 +58,6 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         # decide if we will flip the image and the target
         is_hflip = self.hflip_enabled and (random.random() < 0.5)
 
-        is_shift = self.shift_enabled and (random.random() < 0.5)
-
         if self.shift_enabled:
             hshift, vshift = randrange(-25, 25), randrange(-120, 120)
         else:
