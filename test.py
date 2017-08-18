@@ -56,6 +56,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
         target = targets.data[0].cpu().numpy()
 
         # remove tile borders
+        # TODO modify for case with batch size > 1
         image = tile.remove_tile_borders(image, tile_borders)
         mask = tile.remove_tile_borders(mask, tile_borders)
         target = tile.remove_tile_borders(target, tile_borders)
@@ -67,10 +68,11 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
             loss = criterion(outputs, targets)
 
             # Update stats
-            epoch_val_loss     += loss.data[0]
+            epoch_val_loss     += loss.data[0]  # TODO modify for case with batch size > 1
             epoch_val_accuracy += accuracy
         else:
             # assuming batch size == 1
+             # TODO modify for case with batch size > 1
             img_name = img_name[0]
             predictions[img_name] = mask
             print('Iter {}/{}, Image {}: {:.2f} sec spent'.format(i, len(data_loader), img_name, iter_end - iter_start))

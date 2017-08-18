@@ -73,10 +73,11 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
             target = targets.data[0].cpu().numpy()
 
             # remove tile borders
+             # TODO modify for case with batch size > 1
             image = tile.remove_tile_borders(image, train_tile_borders)
             mask = tile.remove_tile_borders(mask, train_tile_borders)
             target = tile.remove_tile_borders(target, train_tile_borders)
-            accuracy  = evaluation.dice(mask, target)
+            accuracy  = evaluation.dice(mask, target) # TODO modify for case with batch size > 1
 
             # Backward pass
             optimizer.zero_grad()
@@ -84,7 +85,7 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
             optimizer.step()
 
             # Update epoch stats
-            epoch_train_loss     += loss.data[0]
+            epoch_train_loss     += loss.data[0]  # TODO modify for case with batch size > 1
             epoch_train_accuracy += accuracy
 
             iter_end = time.time()
