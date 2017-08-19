@@ -91,8 +91,8 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
 
             # Log Training Progress
             if (i + 1) % log_iter_interval == 0:
-                print('Epoch [%d/%d] Iter [%d/%d] Loss: %.2f Accumd Loss:%.2f Accuracy: %.4f Time Spent: %.2f sec'
-                      % (epoch, num_epochs, i + 1, len(train_data_loader), loss.data[0], accumulated_batch_loss, accuracy, iter_end - iter_start))
+                print('Epoch [%d/%d] Iter [%d/%d] Loss: %.2f Accumd Loss:%.2f Accuracy: %.4f'
+                    % (epoch, num_epochs, i + 1, len(train_data_loader), loss.data[0], accumulated_batch_loss, accuracy))
 
             if DEBUG and accuracy < 0.8:
                 print('Epoch {}, Iter {}, {}: Loss {:.3f}, Accuracy: {:.4f}'.format(epoch, i, img_name, loss.data[0], accuracy))
@@ -104,6 +104,10 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
                 # reset
                 optimizer.zero_grad()
                 accumulated_batch_loss = 0
+
+            # Log Training Progress
+            if (i + 1) % log_iter_interval == 0:
+                print('Time Spent: %.2f sec'.format(iter_end - iter_start))
 
             iter_end = time.time()
 
