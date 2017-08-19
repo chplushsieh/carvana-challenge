@@ -235,6 +235,53 @@ def AndresUnet_without_bn():
     UNetUpBlock_without_bn   = lambda x, y: UNetUpBlock(x, y, bn=False)
     return DynamicUnet(DownBlock=UNetDownBlock_without_bn, UpBlock=UNetUpBlock_without_bn, nums_filters = [32, 64, 128, 256, 512])
 
+class HandBuiltAndresUnet(BaseNet):
+    def __init__(self):
+        super().__init__()
+
+        self.down1 = UNetDownBlock(self.n_channels,  32)
+        self.down2 = UNetDownBlock(             32,  64)
+        self.down3 = UNetDownBlock(             64, 128)
+        self.down4 = UNetDownBlock(            128, 256)
+        self.down5 = UNetDownBlock(            256, 512)
+
+        self.pool1 = nn.MaxPool2d(2)
+        self.pool2 = nn.MaxPool2d(2)
+        self.pool3 = nn.MaxPool2d(2)
+        self.pool4 = nn.MaxPool2d(2)
+
+        self.up4 = UNetUpBlock( 256+512, 256, up='upsample')
+        self.up3 = UNetUpBlock( 128+256, 128, up='upsample')
+        self.up2 = UNetUpBlock(  64+128,  64, up='upsample')
+        self.up1 = UNetUpBlock(  32+ 64,  32, up='upsample')
+
+        self.classify = nn.Conv2d(32, self.n_classes, 1)
+        return
+
+    def forward(self, x):
+
+        down1 = self.down1(x)
+        x = self.pool1(down1)
+
+        down2 = self.down2(x)
+        x = self.pool2(down2)
+
+        down3 = self.down3(x)
+        x = self.pool3(down3)
+
+        down4 = self.down4(x)
+        x = self.pool4(down4)
+
+        down5 = self.down5(x)
+
+        up4 = self.up4(down4, down5)
+        up3 = self.up3(down3, up4)
+        up2 = self.up2(down2, up3)
+        up1 = self.up1(down1, up2)
+
+        out =  self.classify(up1)
+        return F.sigmoid(out)
+
 class SmallerUpsamplingUnet(BaseNet):
     def __init__(self):
         super().__init__()
