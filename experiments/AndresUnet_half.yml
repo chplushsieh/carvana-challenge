@@ -12,6 +12,7 @@ snapshot_epoch_interval: 1
 
 train:
   batch_size: 1
+  accumulated_batch_size: 1
   paddings:  !!python/tuple [0, 1]
   tile_size: !!python/tuple [1280, 1024] # (height, width)
   hflip: True

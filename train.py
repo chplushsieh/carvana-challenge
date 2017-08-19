@@ -35,6 +35,7 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
     log_iter_interval     = cfg['log_iter_interval']
     snapshot_epoch_interval = cfg['snapshot_epoch_interval']
     num_epochs = cfg['num_epochs']
+    accumulated_batch_size = cfg['train']['accumulated_batch_size']
 
     # Train the Model
     for epoch in range(start_epoch, num_epochs + 1):
@@ -78,25 +79,33 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
             mask = tile.remove_tile_borders(mask, train_tile_borders)
             target = tile.remove_tile_borders(target, train_tile_borders)
             accuracy  = evaluation.dice(mask, target) # TODO modify for case with batch size > 1
+            epoch_train_accuracy += accuracy
 
             # Backward pass
-            optimizer.zero_grad()
             loss.backward()
-            optimizer.step()
+            accumulated_batch_loss += (loss.data[0] / accumulated_batch_size)
 
             # Update epoch stats
             epoch_train_loss     += loss.data[0]  # TODO modify for case with batch size > 1
-            epoch_train_accuracy += accuracy
 
-            iter_end = time.time()
             # Log Training Progress
             if (i + 1) % log_iter_interval == 0:
-                print('Epoch [%d/%d] Iter [%d/%d] Loss: %.2f Accuracy: %.4f Time Spent: %.2f sec'
-                      % (epoch, num_epochs, i + 1, len(train_data_loader), loss.data[0], accuracy, iter_end - iter_start))
+                print('Epoch [%d/%d] Iter [%d/%d] Loss: %.2f Accumd Loss:%.2f Accuracy: %.4f Time Spent: %.2f sec'
+                      % (epoch, num_epochs, i + 1, len(train_data_loader), loss.data[0], accumulated_batch_loss, accuracy, iter_end - iter_start))
 
             if DEBUG and accuracy < 0.8:
                 print('Epoch {}, Iter {}, {}: Loss {:.3f}, Accuracy: {:.4f}'.format(epoch, i, img_name, loss.data[0], accuracy))
                 viz.visualize(image, mask, target)
+
+            if (i+1) % accumulated_batch_size == 0:
+                optimizer.step()
+
+                # reset
+                optimizer.zero_grad()
+                accumulated_batch_loss = 0
+
+            iter_end = time.time()
+
         # inner for loop ends
 
         epoch_train_loss     /= len(train_data_loader)
