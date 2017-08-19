@@ -44,6 +44,7 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
         # initialize epoch stats
         epoch_train_loss = 0
         epoch_train_accuracy   = 0
+        accumulated_batch_loss = 0
 
         print('Epoch [%d/%d] starts'
               % (epoch, num_epochs))
