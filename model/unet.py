@@ -282,6 +282,12 @@ class HandbuiltAndresUnet(BaseNet):
         out =  self.classify(up1)
         return F.sigmoid(out)
 
+def PeterUnet():
+    '''
+    https://github.com/petrosgk/Kaggle-Carvana-Image-Masking-Challenge/blob/master/model/u_net.py#L404
+    '''
+    return DynamicUnet(nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
 class SmallerUpsamplingUnet(BaseNet):
     def __init__(self):
         super().__init__()
