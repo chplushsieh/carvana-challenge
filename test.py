@@ -50,16 +50,15 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
         # compute dice
         masks = (outputs > 0.5).float()
 
-        # convert to numpy arra
-        image = images.data[0].cpu().numpy()
-        mask = masks.data[0].cpu().numpy()
-        target = targets.data[0].cpu().numpy()
+        # remove tile borders
+        images = tile.remove_tile_borders(images, train_tile_borders)
+        masks = tile.remove_tile_borders(masks, train_tile_borders)
+        targets = tile.remove_tile_borders(targets, train_tile_borders)
 
         # remove tile borders
-        # TODO modify for case with batch size > 1
-        image = tile.remove_tile_borders(image, tile_borders)
-        mask = tile.remove_tile_borders(mask, tile_borders)
-        target = tile.remove_tile_borders(target, tile_borders)
+        images = tile.remove_tile_borders(images, tile_borders)
+        masks = tile.remove_tile_borders(masks, tile_borders)
+        targets = tile.remove_tile_borders(targets, tile_borders)
 
         iter_end = time.time()
 
@@ -68,7 +67,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
             loss = criterion(outputs, targets)
 
             # Update stats
-            epoch_val_loss     += loss.data[0]  # TODO modify for case with batch size > 1
+            epoch_val_loss     += loss.data[0]
             epoch_val_accuracy += accuracy
         else:
             # assuming batch size == 1
@@ -77,7 +76,12 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
             predictions[img_name] = mask
             print('Iter {}/{}, Image {}: {:.2f} sec spent'.format(i, len(data_loader), img_name, iter_end - iter_start))
 
-        if DEBUG and accuracy < 0.8:
+        if DEBUG and accuracy < 0.9:
+            # convert to numpy array
+            image = images.data[0].cpu().numpy()
+            mask = masks.data[0].cpu().numpy()
+            target = targets.data[0].cpu().numpy()
+
             if is_val:
                 print('Iter {}, {}: Loss {:.3f}, Accuracy: {:.4f}'.format(i, img_name, loss.data[0], accuracy))
                 viz.visualize(image, mask, target)
@@ -97,7 +101,6 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
     print('{:.2f} sec spent'.format(epoch_end - epoch_start))
 
     if is_val:
-        # TODO is this needed?
         net.train()  # Change model bacl to 'train' mode
         return epoch_val_loss, epoch_val_accuracy
     else:
