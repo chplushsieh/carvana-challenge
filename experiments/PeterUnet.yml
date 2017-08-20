@@ -17,7 +17,7 @@ train:
   tile_size: !!python/tuple [1024, 1024] # (height, width)
   hflip: True
   shift: True
-  color: False
+  color: True
 
 test:
   batch_size: 1  # for easier visualize
