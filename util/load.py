@@ -5,6 +5,7 @@ import os.path
 from os import listdir
 from os.path import isfile, join
 from PIL import Image
+import color.transform
 
 import numpy as np
 
@@ -51,11 +52,13 @@ def load_small_imageset():
     small_img_names = get_img_names_from_car_ids(small_ids)
     return small_img_names
 
-def load_train_image(data_dir, img_name, is_hflip=False, hshift=0, vshift=0, paddings=None, tile_size=None):
+def load_train_image(data_dir, img_name, is_hflip=False, hshift=0, vshift=0, color_trans=False, paddings=None, tile_size=None):
     img_file_name = tile.get_img_name(img_name)
     img_ext = 'jpg'
     img = load_image_file(data_dir, img_file_name, img_ext)
     # img.shape: (height, width, 3)
+    if color_trans:
+        img=color.transform(img)
 
     img = np.moveaxis(img, 2, 0)
     # img.shape: (3, height, width)
