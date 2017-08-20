@@ -69,16 +69,12 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
             # generate prediction
             masks = (outputs > 0.5).float()
 
-            # convert to numpy array
-            image = images.data.cpu().numpy()
-            mask = masks.data.cpu().numpy()
-            target = targets.data.cpu().numpy()
-
             # remove tile borders
             image = tile.remove_tile_borders(image, train_tile_borders)
             mask = tile.remove_tile_borders(mask, train_tile_borders)
             target = tile.remove_tile_borders(target, train_tile_borders)
-            accuracy  = evaluation.batch_dice(mask, target)
+
+            accuracy = evaluation.dice_loss(masks, targets)
             epoch_train_accuracy += accuracy
 
             # Backward pass
@@ -95,6 +91,12 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
 
             if DEBUG and accuracy < 0.8:
                 print('Epoch {}, Iter {}, {}: Loss {:.3f}, Accuracy: {:.4f}'.format(epoch, i, img_name, loss.data[0], accuracy))
+
+                # convert to numpy array
+                image = images.data.cpu().numpy()
+                mask = masks.data.cpu().numpy()
+                target = targets.data.cpu().numpy()
+
                 viz.visualize(image, mask, target)
 
             if (i+1) % accumulated_batch_size == 0:

@@ -1,3 +1,4 @@
+import torch
 
 import numpy as np
 import math
@@ -7,10 +8,10 @@ __all__ = [ 'pad_image', 'generate_tile_names', 'get_tile_layout', 'get_img_name
 def remove_tile_borders(image, tile_borders):
     '''
     input:
-      image: a numy array of shape (batch_size, num_channels, height, width)
+      image: a Pytorch Variable of size (batch_size, num_channels, height, width)
       tile_border: a tuple of ints (height_border, width_border)
     output:
-      image: a numy array of shape (batch_size, num_channels, height - 2 * tile_height_border, width - 2 * tile_width_border)
+      image: a Pytorch Variable of size (batch_size, num_channels, height - 2 * tile_height_border, width - 2 * tile_width_border)
     '''
     tile_height_border, tile_width_border = tile_borders
 
@@ -23,6 +24,26 @@ def remove_tile_borders(image, tile_borders):
         image  =  image[:, :, :, tile_width_border:-tile_width_border]
 
     return image
+
+# def remove_tile_borders(image, tile_borders):
+#     '''
+#     input:
+#       image: a numy array of shape (batch_size, num_channels, height, width)
+#       tile_border: a tuple of ints (height_border, width_border)
+#     output:
+#       image: a numy array of shape (batch_size, num_channels, height - 2 * tile_height_border, width - 2 * tile_width_border)
+#     '''
+#     tile_height_border, tile_width_border = tile_borders
+#
+#     assert tile_height_border >= 0
+#     if tile_height_border > 0: # No need to remove border if it's 0
+#         image = image[:, :, tile_height_border:-tile_height_border, :]
+#
+#     assert tile_width_border >= 0
+#     if tile_width_border > 0: # No need to remove border if it's 0
+#         image  =  image[:, :, :, tile_width_border:-tile_width_border]
+#
+#     return image
 
 def get_tile_border(img_length, tile_length, num_tiles):
     '''
