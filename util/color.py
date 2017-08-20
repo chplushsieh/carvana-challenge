@@ -13,8 +13,6 @@ def transform(image):
       transformed: numpy array of shape (channels, height, width), in RGB code
     '''
     transformed = image
-    # transformed = np.swapaxes(transformed, 0, 2)
-    # transformed = np.swapaxes(transformed, 0, 1)
 
     hue_shift_limit = (-50, 50)
     sat_shift_limit = (-5, 5)
@@ -32,8 +30,13 @@ def transform(image):
         transformed = cv2.merge((h, s, v))
         transformed = cv2.cvtColor(transformed, cv2.COLOR_HSV2BGR)
 
-    # transformed = np.swapaxes(transformed, 0, 1)
-    # transformed = np.swapaxes(transformed, 0, 2)
+    DEBUG=0
+    if DEBUG:
+        plt.subplot(1,2,1)
+        plt.imshow(transformed)
+        plt.subplot(1, 2, 2)
+        plt.imshow(image)
+        plt.show()
 
     return transformed
 

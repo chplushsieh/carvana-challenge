@@ -5,12 +5,12 @@ import os.path
 from os import listdir
 from os.path import isfile, join
 from PIL import Image
-import color.transform
 
 import numpy as np
 
 import util.const as const
 import util.tile as tile
+import util.color as color
 from random import randrange
 
 def get_car_ids(img_names):

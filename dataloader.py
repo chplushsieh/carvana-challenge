@@ -64,7 +64,7 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         else:
             hshift, vshift = 0, 0
 
-        img = load.load_train_image(self.data_dir, img_name, is_hflip=is_hflip, hshift=hshift, vshift=vshift, color_trans=color_enabled, paddings=self.paddings, tile_size=self.tile_size)
+        img = load.load_train_image(self.data_dir, img_name, is_hflip=is_hflip, hshift=hshift, vshift=vshift, color_trans=self.color_enabled, paddings=self.paddings, tile_size=self.tile_size)
 
         if self.is_test():
             target = -1

@@ -122,7 +122,8 @@ if __name__ == "__main__":
         cfg['test']['paddings'],
         cfg['test']['tile_size'],
         cfg['test']['hflip'],
-        cfg['test']['shift']
+        cfg['test']['shift'],
+        cfg['test']['color']
     )
 
     net, _, criterion, _ = exp.load_exp(exp_name)
