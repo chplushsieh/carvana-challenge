@@ -105,11 +105,10 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
                 optimizer.zero_grad()
                 accumulated_batch_loss = 0
 
+            iter_end = time.time()
             # Log Training Progress
             if (i + 1) % log_iter_interval == 0:
                 print('Time Spent: {:.2f} sec'.format(iter_end - iter_start))
-
-            iter_end = time.time()
 
         # inner for loop ends
 
