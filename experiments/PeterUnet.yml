@@ -7,7 +7,7 @@ criterion: HengLoss
 
 num_epochs: 101
 
-log_iter_interval: 1
+log_iter_interval: 100
 snapshot_epoch_interval: 1
 
 train:
