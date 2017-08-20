@@ -155,7 +155,8 @@ if __name__ == "__main__":
         cfg['train']['paddings'],
         cfg['train']['tile_size'],
         cfg['train']['hflip'],
-        cfg['train']['shift']
+        cfg['train']['shift'],
+        cfg['train']['color']
     )
 
     # val_data_loader, val_tile_borders = get_small_loader(
@@ -164,7 +165,8 @@ if __name__ == "__main__":
         cfg['test']['paddings'],
         cfg['test']['tile_size'],
         cfg['test']['hflip'],
-        cfg['test']['shift']
+        cfg['test']['shift'],
+        cfg['test']['color']
     )
 
     trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loader=val_data_loader, val_tile_borders=val_tile_borders, DEBUG=False)

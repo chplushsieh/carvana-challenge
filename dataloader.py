@@ -19,7 +19,7 @@ __all__ = [
 
 
 class LargeDataset(torch.utils.data.dataset.Dataset):
-    def __init__(self, data_dir, ids=None, mask_dir=None, hflip_enabled=False, shift_enabled=False, paddings=None, tile_size=None):
+    def __init__(self, data_dir, ids=None, mask_dir=None, hflip_enabled=False, shift_enabled=False, color_enabled=False,paddings=None, tile_size=None):
         self.data_dir = data_dir
 
         if not ids:
@@ -36,6 +36,7 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         self.mask_dir = mask_dir
         self.hflip_enabled = hflip_enabled
         self.shift_enabled = shift_enabled
+        self.color_enabled = color_enabled
         self.paddings = paddings
         self.tile_size = tile_size
 
@@ -63,7 +64,7 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         else:
             hshift, vshift = 0, 0
 
-        img = load.load_train_image(self.data_dir, img_name, is_hflip=is_hflip, hshift=hshift, vshift=vshift, paddings=self.paddings, tile_size=self.tile_size)
+        img = load.load_train_image(self.data_dir, img_name, is_hflip=is_hflip, hshift=hshift, vshift=vshift, color_trans=color_enabled, paddings=self.paddings, tile_size=self.tile_size)
 
         if self.is_test():
             target = -1
@@ -88,6 +89,7 @@ def get_test_loader(batch_size, tile_size):
         ids=test_ids,
         hflip_enabled=False, # No random flipping for inference
         shift_enabled=False,
+        color_enabled=False,
         tile_size=tile_size,
     )
 
@@ -99,7 +101,7 @@ def get_test_loader(batch_size, tile_size):
                             )
     return test_loader
 
-def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=False, shift_enabled=False):
+def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=False, shift_enabled=False, color_enabled=False):
     train_dir = const.TRAIN_DIR
     train_mask_dir = const.TRAIN_MASK_DIR
 
@@ -114,6 +116,7 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=
         mask_dir=train_mask_dir,
         hflip_enabled=hflip_enabled,
         shift_enabled=shift_enabled,
+        color_enabled=color_enabled,
         paddings=paddings,
         tile_size=tile_size,
     )
@@ -127,14 +130,14 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=
                             )
     return loader, tile_borders
 
-def get_train_loader(batch_size, paddings, tile_size, hflip, shift):
+def get_train_loader(batch_size, paddings, tile_size, hflip, shift, color):
     train_imgs = load.load_train_imageset()
-    return get_trainval_loader(batch_size, train_imgs, paddings, tile_size, hflip_enabled=hflip, shift_enabled=shift)
+    return get_trainval_loader(batch_size, train_imgs, paddings, tile_size, hflip_enabled=hflip, shift_enabled=shift, color_enabled=color)
 
-def get_val_loader(batch_size, paddings, tile_size, hflip, shift):
+def get_val_loader(batch_size, paddings, tile_size, hflip, shift, color):
     val_imgs = load.load_val_imageset()
-    return get_trainval_loader(batch_size, val_imgs, paddings, tile_size, hflip_enabled=hflip, shift_enabled=shift)
+    return get_trainval_loader(batch_size, val_imgs, paddings, tile_size, hflip_enabled=hflip, shift_enabled=shift, color_enabled=color)
 
-def get_small_loader(batch_size, paddings, tile_size, hflip, shift):
+def get_small_loader(batch_size, paddings, tile_size, hflip, shift, color):
     small_imgs = load.load_small_imageset()
-    return get_trainval_loader(batch_size, small_imgs, paddings, tile_size, hflip_enabled=False, shift_enabled=False)
+    return get_trainval_loader(batch_size, small_imgs, paddings, tile_size, hflip_enabled=False, shift_enabled=False, color_enabled=False)
