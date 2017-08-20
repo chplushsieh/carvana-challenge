@@ -7,11 +7,11 @@ criterion: HengLoss
 
 num_epochs: 101
 
-log_iter_interval: 200
+log_iter_interval: 1
 snapshot_epoch_interval: 1
 
 train:
-  batch_size: 7
+  batch_size: 15
   accumulated_batch_size: 1
   paddings:  !!python/tuple [0, 1]
   tile_size: !!python/tuple [1024, 1024] # (height, width)

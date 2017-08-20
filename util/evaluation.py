@@ -1,5 +1,5 @@
 import numpy as np
-
+import time
 '''
 This Kaggle competition is evaluated on the mean Dice coefficient:
 https://www.kaggle.com/c/carvana-image-masking-challenge#evaluation
@@ -9,12 +9,13 @@ def batch_dice(x, y):
     '''
     (batch_size, 1, height, width)
     '''
+    # batch_start = time.time()
     assert len(x) == len(y)
 
     scores = np.zeros(len(x))
     for i in range(len(x)):
         scores[i] = dice(x[i], y[i])
-
+    # print(time.time() - batch_start)
     return np.mean(scores)
 
 
@@ -27,6 +28,7 @@ def dice(x, y):
     output:
       dice: Dice coefficient for x and y, which is a decimal number between 0 and 1
     '''
+    # func_start = time.time()
     smooth = 1            # for stability
 
     dice = None
@@ -36,6 +38,7 @@ def dice(x, y):
     intersection = sum(x*y)
 
     dice= (2. * intersection + smooth) / (x.sum() + y.sum() + smooth)
+    # print(time.time() - func_start)
     return dice
 
 if __name__ == "__main__":
