@@ -11,7 +11,7 @@ log_iter_interval: 200
 snapshot_epoch_interval: 1
 
 train:
-  batch_size: 1
+  batch_size: 7
   accumulated_batch_size: 1
   paddings:  !!python/tuple [0, 1]
   tile_size: !!python/tuple [1024, 1024] # (height, width)

@@ -5,6 +5,19 @@ This Kaggle competition is evaluated on the mean Dice coefficient:
 https://www.kaggle.com/c/carvana-image-masking-challenge#evaluation
 '''
 
+def batch_dice(x, y):
+    '''
+    (batch_size, 1, height, width)
+    '''
+    assert len(x) == len(y)
+
+    scores = np.zeros(len(x))
+    for i in range(len(x)):
+        scores[i] = dice(x[i], y[i])
+
+    return np.mean(scores)
+
+
 def dice(x, y):
     '''
     input:

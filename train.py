@@ -70,16 +70,15 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
             masks = (outputs > 0.5).float()
 
             # convert to numpy array
-            image = images.data[0].cpu().numpy()
-            mask = masks.data[0].cpu().numpy()
-            target = targets.data[0].cpu().numpy()
+            image = images.data.cpu().numpy()
+            mask = masks.data.cpu().numpy()
+            target = targets.data.cpu().numpy()
 
             # remove tile borders
-             # TODO modify for case with batch size > 1
             image = tile.remove_tile_borders(image, train_tile_borders)
             mask = tile.remove_tile_borders(mask, train_tile_borders)
             target = tile.remove_tile_borders(target, train_tile_borders)
-            accuracy  = evaluation.dice(mask, target) # TODO modify for case with batch size > 1
+            accuracy  = evaluation.batch_dice(mask, target)
             epoch_train_accuracy += accuracy
 
             # Backward pass
@@ -87,7 +86,7 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
             accumulated_batch_loss += (loss.data[0] / accumulated_batch_size)
 
             # Update epoch stats
-            epoch_train_loss     += loss.data[0]  # TODO modify for case with batch size > 1
+            epoch_train_loss     += loss.data[0]
 
             # Log Training Progress
             if (i + 1) % log_iter_interval == 0:
@@ -168,5 +167,4 @@ if __name__ == "__main__":
         cfg['test']['shift']
     )
 
-    assert cfg['train']['batch_size'] == 1
     trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loader=val_data_loader, val_tile_borders=val_tile_borders, DEBUG=False)
