@@ -107,7 +107,7 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
 
             # Log Training Progress
             if (i + 1) % log_iter_interval == 0:
-                print('Time Spent: %.2f sec'.format(iter_end - iter_start))
+                print('Time Spent: {:.2f} sec'.format(iter_end - iter_start))
 
             iter_end = time.time()
 
