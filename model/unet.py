@@ -201,7 +201,7 @@ class DynamicUnet(BaseNet):
         for i in range(len(nums_filters)-1):
             self.down.append(DownBlock(nums_filters[i],  nums_filters[i+1]))
 
-        self.pool = nn.ModuleList([ nn.MaxPool2d(2) for i in range(4) ])
+        self.pool = nn.ModuleList([ nn.MaxPool2d(2) for i in range(len(nums_filters) - 1) ])
 
         self.up = nn.ModuleList([])
         for i in range(len(nums_filters)-1):
