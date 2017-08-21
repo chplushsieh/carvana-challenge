@@ -46,20 +46,19 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
             targets = targets.cuda()
 
         outputs = net(images)
+        
+        # remove tile borders
+        images = tile.remove_tile_borders(images, tile_borders)
+        targets = tile.remove_tile_borders(targets, tile_borders)
+        outputs = tile.remove_tile_borders(outputs, tile_borders)
 
         # compute dice
         masks = (outputs > 0.5).float()
 
-        
-        # remove tile borders
-        images = tile.remove_tile_borders(images, tile_borders)
-        masks = tile.remove_tile_borders(masks, tile_borders)
-        targets = tile.remove_tile_borders(targets, tile_borders)
-
         iter_end = time.time()
 
         if is_val:
-            accuracy = evaluation.dice(mask, target)
+            accuracy = evaluation.dice_loss(masks, targets)
             loss = criterion(outputs, targets)
 
             # Update stats

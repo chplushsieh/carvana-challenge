@@ -64,15 +64,17 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
                 targets = targets.cuda()
 
             outputs = net(images)
+
+
+            # remove tile borders
+            images = tile.remove_tile_borders(images, train_tile_borders)
+            outputs = tile.remove_tile_borders(outputs, train_tile_borders)
+            targets = tile.remove_tile_borders(targets, train_tile_borders)
+
             loss = criterion(outputs, targets)
 
             # generate prediction
             masks = (outputs > 0.5).float()
-
-            # remove tile borders
-            images = tile.remove_tile_borders(images, train_tile_borders)
-            masks = tile.remove_tile_borders(masks, train_tile_borders)
-            targets = tile.remove_tile_borders(targets, train_tile_borders)
 
             accuracy = evaluation.dice_loss(masks, targets)
             epoch_train_accuracy += accuracy
@@ -145,14 +147,14 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('exp_name', nargs='?', default='PeterUnet')
+    parser.add_argument('exp_name', nargs='?', default='PeterUnet_without_color')
     args = parser.parse_args()
 
     exp_name = args.exp_name
 
     cfg = config.load_config_file(exp_name)
-    # train_data_loader, train_tile_borders = get_small_loader(
-    train_data_loader, train_tile_borders = get_train_loader(
+    train_data_loader, train_tile_borders = get_small_loader(
+    #train_data_loader, train_tile_borders = get_train_loader(
         cfg['train']['batch_size'],
         cfg['train']['paddings'],
         cfg['train']['tile_size'],
@@ -161,8 +163,8 @@ if __name__ == "__main__":
         cfg['train']['color']
     )
 
-    # val_data_loader, val_tile_borders = get_small_loader(
-    val_data_loader, val_tile_borders = get_val_loader(
+    val_data_loader, val_tile_borders = get_small_loader(
+    #val_data_loader, val_tile_borders = get_val_loader(
         cfg['test']['batch_size'],
         cfg['test']['paddings'],
         cfg['test']['tile_size'],

@@ -23,6 +23,7 @@ def remove_tile_borders(image, tile_borders):
     if tile_width_border > 0: # No need to remove border if it's 0
         image  =  image[:, :, :, tile_width_border:-tile_width_border]
 
+    image = image.contiguous()
     return image
 
 # def remove_tile_borders(image, tile_borders):
