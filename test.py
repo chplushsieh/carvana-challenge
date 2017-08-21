@@ -50,11 +50,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
         # compute dice
         masks = (outputs > 0.5).float()
 
-        # remove tile borders
-        images = tile.remove_tile_borders(images, train_tile_borders)
-        masks = tile.remove_tile_borders(masks, train_tile_borders)
-        targets = tile.remove_tile_borders(targets, train_tile_borders)
-
+        
         # remove tile borders
         images = tile.remove_tile_borders(images, tile_borders)
         masks = tile.remove_tile_borders(masks, tile_borders)
