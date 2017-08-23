@@ -46,7 +46,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
             targets = targets.cuda()
 
         outputs = net(images)
-        
+
         # remove tile borders
         images = tile.remove_tile_borders(images, tile_borders)
         targets = tile.remove_tile_borders(targets, tile_borders)
@@ -65,11 +65,9 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
             epoch_val_loss     += loss.data[0]
             epoch_val_accuracy += accuracy
         else:
-            # assuming batch size == 1
-             # TODO modify for case with batch size > 1
-            img_name = img_name[0]
-            predictions[img_name] = mask
-            print('Iter {}/{}, Image {}: {:.2f} sec spent'.format(i, len(data_loader), img_name, iter_end - iter_start))
+            for i in range(len(img_name)):
+                predictions[img_name[i]] = masks.data[i].cpu().numpy()
+            print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
 
         if DEBUG and accuracy < 0.9:
             # convert to numpy array
