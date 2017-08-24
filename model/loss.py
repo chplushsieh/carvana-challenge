@@ -1,6 +1,7 @@
 import torch.nn.functional as F
 import torch.nn as nn
-
+from torch.autograd import Variable
+import torch
 
 class CrossEntropy2dLoss(nn.Module):
 
@@ -67,7 +68,7 @@ class WeightedBCELoss2d(nn.Module):
         weights   = weights.view (-1)
 
         loss = weights * inputs.clamp(min=0) - weights * inputs * targets + weights * torch.log(1 + torch.exp(-inputs.abs()))
-        loss = loss.sum() / w.sum()
+        loss = loss.sum() / weights.sum()
         return loss
 
 
@@ -98,7 +99,7 @@ class WeightedSoftDiceLoss(nn.Module):
         super(WeightedSoftDiceLoss, self).__init__()
 
 
-    def forward(self, inputs, targets):
+    def forward(self, inputs, targets, weights):
         num = targets.size(0)
         m1  = inputs.view(num,-1)
         m2  = targets.view(num,-1)
@@ -141,7 +142,7 @@ class BoundaryWeightedLoss(nn.Module):
 
         weights = Variable(torch.tensor.torch.ones(avg_neighbors.size())).cuda()
 
-        w0 = wieghts.sum()
+        w0 = weights.sum()
         weights = weights + is_boundary * 2
         w1 = weights.sum()
         weights = weights * w0 / w1
