@@ -19,7 +19,7 @@ __all__ = [
 
 
 class LargeDataset(torch.utils.data.dataset.Dataset):
-    def __init__(self, data_dir, ids=None, mask_dir=None, hflip_enabled=False, shift_enabled=False, color_enabled=False,paddings=None, tile_size=None):
+    def __init__(self, data_dir, ids=None, mask_dir=None, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False, paddings=None, tile_size=None):
         self.data_dir = data_dir
 
         if not ids:
@@ -37,6 +37,8 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         self.hflip_enabled = hflip_enabled
         self.shift_enabled = shift_enabled
         self.color_enabled = color_enabled
+        self.rotate_enabled = rotate_enabled
+        self.scale_enabled = scale_enabled
         self.paddings = paddings
         self.tile_size = tile_size
 
@@ -64,12 +66,22 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         else:
             hshift, vshift = 0, 0
 
-        img = load.load_train_image(self.data_dir, img_name, is_hflip=is_hflip, hshift=hshift, vshift=vshift, color_trans=self.color_enabled, paddings=self.paddings, tile_size=self.tile_size)
+        if self.rotate_enabled and (random.random() < 0.5):
+            rotate = randrange(-5,5)
+        else:
+            rotate = 0
+
+        if self.scale_enabled and (random.random() < 0.5):
+            scale_size = randrange(90,110)/100
+        else:
+            scale_size = 0
+
+        img = load.load_train_image(self.data_dir, img_name, is_hflip=is_hflip, hshift=hshift, vshift=vshift, color_trans=self.color_enabled, rotate = rotate, scale_size=scale_size, paddings=self.paddings, tile_size=self.tile_size)
 
         if self.is_test():
             target = -1
         else:
-            target = load.load_train_mask(self.mask_dir, img_name, is_hflip=is_hflip, hshift=hshift, vshift=vshift, paddings=self.paddings, tile_size=self.tile_size)
+            target = load.load_train_mask(self.mask_dir, img_name, is_hflip=is_hflip, hshift=hshift, vshift=vshift, rotate = rotate, scale_size=scale_size, paddings=self.paddings, tile_size=self.tile_size)
 
         return img_name, img, target
 
@@ -90,6 +102,8 @@ def get_test_loader(batch_size, tile_size):
         hflip_enabled=False, # No random flipping for inference
         shift_enabled=False,
         color_enabled=False,
+        rotate_enabled=False,
+        scale_enabled=False,
         tile_size=tile_size,
     )
 
@@ -101,7 +115,7 @@ def get_test_loader(batch_size, tile_size):
                             )
     return test_loader
 
-def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=False, shift_enabled=False, color_enabled=False):
+def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False):
     train_dir = const.TRAIN_DIR
     train_mask_dir = const.TRAIN_MASK_DIR
 
@@ -117,6 +131,8 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=
         hflip_enabled=hflip_enabled,
         shift_enabled=shift_enabled,
         color_enabled=color_enabled,
+        rotate_enabled=rotate_enabled,
+        scale_enabled = scale_enabled,
         paddings=paddings,
         tile_size=tile_size,
     )
@@ -130,14 +146,14 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=
                             )
     return loader, tile_borders
 
-def get_train_loader(batch_size, paddings, tile_size, hflip, shift, color):
+def get_train_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate, scale):
     train_imgs = load.load_train_imageset()
-    return get_trainval_loader(batch_size, train_imgs, paddings, tile_size, hflip_enabled=hflip, shift_enabled=shift, color_enabled=color)
+    return get_trainval_loader(batch_size, train_imgs, paddings, tile_size, hflip_enabled=hflip, shift_enabled=shift, color_enabled=color, rotate_enabled=rotate, scale_enabled=scale)
 
-def get_val_loader(batch_size, paddings, tile_size, hflip, shift, color):
+def get_val_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate, scale):
     val_imgs = load.load_val_imageset()
-    return get_trainval_loader(batch_size, val_imgs, paddings, tile_size, hflip_enabled=hflip, shift_enabled=shift, color_enabled=color)
+    return get_trainval_loader(batch_size, val_imgs, paddings, tile_size, hflip_enabled=hflip, shift_enabled=shift, color_enabled=color, rotate_enabled=rotate, scale_enabled=scale)
 
-def get_small_loader(batch_size, paddings, tile_size, hflip, shift, color):
+def get_small_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate, scale):
     small_imgs = load.load_small_imageset()
-    return get_trainval_loader(batch_size, small_imgs, paddings, tile_size, hflip_enabled=False, shift_enabled=False, color_enabled=False)
+    return get_trainval_loader(batch_size, small_imgs, paddings, tile_size, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False)

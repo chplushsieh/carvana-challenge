@@ -18,6 +18,8 @@ train:
   hflip: True
   shift: True
   color: True
+  rotate: False
+  scale: False
 
 test:
   batch_size: 1  # for easier visualize
@@ -26,3 +28,6 @@ test:
   hflip: False
   shift: False
   color: False
+  rotate: False
+  scale: False
+  

@@ -5,12 +5,14 @@ import os.path
 from os import listdir
 from os.path import isfile, join
 from PIL import Image
+import matplotlib.pyplot as plt
 
 import numpy as np
 
 import util.const as const
 import util.tile as tile
 import util.color as color
+import util.scale as scale
 from random import randrange
 
 def get_car_ids(img_names):
@@ -52,10 +54,10 @@ def load_small_imageset():
     small_img_names = get_img_names_from_car_ids(small_ids)
     return small_img_names
 
-def load_train_image(data_dir, img_name, is_hflip=False, hshift=0, vshift=0, color_trans=False, paddings=None, tile_size=None):
+def load_train_image(data_dir, img_name, is_hflip=False, hshift=0, vshift=0, color_trans=False, rotate=0, scale_size=0, paddings=None, tile_size=None):
     img_file_name = tile.get_img_name(img_name)
     img_ext = 'jpg'
-    img = load_image_file(data_dir, img_file_name, img_ext)
+    img = load_image_file(data_dir, img_file_name, img_ext, rotate)
     # img.shape: (height, width, 3)
     if color_trans:
         img=color.transform(img)
@@ -65,20 +67,21 @@ def load_train_image(data_dir, img_name, is_hflip=False, hshift=0, vshift=0, col
 
     # TODO img = color.transform(img)
 
-    return preprocess(img, img_name, is_hflip, hshift, vshift, paddings, tile_size)
+    return preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, tile_size)
 
-def load_train_mask(data_dir, img_name, is_hflip=False, hshift=0, vshift=0, paddings=None, tile_size=None):
+def load_train_mask(data_dir, img_name, is_hflip=False, hshift=0, vshift=0, rotate=0, scale_size=0, paddings=None, tile_size=None):
     img_file_name = tile.get_img_name(img_name) + '_mask'
     img_ext = 'gif'
-    img = load_image_file(data_dir, img_file_name, img_ext)
+    img = load_image_file(data_dir, img_file_name, img_ext, rotate)
     # img.shape: (height, width)
+
 
     img = img[np.newaxis, :, :]
     # img.shape: (1, height, width)
 
-    return preprocess(img, img_name, is_hflip, hshift, vshift, paddings, tile_size)
+    return preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, tile_size)
 
-def preprocess(img, img_name, is_hflip, hshift, vshift, paddings, tile_size):
+def preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, tile_size):
     '''
     input:
       img: has shape (1, height, width) or (3, height, width)
@@ -99,6 +102,9 @@ def preprocess(img, img_name, is_hflip, hshift, vshift, paddings, tile_size):
     if vshift != 0:
         img = np.roll(img, vshift, axis=1).copy()
 
+    if scale_size >0 :
+        img = scale.resize_image(img, scale_size).copy()
+
     if paddings:
         img = tile.pad_image(img, paddings)
 
@@ -107,9 +113,9 @@ def preprocess(img, img_name, is_hflip, hshift, vshift, paddings, tile_size):
 
     return img
 
-def load_image_file(data_dir, img_name, img_ext):
+def load_image_file(data_dir, img_name, img_ext, rotate):
     img_path = os.path.join(data_dir, img_name + '.' + img_ext)
-    img = Image.open(img_path)
+    img = Image.open(img_path).rotate(rotate)
 
     img = np.asarray(img) # img.shape: (height, width, 3) or (height, width) if mask
 

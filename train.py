@@ -91,7 +91,7 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
                 print('Epoch [%d/%d] Iter [%d/%d] Loss: %.2f Accumd Loss:%.2f Accuracy: %.4f'
                     % (epoch, num_epochs, i + 1, len(train_data_loader), loss.data[0], accumulated_batch_loss, accuracy))
 
-            if DEBUG and accuracy < 0.9:
+            if DEBUG and accuracy < 0.98:
                 print('Epoch {}, Iter {}, {}: Loss {:.3f}, Accuracy: {:.4f}'.format(epoch, i, img_name, loss.data[0], accuracy))
 
                 # convert to numpy array
@@ -147,7 +147,7 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('exp_name', nargs='?', default='PeterUnet_full_img')
+    parser.add_argument('exp_name', nargs='?', default='PeterUnet')
     args = parser.parse_args()
 
     exp_name = args.exp_name
@@ -160,7 +160,9 @@ if __name__ == "__main__":
         cfg['train']['tile_size'],
         cfg['train']['hflip'],
         cfg['train']['shift'],
-        cfg['train']['color']
+        cfg['train']['color'],
+        cfg['train']['rotate'],
+        cfg['train']['scale']
     )
 
     # val_data_loader, val_tile_borders = get_small_loader(
@@ -170,7 +172,9 @@ if __name__ == "__main__":
         cfg['test']['tile_size'],
         cfg['test']['hflip'],
         cfg['test']['shift'],
-        cfg['test']['color']
+        cfg['test']['color'],
+        cfg['test']['rotate'],
+        cfg['test']['scale']
     )
 
     trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loader=val_data_loader, val_tile_borders=val_tile_borders, DEBUG=False)

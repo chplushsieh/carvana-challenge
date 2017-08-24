@@ -69,7 +69,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
                 predictions[img_name[i]] = masks.data[i].cpu().numpy()
             print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
 
-        if DEBUG and accuracy < 0.9:
+        if DEBUG and accuracy < 0.98:
             # convert to numpy array
             image = images.data[0].cpu().numpy()
             mask = masks.data[0].cpu().numpy()
@@ -102,7 +102,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('exp_name', nargs='?', default='DynamicUnet')
+    parser.add_argument('exp_name', nargs='?', default='PeterUnet')
     args = parser.parse_args()
 
     exp_name = args.exp_name
@@ -116,7 +116,9 @@ if __name__ == "__main__":
         cfg['test']['tile_size'],
         cfg['test']['hflip'],
         cfg['test']['shift'],
-        cfg['test']['color']
+        cfg['test']['color'],
+        cfg['test']['rotate'],
+        cfg['test']['scale']
     )
 
     net, _, criterion, _ = exp.load_exp(exp_name)
