@@ -1,8 +1,8 @@
-optimizer: SGD
-learning_rate: 1e-2
+optimizer: RMSprop
+learning_rate: 1e-4
 
-momentum: 0.9
-weight_decay: 1e-4
+momentum: 0
+weight_decay: 0
 criterion: HengLoss
 
 num_epochs: 101
@@ -17,12 +17,12 @@ train:
   tile_size: !!python/tuple [1024, 1024] # (height, width)
   hflip: True
   shift: True
-  color: False
-  rotate: False
-  scale: False
+  color: True
+  rotate: True
+  scale: True
 
 test:
-  batch_size: 1  # for easier visualize
+  batch_size: 16
   paddings:  !!python/tuple [0, 1]
   tile_size: !!python/tuple [1024, 1024] # (height, width)
   hflip: False

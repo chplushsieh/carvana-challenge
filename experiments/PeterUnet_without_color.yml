@@ -18,6 +18,8 @@ train:
   hflip: True
   shift: True
   color: False
+  rotate: False
+  scale: False
 
 test:
   batch_size: 16
@@ -26,3 +28,5 @@ test:
   hflip: False
   shift: False
   color: False
+  rotate: False
+  scale: False
