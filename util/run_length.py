@@ -23,7 +23,7 @@ def run_length_encode(mask):
     head=inds[0]
     inds[0]=0
     tail=inds[inds.size-1]
-    print(tail)
+    # print(tail)
     inds[inds.size-1]=0
     runs = np.where(inds[1:] != inds[:-1])[0] + 2
     runs[1::2] = runs[1::2] - runs[:-1:2]
