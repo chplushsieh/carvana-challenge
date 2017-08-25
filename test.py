@@ -28,7 +28,8 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
         epoch_val_loss = 0
         epoch_val_accuracy = 0
     else:
-        predictions = {}
+        tile_masks = {}
+        img_rles = {}
 
     epoch_start = time.time()
 
@@ -65,8 +66,13 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
             epoch_val_loss     += loss.data[0]
             epoch_val_accuracy += accuracy
         else:
-            for i in range(len(img_name)):
-                predictions[img_name[i]] = masks.data[i].cpu().numpy()
+            for img_idx in range(len(img_name)):
+                tile_masks[img_name[img_idx]] = masks.data[img_idx].cpu().numpy()
+
+            # TODO merge complete tile predictions and convert to run length encoding
+            # predictions = tile.stitch_predictions(predictions)
+            tile.merge_preds_if_possible(tile_masks, img_rles)  # TODO
+
             print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
 
         if DEBUG and accuracy < 0.98:
@@ -76,7 +82,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
             target = targets.data[0].cpu().numpy()
 
             if is_val:
-                print('Iter {}, {}: Loss {:.3f}, Accuracy: {:.4f}'.format(i, img_name, loss.data[0], accuracy))
+                print('Iter {}, {}: Loss {:.4f}, Accuracy: {:.5f}'.format(i, img_name, loss.data[0], accuracy))
                 viz.visualize(image, mask, target)
             else:
                 viz.visualize(image, mask)
@@ -85,10 +91,10 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
     if is_val:
         epoch_val_loss     /= len(data_loader)
         epoch_val_accuracy /= len(data_loader)
-        print('Validation Loss: {:.3f} Validation Accuracy:{:.5f}'.format(epoch_val_loss, epoch_val_accuracy))
+        print('Validation Loss: {:.4f} Validation Accuracy:{:.5f}'.format(epoch_val_loss, epoch_val_accuracy))
     else:
-        predictions = tile.stitch_predictions(predictions)
-        submit.save_predictions(exp_name, predictions)
+        assert len(tile_masks) == 0  # all tile predictions should now be merged into image predictions now
+        submit.save_predictions(exp_name, img_rles)
 
     epoch_end = time.time()
     print('{:.2f} sec spent'.format(epoch_end - epoch_start))

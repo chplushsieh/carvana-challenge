@@ -88,11 +88,11 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
 
             # Log Training Progress
             if (i + 1) % log_iter_interval == 0:
-                print('Epoch [%d/%d] Iter [%d/%d] Loss: %.2f Accumd Loss:%.2f Accuracy: %.4f'
+                print('Epoch [%d/%d] Iter [%d/%d] Loss: %.3f Accumd Loss:%.4f Accuracy: %.5f'
                     % (epoch, num_epochs, i + 1, len(train_data_loader), loss.data[0], accumulated_batch_loss, accuracy))
 
             if DEBUG and accuracy < 0.98:
-                print('Epoch {}, Iter {}, {}: Loss {:.3f}, Accuracy: {:.4f}'.format(epoch, i, img_name, loss.data[0], accuracy))
+                print('Epoch {}, Iter {}, {}: Loss {:.5f}, Accuracy: {:.6f}'.format(epoch, i, img_name, loss.data[0], accuracy))
 
                 # convert to numpy array
                 image = images.data[0].cpu().numpy()
@@ -137,7 +137,7 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
             exp.save_checkpoint(exp_name, epoch, net.state_dict(), optimizer.state_dict())
 
         epoch_end = time.time()
-        print('Epoch [%d/%d] Loss: %.3f Accuracy: %.4f Time Spent: %.2f sec'
+        print('Epoch [%d/%d] Loss: %.4f Accuracy: %.5f Time Spent: %.2f sec'
               % (epoch, num_epochs, epoch_train_loss, epoch_train_accuracy, epoch_end - epoch_start))
 
     # outer for loop ends
