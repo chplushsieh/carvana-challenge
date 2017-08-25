@@ -245,70 +245,25 @@ def merge_preds_if_possible(tile_masks, img_rles, paddings):
             # TODO
     return
 
-    def group_tile_names(tile_names):
-        '''
-        input:
-          tile_names: a list of strings, tile names of all images
-        output:
-          tiles_by_imgs: a dict with image names as keys and tile names of a image as values
-        '''
+def group_tile_names(tile_names):
+    '''
+    input:
+      tile_names: a list of strings, tile names of all images
+    output:
+      tiles_by_imgs: a dict with image names as keys and tile names of a image as values
+    '''
 
-        tiles_by_imgs = {}
+    tiles_by_imgs = {}
 
-        for tile_name in tile_names:
-            img_name = get_img_name(tile_name)
+    for tile_name in tile_names:
+        img_name = get_img_name(tile_name)
 
-            if img_name not in tiles_by_imgs:
-                tiles_by_imgs[img_name] = [tile_name]
-            else:
-                tiles_by_imgs[img_name].append(tile_name)
-        return tiles_by_imgs
+        if img_name not in tiles_by_imgs:
+            tiles_by_imgs[img_name] = [tile_name]
+        else:
+            tiles_by_imgs[img_name].append(tile_name)
+    return tiles_by_imgs
 
-# def stitch_predictions(tile_preds):
-#     '''
-#     input:
-#       tile_preds: a dict of numpy arrays, with image tile names as keys and predicted masks as values
-#
-#     output:
-#       img_preds: a dict of numpy arrays, with image names as keys and predicted masks as values
-#     '''
-#     tile_names = tile_preds.keys()
-#     tiles_by_imgs, max_tile_pos = organize_tiles(tile_names)
-#
-#     img_preds = {}
-#     img_names = tiles_by_imgs.keys()
-#     for img_name in img_names:
-#         cur_img_tiles = tiles_by_imgs[img_name]
-#         cur_tile_preds = create_dict_from_dict(cur_img_tiles, tile_preds)
-#         img_preds[img_name] = merge_tiles(cur_tile_preds, max_tile_pos)
-#
-#     return img_preds
-
-# def organize_tiles(tile_names):
-#     '''
-#     input:
-#       tile_names: a list of strings, tile names of all images
-#     output:
-#       tiles_by_imgs: a dict with image names as keys and tile names of a image as values
-#       max_tile_pos: a tuple of ints, which should be equivalent to tile_layout
-#     '''
-#
-#     max_tile_pos = (-1, -1)
-#     tiles_by_imgs = {}
-#
-#     for tile_name in tile_names:
-#         img_name = get_img_name(tile_name)
-#         tile_pos = get_tile_pos(tile_name)
-#
-#         max_tile_pos = max(tile_pos, max_tile_pos)
-#
-#         if img_name not in tiles_by_imgs:
-#             tiles_by_imgs[img_name] = [tile_name]
-#         else:
-#             tiles_by_imgs[img_name].append(tile_name)
-#
-#     print("Max Tile Position: {}".format(max_tile_pos))
-#     return tiles_by_imgs, max_tile_pos
 
 def create_dict_from_dict(some_keys, large_dict):
     '''
