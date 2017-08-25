@@ -80,7 +80,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
             target = targets.data[0].cpu().numpy()
 
             if is_val:
-                print('Iter {}, {}: Loss {:.3f}, Accuracy: {:.4f}'.format(i, img_name, loss.data[0], accuracy))
+                print('Iter {}, {}: Loss {:.4f}, Accuracy: {:.5f}'.format(i, img_name, loss.data[0], accuracy))
                 viz.visualize(image, mask, target)
             else:
                 viz.visualize(image, mask)
@@ -89,7 +89,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
     if is_val:
         epoch_val_loss     /= len(data_loader)
         epoch_val_accuracy /= len(data_loader)
-        print('Validation Loss: {:.3f} Validation Accuracy:{:.5f}'.format(epoch_val_loss, epoch_val_accuracy))
+        print('Validation Loss: {:.4f} Validation Accuracy:{:.5f}'.format(epoch_val_loss, epoch_val_accuracy))
     else:
         submit.save_predictions(exp_name, predictions)
 
