@@ -210,6 +210,15 @@ def merge_preds_if_possible(tile_masks, img_rles, paddings):
     '''
     # TODO
 
+    def process_merged_mask(img_mask):
+        # merged into whole image with shape: (1280, 1920)
+        img_mask = remove_paddings(img_mask, paddings)
+        assert img_mask.shape == const.img_size  # image shape: (1280, 1918)
+
+        # employ Run Length Encoding
+        img_mask = run_length.encode(img_mask)
+        return img_mask
+
     if len(tile_masks) == 0:
         return
 
@@ -220,17 +229,40 @@ def merge_preds_if_possible(tile_masks, img_rles, paddings):
     num_of_rows, num_of_cols = tile_layout
     num_tiles = num_of_rows * num_of_cols
 
-    # merge into whole image with shape: (1280, 1920)
+    tile_names = tile_masks.keys()
+    tiles_by_imgs = group_tile_names(tile_names)
+    img_names = tiles_by_imgs.keys()
+    for img_name in img_names:
+        if len(tiles_by_imgs[img_name]) == num_tiles:
+            # all tiles of this image are here and ready to be merged
 
-    # remove paddings
-    # img_mask = remove_paddings(img_mask, paddings)
+            tile_masks_of_one_image = create_dict_from_dict(tiles_by_imgs[img_name], tile_masks)
 
-    # image shape: (1280, 1918)
-    # assert img_mask.shape == const.img_size
+            img_mask = merge_tiles(tile_masks_of_one_image, tile_layout)
+            img_rles[img_name] = process_merged_mask(img_mask)
 
-    # employ Run Length Encoding
-    # preds['rle_mask']=preds['rle_mask'].apply(lambda x: run_length.encode(x))
+            # remove merged tiles from tile_masks
+            # TODO
     return
+
+    def group_tile_names(tile_names):
+        '''
+        input:
+          tile_names: a list of strings, tile names of all images
+        output:
+          tiles_by_imgs: a dict with image names as keys and tile names of a image as values
+        '''
+
+        tiles_by_imgs = {}
+
+        for tile_name in tile_names:
+            img_name = get_img_name(tile_name)
+
+            if img_name not in tiles_by_imgs:
+                tiles_by_imgs[img_name] = [tile_name]
+            else:
+                tiles_by_imgs[img_name].append(tile_name)
+        return tiles_by_imgs
 
 # def stitch_predictions(tile_preds):
 #     '''
@@ -278,13 +310,13 @@ def merge_preds_if_possible(tile_masks, img_rles, paddings):
 #     print("Max Tile Position: {}".format(max_tile_pos))
 #     return tiles_by_imgs, max_tile_pos
 
-# def create_dict_from_dict(some_keys, large_dict):
-#     '''
-#     from:
-#     https://stackoverflow.com/questions/3420122/filter-dict-to-contain-only-certain-keys
-#     '''
-#     small_dict = { a_key: large_dict[a_key] for a_key in some_keys }
-#     return small_dict
+def create_dict_from_dict(some_keys, large_dict):
+    '''
+    from:
+    https://stackoverflow.com/questions/3420122/filter-dict-to-contain-only-certain-keys
+    '''
+    small_dict = { a_key: large_dict[a_key] for a_key in some_keys }
+    return small_dict
 
 def merge_tiles(tile_masks, tile_layout):
     '''
