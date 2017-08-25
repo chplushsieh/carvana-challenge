@@ -65,8 +65,12 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
             epoch_val_loss     += loss.data[0]
             epoch_val_accuracy += accuracy
         else:
-            for i in range(len(img_name)):
-                predictions[img_name[i]] = masks.data[i].cpu().numpy()
+            for img_idx in range(len(img_name)):
+                predictions[img_name[img_idx]] = masks.data[img_idx].cpu().numpy()
+
+            # TODO merge complete tile predictions and convert to run length encoding
+            # predictions = tile.stitch_predictions(predictions)
+
             print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
 
         if DEBUG and accuracy < 0.98:
@@ -87,7 +91,6 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
         epoch_val_accuracy /= len(data_loader)
         print('Validation Loss: {:.3f} Validation Accuracy:{:.5f}'.format(epoch_val_loss, epoch_val_accuracy))
     else:
-        predictions = tile.stitch_predictions(predictions)
         submit.save_predictions(exp_name, predictions)
 
     epoch_end = time.time()
