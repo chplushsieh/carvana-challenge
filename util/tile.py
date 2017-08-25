@@ -3,6 +3,8 @@ import torch
 import numpy as np
 import math
 
+import util.const as const
+
 __all__ = [ 'pad_image', 'generate_tile_names', 'get_tile_layout', 'get_img_name', 'get_tile', 'stitch_predictions', 'merge_preds_if_possible' ]
 
 def remove_tile_borders(image, tile_borders):
@@ -214,7 +216,7 @@ def merge_preds_if_possible(tile_masks, img_rles, paddings):
     tile_size = tile_masks[0].shape
     padded_img_size = np.add(const.img_size, paddings)
 
-    tile_layout, _ = get_tile_layout(, padded_img_size)
+    tile_layout, _ = get_tile_layout(tile_size, padded_img_size)
     num_of_rows, num_of_cols = tile_layout
     num_tiles = num_of_rows * num_of_cols
 
