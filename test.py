@@ -28,7 +28,8 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
         epoch_val_loss = 0
         epoch_val_accuracy = 0
     else:
-        predictions = {}
+        tile_masks = {}
+        img_rles = {}
 
     epoch_start = time.time()
 
@@ -66,10 +67,11 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
             epoch_val_accuracy += accuracy
         else:
             for img_idx in range(len(img_name)):
-                predictions[img_name[img_idx]] = masks.data[img_idx].cpu().numpy()
+                tile_masks[img_name[img_idx]] = masks.data[img_idx].cpu().numpy()
 
             # TODO merge complete tile predictions and convert to run length encoding
             # predictions = tile.stitch_predictions(predictions)
+            tile.merge_preds_if_possible(tile_masks, img_rles)  # TODO
 
             print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
 
@@ -91,7 +93,8 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
         epoch_val_accuracy /= len(data_loader)
         print('Validation Loss: {:.4f} Validation Accuracy:{:.5f}'.format(epoch_val_loss, epoch_val_accuracy))
     else:
-        submit.save_predictions(exp_name, predictions)
+        assert len(tile_masks) == 0  # all tile predictions should now be merged into image predictions now
+        submit.save_predictions(exp_name, img_rles)
 
     epoch_end = time.time()
     print('{:.2f} sec spent'.format(epoch_end - epoch_start))

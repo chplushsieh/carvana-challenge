@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import math
 
-__all__ = [ 'pad_image', 'generate_tile_names', 'get_tile_layout', 'get_img_name', 'get_tile', 'stitch_predictions' ]
+__all__ = [ 'pad_image', 'generate_tile_names', 'get_tile_layout', 'get_img_name', 'get_tile', 'stitch_predictions', 'merge_preds_if_possible' ]
 
 def remove_tile_borders(image, tile_borders):
     '''
@@ -202,6 +202,17 @@ def crop_tile(img, tile_pos, tile_size, tile_layout, tile_border):
 
     return cropped_img
 
+def merge_preds_if_possible(tile_preds, img_preds):
+    '''
+    input:
+      tile_preds: a dict of numpy arrays, with image tile names as keys and predicted masks as values
+      img_preds: a dict of numpy arrays, with image names as keys and predicted masks as values
+    '''
+     # TODO
+
+     # preds['rle_mask']=preds['rle_mask'].apply(lambda x: run_length.run_length_encode(x))
+     return
+
 def stitch_predictions(tile_preds):
     '''
     input:
@@ -285,7 +296,5 @@ def merge_tiles(tile_masks, tile_layout):
         end_x = tile_col_idx * tile_width
 
         img_mask[start_y:end_y, start_x:end_x] = tile_masks[tile_name]
-
-    # TODO call viz.visulize() to see if this works
 
     return img_mask
