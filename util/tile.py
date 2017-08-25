@@ -206,7 +206,7 @@ def merge_preds_if_possible(tile_preds, img_preds):
     '''
     input:
       tile_preds: a dict of numpy arrays, with image tile names as keys and predicted masks as values
-      img_preds: a dict of numpy arrays, with image names as keys and predicted masks as values
+      img_preds: a dict of strings, with image names as keys and predicted run-length-encoded masks as values
     '''
      # TODO
 

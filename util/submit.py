@@ -10,7 +10,7 @@ def save_predictions(exp_name, preds):
     '''
     input:
       exp_name: a string which is the experiemnt name
-      preds: a dict of numpy arrays, with image names as keys and predicted run-length-encoded masks as values
+      preds: a dict of strings, with image names as keys and predicted run-length-encoded masks as values
     '''
     save_path = os.path.join(const.OUTPUT_DIR, exp_name, 'submission.csv')
 
