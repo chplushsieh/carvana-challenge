@@ -202,14 +202,21 @@ def crop_tile(img, tile_pos, tile_size, tile_layout, tile_border):
 
     return cropped_img
 
-def merge_preds_if_possible(tile_preds, img_preds):
+def merge_preds_if_possible(tile_masks, img_rles):
     '''
     input:
-      tile_preds: a dict of numpy arrays, with image tile names as keys and predicted masks as values
-      img_preds: a dict of strings, with image names as keys and predicted run-length-encoded masks as values
+      tile_masks: a dict of numpy arrays, with image tile names as keys and predicted masks as values
+      img_rles: a dict of strings, with image names as keys and predicted run-length-encoded masks as values
     '''
      # TODO
 
+     # merge into whole image with shape: (1280, 1920)
+
+     # remove zero padding
+
+     # image shape: (1280, 1918)
+
+     # employ Run Length Encoding
      # preds['rle_mask']=preds['rle_mask'].apply(lambda x: run_length.run_length_encode(x))
      return
 
