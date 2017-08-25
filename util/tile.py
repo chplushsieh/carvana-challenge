@@ -242,7 +242,7 @@ def merge_preds_if_possible(tile_masks, img_rles, paddings):
             img_rles[img_name] = process_merged_mask(img_mask)
 
             # remove merged tiles from tile_masks
-            # TODO
+            remove_keys_from_dict(tiles_by_imgs[img_name], tile_masks)
     return
 
 def group_tile_names(tile_names):
@@ -272,6 +272,15 @@ def create_dict_from_dict(some_keys, large_dict):
     '''
     small_dict = { a_key: large_dict[a_key] for a_key in some_keys }
     return small_dict
+
+def remove_keys_from_dict(some_keys, dictionary):
+    '''
+    from:
+    https://stackoverflow.com/questions/8995611/removing-multiple-keys-from-a-dictionary-safely
+    '''
+    for a_key in some_keys:
+        dictionary.pop(a_key, None)
+    return
 
 def merge_tiles(tile_masks, tile_layout):
     '''
