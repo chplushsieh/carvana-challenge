@@ -6,7 +6,7 @@ Carvana competition uses Run Length encoding to reduce the size of submission:
 https://www.kaggle.com/c/carvana-image-masking-challenge#evaluation
 '''
 
-def run_length_encode(mask):
+def encode(mask):
     '''
     input:
       mask: a numpy array with only 0's or 1's in it
@@ -55,4 +55,4 @@ if __name__ == "__main__":
     ])
 
     stringified_output = '1 1 3 1 5 2 10 4'
-    assert stringified_output == run_length_encode(test_arr)
+    assert stringified_output == encode(test_arr)
