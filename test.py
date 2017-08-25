@@ -16,7 +16,7 @@ import config
 
 
 
-def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DEBUG=False):
+def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, paddings=(0, 0), DEBUG=False):
 
     if torch.cuda.is_available():
         net.cuda()
@@ -71,7 +71,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, DE
 
             # TODO merge complete tile predictions and convert to run length encoding
             # predictions = tile.stitch_predictions(predictions)
-            tile.merge_preds_if_possible(tile_masks, img_rles)  # TODO
+            tile.merge_preds_if_possible(tile_masks, img_rles, paddings)  # TODO
 
             print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
 
@@ -129,5 +129,5 @@ if __name__ == "__main__":
 
     net, _, criterion, _ = exp.load_exp(exp_name)
 
-    tester(exp_name, data_loader, tile_borders, net, criterion)
+    tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'])
     # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True)

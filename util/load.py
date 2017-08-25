@@ -59,13 +59,12 @@ def load_train_image(data_dir, img_name, is_hflip=False, hshift=0, vshift=0, col
     img_ext = 'jpg'
     img = load_image_file(data_dir, img_file_name, img_ext, rotate)
     # img.shape: (height, width, 3)
+
     if color_trans:
-        img=color.transform(img)
+        img = color.transform(img)
 
     img = np.moveaxis(img, 2, 0)
     # img.shape: (3, height, width)
-
-    # TODO img = color.transform(img)
 
     return preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, tile_size)
 
@@ -74,7 +73,6 @@ def load_train_mask(data_dir, img_name, is_hflip=False, hshift=0, vshift=0, rota
     img_ext = 'gif'
     img = load_image_file(data_dir, img_file_name, img_ext, rotate)
     # img.shape: (height, width)
-
 
     img = img[np.newaxis, :, :]
     # img.shape: (1, height, width)
@@ -102,7 +100,7 @@ def preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, ti
     if vshift != 0:
         img = np.roll(img, vshift, axis=1).copy()
 
-    if scale_size >0 :
+    if scale_size > 0 :
         img = scale.resize_image(img, scale_size).copy()
 
     if paddings:

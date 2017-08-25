@@ -162,6 +162,24 @@ def pad_image(img, paddings):
 
     return padded_img
 
+def remove_paddings(mask, paddings):
+    '''
+    input:
+      mask: numpy array of shape (height, width)
+      paddings: tuple of ints, (height_padding, width_padding)
+    '''
+    height_padding, width_padding = paddings
+
+    assert height_padding >= 0
+    if height_padding > 0: # No need to remove padding if it's 0
+        mask  =  mask[height_padding:-height_padding, :]
+
+    assert width_padding >= 0
+    if width_padding > 0: # No need to remove padding if it's 0
+        mask  =  mask[:, width_padding:-width_padding]
+
+    return mask
+
 def crop_tile(img, tile_pos, tile_size, tile_layout, tile_border):
     '''
     crop from a image
@@ -202,7 +220,7 @@ def crop_tile(img, tile_pos, tile_size, tile_layout, tile_border):
 
     return cropped_img
 
-def merge_preds_if_possible(tile_masks, img_rles):
+def merge_preds_if_possible(tile_masks, img_rles, paddings):
     '''
     input:
       tile_masks: a dict of numpy arrays, with image tile names as keys and predicted masks as values
@@ -212,9 +230,11 @@ def merge_preds_if_possible(tile_masks, img_rles):
 
      # merge into whole image with shape: (1280, 1920)
 
-     # remove zero padding
+     # remove paddings
+     # img_mask = remove_paddings(img_mask, paddings)
 
      # image shape: (1280, 1918)
+     # assert img_mask.shape == const.img_size
 
      # employ Run Length Encoding
      # preds['rle_mask']=preds['rle_mask'].apply(lambda x: run_length.run_length_encode(x))
