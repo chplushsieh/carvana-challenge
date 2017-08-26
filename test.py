@@ -68,10 +68,8 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
         else:
             for img_idx in range(len(img_name)):
                 tile_masks[img_name[img_idx]] = masks.data[img_idx].cpu().numpy()
-
-            # TODO merge complete tile predictions and convert to run length encoding
-            # predictions = tile.stitch_predictions(predictions)
-            tile.merge_preds_if_possible(tile_masks, img_rles, paddings)  # TODO
+            
+            tile.merge_preds_if_possible(tile_masks, img_rles, paddings)
 
             print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
 
