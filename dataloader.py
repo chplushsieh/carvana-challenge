@@ -97,24 +97,26 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         return (self.mask_dir is None)
 
 
-def get_test_loader(batch_size, paddings, tile_size, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False):
+def get_test_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate, scale):
     test_dir = const.TEST_DIR
 
     test_ids = load.list_img_in_dir(test_dir)
+    test_ids.sort()
 
     print('Number of Test Images:', len(test_ids))
 
     test_dataset = LargeDataset(
         test_dir,
         ids=test_ids,
-        hflip_enabled=hflip_enabled, # No random flipping for inference
-        shift_enabled=shift_enabled,
-        color_enabled=color_enabled,
-        rotate_enabled=rotate_enabled,
-        scale_enabled=scale_enabled,
+        hflip_enabled=hflip, # No random flipping for inference
+        shift_enabled=shift,
+        color_enabled=color,
+        rotate_enabled=rotate,
+        scale_enabled=scale,
         paddings=paddings,
         tile_size=tile_size,
     )
+    tile_borders = test_dataset.get_tile_borders()
 
     test_loader = torch.utils.data.dataloader.DataLoader(
                                 test_dataset,
@@ -122,7 +124,7 @@ def get_test_loader(batch_size, paddings, tile_size, hflip_enabled=False, shift_
                                 shuffle=False, # For inference
                                 num_workers=8,
                             )
-    return test_loader
+    return test_loader, tile_borders
 
 def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False):
     train_dir = const.TRAIN_DIR
