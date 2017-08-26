@@ -4,6 +4,7 @@ import numpy as np
 import math
 
 import util.const as const
+import util.run_length as run_length
 
 __all__ = [ 'pad_image', 'generate_tile_names', 'get_tile_layout', 'get_img_name', 'get_tile', 'stitch_predictions', 'merge_preds_if_possible' ]
 
