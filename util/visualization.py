@@ -24,14 +24,17 @@ def visualize(image, pred, target=None):
     assert image.shape[:-1] == pred.shape
 
     plt.figure()
-    plt.subplot(1,2,1)
+    plt.subplot(1, 3, 1)
+    plt.imshow(image)
+
+    plt.subplot(1,3,2)
     plt.imshow(image, 'gray', interpolation='none')
     plt.imshow(pred, 'BuGn', interpolation='none', alpha=0.3)
 
 
-    plt.subplot(1,2,2)
+    plt.subplot(1,3,3)
     plt.imshow(pred, 'BuGn', interpolation='none')
-    plt.show()
+
 
     if target is not None:
         target=np.squeeze(change_index_ord(target) , axis=2)
@@ -50,8 +53,8 @@ def visualize(image, pred, target=None):
 
         plt.subplot(2, 2, 4)
         plt.imshow((pred+target*0.5), 'Accent', interpolation='none')
-        plt.show()
-        return
+    plt.show()
+    return
 
 # example
 # input_path='/home/judichunt/Downloads/'
