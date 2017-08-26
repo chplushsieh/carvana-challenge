@@ -223,14 +223,14 @@ def merge_preds_if_possible(tile_masks, img_rles, paddings):
     if len(tile_masks) == 0:
         return
 
-    tile_size = tile_masks[0].shape
-    padded_img_size = np.add(const.img_size, paddings)
+    tile_names = list(tile_masks.keys())
+    tile_size = tile_masks[tile_names[0]].shape[1:]
+    padded_img_size = np.add(const.img_size, np.multiply(paddings, 2))
 
     tile_layout, _ = get_tile_layout(tile_size, padded_img_size)
     num_of_rows, num_of_cols = tile_layout
     num_tiles = num_of_rows * num_of_cols
 
-    tile_names = tile_masks.keys()
     tiles_by_imgs = group_tile_names(tile_names)
     img_names = tiles_by_imgs.keys()
     for img_name in img_names:
