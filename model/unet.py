@@ -325,6 +325,9 @@ def PeterUnet():
     '''
     return DynamicUnet(nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
 
+def PeterUnet3():
+    return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock3, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
 class SmallerUpsamplingUnet(BaseNet):
     def __init__(self):
         super().__init__()
