@@ -41,7 +41,7 @@ Images are all of size 1918 x 1280
 
 2. Run `crayon` and then `python train.py`
 
-3. [Not yet supported] Run `python test.py`
+3. Run `python test.py`
 
 ### Other Scripts
 
@@ -69,11 +69,14 @@ For instance, `python scripts/divisble.py 900 1300`
 - [x] try modified UNet with UpSampling layers
 - [x] improve tile.py: make it able to cut image into halves
 - [x] complete util/tile.py: stitch_predictions()
-    - [ ] verify it work
 - [x] complete util/submit.py
 - [x] add data augmentation: random shift
+- [x] add boundary weighted loss
 - [ ] experimenting with UNet parameters and architectures/modules
     - [ ] larger UNets
+    - [ ] different UNet mos
     - [ ] try Adam or other optimizers
     - [ ] try different losses
+- [ ] add CRF
 - [ ] try a memory-efficient DenseNet
+
