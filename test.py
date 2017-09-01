@@ -10,6 +10,7 @@ import util.evaluation as evaluation
 import util.visualization as viz
 import util.submit as submit
 import util.tile as tile
+import util.crf as crf
 
 from dataloader import *
 import config
@@ -57,6 +58,11 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
 
         # compute dice
         masks = (outputs > 0.5).float()
+
+        # apply CRF
+        if use_crf:
+            pass  # TODO
+            # masks = crf.apply_crf(masks, outputs)
 
         iter_end = time.time()
 
