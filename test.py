@@ -16,7 +16,7 @@ import config
 
 
 
-def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, paddings=(0, 0), DEBUG=False):
+def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, paddings=(0, 0), use_crf=False, DEBUG=False):
 
     if torch.cuda.is_available():
         net.cuda()
@@ -54,7 +54,6 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
 
         if is_val:
             targets = tile.remove_tile_borders(targets, tile_borders)
-            
 
         # compute dice
         masks = (outputs > 0.5).float()
@@ -71,18 +70,18 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
         else:
             for img_idx in range(len(img_name)):
                 tile_masks[img_name[img_idx]] = masks.data[img_idx].cpu().numpy()
-            
+
             tile.merge_preds_if_possible(tile_masks, img_rles, paddings)
 
             print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
 
-        if DEBUG and accuracy < 0.98:
+        if DEBUG:
             # convert to numpy array
             image = images.data[0].cpu().numpy()
             mask = masks.data[0].cpu().numpy()
             target = targets.data[0].cpu().numpy()
 
-            if is_val:
+            if is_val and accuracy < 0.98:
                 print('Iter {}, {}: Loss {:.4f}, Accuracy: {:.5f}'.format(i, img_name, loss.data[0], accuracy))
                 viz.visualize(image, mask, target)
             else:
@@ -130,5 +129,5 @@ if __name__ == "__main__":
 
     net, _, criterion, _ = exp.load_exp(exp_name)
 
-    tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'])
+    tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'], use_crf=True)
     # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True)
