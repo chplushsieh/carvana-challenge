@@ -23,12 +23,19 @@ def apply_crf(masks, probs):
 
     d = dcrf.DenseCRF(img.shape[0] * img.shape[1], num_classes)
     d.setUnaryEnergy(unary)
+    # TODO unary protential is not dependent on the image itself?
 
+    # This potential penalizes small pieces of segmentation that are
+    # spatially isolated -- enforces more spatially consistent segmentations
     feats = create_pairwise_gaussian(sdims=(10, 10), shape=img.shape[:2])
     d.addPairwiseEnergy(feats, compat=3,
                         kernel=dcrf.DIAG_KERNEL,
                         normalization=dcrf.NORMALIZE_SYMMETRIC)
+    # TODO this potential is not dependent on the image itself?
 
+    # This creates the color-dependent features --
+    # because the segmentation that we get from CNN are too coarse
+    # and we can use local color features to refine them
     feats = create_pairwise_bilateral(sdims=(50, 50), schan=(20, 20, 20),
                                       img=img, chdim=2)
 
@@ -36,7 +43,8 @@ def apply_crf(masks, probs):
                         kernel=dcrf.DIAG_KERNEL,
                         normalization=dcrf.NORMALIZE_SYMMETRIC)
 
-    Q = d.inference(5)
+
+    Q = d.inference(5)  # set the number of iterations 
     res = np.argmax(Q, axis=0).reshape((img.shape[0], img.shape[1]))
 
     return res
