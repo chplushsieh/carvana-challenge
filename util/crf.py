@@ -2,7 +2,7 @@
 import numpy as np
 
 import pydensecrf.densecrf as dcrf
-from pydensecrf.utils import compute_unary, create_pairwise_bilateral, create_pairwise_gaussian, softmax_to_unary
+from pydensecrf.utils import compute_unary, create_pairwise_bilateral, create_pairwise_gaussian, unary_from_softmax
 
 
 def apply_crf(img, prob):

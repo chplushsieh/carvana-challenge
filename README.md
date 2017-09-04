@@ -8,6 +8,8 @@ My Solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.c
 * pandas
 * pyyaml
 * [crayon](https://github.com/torrvision/crayon)
+* [pydensecrf](https://github.com/lucasb-eyer/pydensecrf)
+    * `pip install cython` and then `pip install pydensecrf`
 
 
 ## Usage
