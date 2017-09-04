@@ -10,8 +10,11 @@ def apply_crf(masks, probs):
     input:
       masks: pytorch Variable in gpu
 
-    modified from:
+    Modified from:
     https://github.com/yt605155624/tensorflow-deeplab-resnet/blob/e81482d7bb1ae674f07eae32b0953fe09ff1c9d1/inference_crf.py
+
+    Usage:
+      masks = crf.apply_crf(masks, outputs)
     '''
 
     unary = softmax_to_unary(probs)
@@ -44,7 +47,7 @@ def apply_crf(masks, probs):
                         normalization=dcrf.NORMALIZE_SYMMETRIC)
 
 
-    Q = d.inference(5)  # set the number of iterations 
+    Q = d.inference(5)  # set the number of iterations
     res = np.argmax(Q, axis=0).reshape((img.shape[0], img.shape[1]))
 
     return res

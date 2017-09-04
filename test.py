@@ -59,14 +59,12 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
         # compute dice
         masks = (outputs > 0.5).float()
 
-        # apply CRF
-        if use_crf:
-            pass  # TODO
-            # masks = crf.apply_crf(masks, outputs)
-
         iter_end = time.time()
 
         if is_val:
+
+            if use_crf:
+                pass  # TODO apply CRF to image tile for validation
             accuracy = evaluation.dice_loss(masks, targets)
             loss = criterion(outputs, targets)
 
@@ -77,7 +75,8 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
             for img_idx in range(len(img_name)):
                 tile_masks[img_name[img_idx]] = masks.data[img_idx].cpu().numpy()
 
-            tile.merge_preds_if_possible(tile_masks, img_rles, paddings)
+            # merge tile predictions into image predictions
+            tile.merge_preds_if_possible(tile_masks, img_rles, paddings, use_crf=use_crf)
 
             print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
 
@@ -137,3 +136,4 @@ if __name__ == "__main__":
 
     tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'], use_crf=True)
     # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True)
+    # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True, use_crf=True)
