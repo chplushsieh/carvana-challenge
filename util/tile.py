@@ -203,20 +203,22 @@ def crop_tile(img, tile_pos, tile_size, tile_layout, tile_border):
 
     return cropped_img
 
-def merge_preds_if_possible(tile_masks, img_rles, paddings, use_crf=False):
+def merge_preds_if_possible(tile_masks, img_rles, paddings):
     '''
     input:
       tile_masks: a dict of numpy arrays, with image tile names as keys and predicted masks as values
       img_rles: a dict of strings, with image names as keys and predicted run-length-encoded masks as values
     '''
 
-    def process_merged_mask(img_mask, use_crf=False):
+    def process_merged_mask(img_mask):
         # merged into whole image with shape: (1280, 1920)
         img_mask = remove_paddings(img_mask, paddings)
         assert img_mask.shape == const.img_size  # image shape: (1280, 1918)
 
-        if use_crf:
-            pass # TODO apply CRF here to whole images during Inference
+        # TODO apply CRF here to whole images during Inference
+        # To do that, pass img and probs (instead of masks) all the way into here 
+        # if use_crf:
+        #     pass
 
         # employ Run Length Encoding
         img_mask = run_length.encode(img_mask)
@@ -242,7 +244,7 @@ def merge_preds_if_possible(tile_masks, img_rles, paddings, use_crf=False):
             tile_masks_of_one_image = create_dict_from_dict(tiles_by_imgs[img_name], tile_masks)
 
             img_mask = merge_tiles(tile_masks_of_one_image, tile_layout)
-            img_rles[img_name] = process_merged_mask(img_mask, use_crf=use_crf)
+            img_rles[img_name] = process_merged_mask(img_mask)
 
             # remove merged tiles from tile_masks
             remove_keys_from_dict(tiles_by_imgs[img_name], tile_masks)

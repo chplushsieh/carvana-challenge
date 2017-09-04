@@ -59,12 +59,15 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
         # compute dice
         masks = (outputs > 0.5).float()
 
+        # TODO apply CRF to image tiles
+        if use_crf:
+            pass
+            # for img_idx in range(len(img_name)):
+            #     mask = crf.apply_crf(img, prob)
+
         iter_end = time.time()
 
         if is_val:
-
-            if use_crf:
-                pass  # TODO apply CRF to image tile for validation
             accuracy = evaluation.dice_loss(masks, targets)
             loss = criterion(outputs, targets)
 
@@ -76,7 +79,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
                 tile_masks[img_name[img_idx]] = masks.data[img_idx].cpu().numpy()
 
             # merge tile predictions into image predictions
-            tile.merge_preds_if_possible(tile_masks, img_rles, paddings, use_crf=use_crf)
+            tile.merge_preds_if_possible(tile_masks, img_rles, paddings)
 
             print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
 

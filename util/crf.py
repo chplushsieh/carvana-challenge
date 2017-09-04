@@ -13,9 +13,6 @@ def apply_crf(img, prob):
 
     Modified from:
     https://github.com/yt605155624/tensorflow-deeplab-resnet/blob/e81482d7bb1ae674f07eae32b0953fe09ff1c9d1/inference_crf.py
-
-    Usage:
-      masks = crf.apply_crf(masks, outputs)
     '''
 
     # preprocess prob to (num_classes, height, width) since we have 2 classes: car and background.
