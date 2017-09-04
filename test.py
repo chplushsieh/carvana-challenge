@@ -59,8 +59,6 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
         # compute dice
         masks = (outputs > 0.5).float()
 
-        iter_end = time.time()
-
         if is_val:
             accuracy = evaluation.dice_loss(masks, targets)
             loss = criterion(outputs, targets)
@@ -74,6 +72,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
             
             tile.merge_preds_if_possible(tile_masks, img_rles, paddings)
 
+            iter_end = time.time()
             print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
 
         if DEBUG and accuracy < 0.98:
@@ -98,7 +97,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
         submit.save_predictions(exp_name, img_rles)
 
     epoch_end = time.time()
-    print('{:.2f} sec spent'.format(epoch_end - epoch_start))
+    print('Total: {:.2f} sec = {:.1f} hour spent'.format(epoch_end - epoch_start, (epoch_end - epoch_start)/3600))
 
     if is_val:
         net.train()  # Change model bacl to 'train' mode
