@@ -59,11 +59,19 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
         # compute dice
         masks = (outputs > 0.5).float()
 
-        # TODO apply CRF to image tiles
+        # apply CRF to image tiles
         if use_crf:
-            pass
-            # for img_idx in range(len(img_name)):
-            #     mask = crf.apply_crf(img, prob)
+            for img_idx in range(len(img_name)):
+                img = images.data[img_idx].cpu().numpy()
+                prob = outputs.data[img_idx].cpu().numpy()
+                crf_mask[img_idx] = crf.apply_crf(img, prob)
+
+                # convert CRF results back into Variable in GPU
+                masks = Variable(torch.from_numpy(crf_mask), volatile=True)
+                if torch.cuda.is_available():
+                    masks = masks.cuda()
+
+                # TODO refactor the above block of code
 
         iter_end = time.time()
 
