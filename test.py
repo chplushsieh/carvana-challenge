@@ -61,14 +61,14 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
 
         # apply CRF to image tiles
         if use_crf:
-            crf_masks = np.zeros(masks.data.size())
+            crf_masks = np.zeros(masks.data.size())  # shape: (batch_size, 1, height, width)
             for img_idx in range(len(img_name)):
-                img = images.data[img_idx].cpu().numpy()
-                prob = outputs.data[img_idx].cpu().numpy()
+                img  =  images.data[img_idx].cpu().numpy()  # shape: (3, height, width)
+                prob = outputs.data[img_idx].cpu().numpy()  # shape: (1, height, width)
                 crf_masks[img_idx] = crf.apply_crf(img, prob)
 
                 # convert CRF results back into Variable in GPU
-                masks = Variable(torch.from_numpy(crf_masks), volatile=True)
+                masks = Variable(torch.from_numpy(crf_masks).float(), volatile=True)
                 if torch.cuda.is_available():
                     masks = masks.cuda()
 
