@@ -126,7 +126,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('exp_name', nargs='?', default='PeterUnet')
+    parser.add_argument('exp_name', nargs='?', default='PeterUnet3_all_aug_1280')
     args = parser.parse_args()
 
     exp_name = args.exp_name
@@ -134,7 +134,7 @@ if __name__ == "__main__":
     cfg = config.load_config_file(exp_name)
     # data_loader, tile_borders = get_small_loader(
     data_loader, tile_borders = get_val_loader(
-    # data_loader, tile_borders = get_test_loader(
+    #data_loader, tile_borders = get_test_loader(
         cfg['test']['batch_size'],
         cfg['test']['paddings'],
         cfg['test']['tile_size'],
@@ -142,7 +142,9 @@ if __name__ == "__main__":
         cfg['test']['shift'],
         cfg['test']['color'],
         cfg['test']['rotate'],
-        cfg['test']['scale']
+        cfg['test']['scale'],
+        cfg['test']['fancy_pca'],
+        cfg['test']['edge_enh']
     )
 
     net, _, criterion, _ = exp.load_exp(exp_name)

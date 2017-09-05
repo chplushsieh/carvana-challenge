@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from skimage import io,transform
 import csv
+import cv2
 
 
 
@@ -41,12 +42,12 @@ if __name__ == "__main__":
         with open(imageset_path, newline='') as f:
             reader = csv.reader(f)
             for row in reader:
-                img_names.append('/home/judichunt/git/carvana-challenge/data/train/' + row[0] + '.jpg')
+                img_names.append('/home/paperspace/git/carvana-challenge/data/train_hq/' + row[0] + '.jpg')
 
         img_names.sort()
         return img_names
 
-    DATA_DIR = '/home/judichunt/git/carvana-challenge/data/'
+    DATA_DIR = '/home/paperspace/git/carvana-challenge/data/'
     TRAIN_IMAGESET_PATH = os.path.join(DATA_DIR, 'train.csv')
 
     img_names = load_imageset(TRAIN_IMAGESET_PATH)
@@ -55,5 +56,11 @@ if __name__ == "__main__":
 
     img = imlist[0]
     im = rgb_shift(img)
+    plt.subplot(1, 3, 1)
+    plt.imshow(img)
+    plt.subplot(1, 3, 2)
     plt.imshow(im)
+    plt.subplot(1, 3, 3)
+    img_enhance = cv2.detailEnhance(img, sigma_s=5, sigma_r=0.1)
+    plt.imshow(img_enhance)
     plt.show()
