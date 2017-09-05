@@ -10,13 +10,14 @@ import util.evaluation as evaluation
 import util.visualization as viz
 import util.submit as submit
 import util.tile as tile
+import util.crf as crf
 
 from dataloader import *
 import config
 
 
 
-def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, paddings=(0, 0), DEBUG=False):
+def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, paddings=(0, 0), use_crf=False, DEBUG=False):
 
     if torch.cuda.is_available():
         net.cuda()
@@ -54,10 +55,26 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
 
         if is_val:
             targets = tile.remove_tile_borders(targets, tile_borders)
-            
 
         # compute dice
         masks = (outputs > 0.5).float()
+
+        # apply CRF to image tiles
+        if use_crf:
+            crf_masks = np.zeros(masks.data.size())  # shape: (batch_size, 1, height, width)
+            for img_idx in range(len(img_name)):
+                img  =  images.data[img_idx].cpu().numpy()  # shape: (3, height, width)
+                prob = outputs.data[img_idx].cpu().numpy()  # shape: (1, height, width)
+                crf_masks[img_idx] = crf.apply_crf(img, prob)
+
+                # convert CRF results back into Variable in GPU
+                masks = Variable(torch.from_numpy(crf_masks).float(), volatile=True)
+                if torch.cuda.is_available():
+                    masks = masks.cuda()
+
+                # TODO refactor the above block of code
+
+        iter_end = time.time()
 
         if is_val:
             accuracy = evaluation.dice_loss(masks, targets)
@@ -69,19 +86,20 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
         else:
             for img_idx in range(len(img_name)):
                 tile_masks[img_name[img_idx]] = masks.data[img_idx].cpu().numpy()
-            
+
+            # merge tile predictions into image predictions
             tile.merge_preds_if_possible(tile_masks, img_rles, paddings)
 
             iter_end = time.time()
             print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
 
-        if DEBUG and accuracy < 0.98:
+        if DEBUG:
             # convert to numpy array
             image = images.data[0].cpu().numpy()
             mask = masks.data[0].cpu().numpy()
             target = targets.data[0].cpu().numpy()
 
-            if is_val:
+            if is_val and accuracy < 0.98:
                 print('Iter {}, {}: Loss {:.4f}, Accuracy: {:.5f}'.format(i, img_name, loss.data[0], accuracy))
                 viz.visualize(image, mask, target)
             else:
@@ -129,5 +147,8 @@ if __name__ == "__main__":
 
     net, _, criterion, _ = exp.load_exp(exp_name)
 
-    tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'])
+    tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'], use_crf=True)
+
+    # TODO try both of the following to see if CRF improves performance for validation
     # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True)
+    # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True, use_crf=True)
