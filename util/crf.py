@@ -26,9 +26,11 @@ def apply_crf(img, prob):
     # TODO
     num_iter = 5
 
-    # preprocess prob to (num_classes, height, width) since we have 2 classes: car and background.
+    prob = np.swapaxes(prob, 1, 2)  # shape: (1, width, height)
+
+    # preprocess prob to (num_classes, width, height) since we have 2 classes: car and background.
     num_classes = 2
-    probs = np.tile(prob, (num_classes, 1, 1))  # shape: (2, height, width)
+    probs = np.tile(prob, (num_classes, 1, 1))  # shape: (2, width, height)
     probs[0] = np.subtract(1, prob) # class 0 is background
     probs[1] = prob                 # class 1 is car
 
