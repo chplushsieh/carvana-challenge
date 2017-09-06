@@ -215,11 +215,6 @@ def merge_preds_if_possible(tile_masks, img_rles, paddings):
         img_mask = remove_paddings(img_mask, paddings)
         assert img_mask.shape == const.img_size  # image shape: (1280, 1918)
 
-        # TODO apply CRF here to whole images during Inference
-        # To do that, pass img and probs (instead of masks) all the way into here 
-        # if use_crf:
-        #     pass
-
         # employ Run Length Encoding
         img_mask = run_length.encode(img_mask)
         return img_mask

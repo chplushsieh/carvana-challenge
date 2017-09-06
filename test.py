@@ -61,6 +61,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
 
         # apply CRF to image tiles
         if use_crf:
+            print("You're using CRF. Are you sure? In our previous experiments, it has never improved the performance. ")
             crf_masks = np.zeros(masks.data.size())  # shape: (batch_size, 1, height, width)
             for img_idx in range(len(img_name)):
                 img  =  images.data[img_idx].cpu().numpy()  # shape: (3, height, width)
