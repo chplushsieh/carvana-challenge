@@ -379,3 +379,51 @@ class SmallerUpsamplingUnet(BaseNet):
 
         out =  self.classify(up1)
         return F.sigmoid(out)
+
+# class DenseLayer(nn.Module):
+#     def __init__(self, in_, out, *, dropout, bn):
+#         super().__init__()
+#         self.bn = nn.BatchNorm2d(in_) if bn else None
+#         self.activation = nn.ReLU(inplace=True)
+#         self.conv = conv3x3(in_, out)
+#         self.dropout = nn.Dropout2d(p=dropout) if dropout else None
+#
+#     def forward(self, x):
+#         x = self.activation(x)
+#         if self.bn is not None:
+#             x = self.bn(x)
+#         x = self.conv(x)
+#         if self.dropout is not None:
+#             x = self.dropout(x)
+#         return x
+#
+# class DenseBlock(nn.Module):
+#     def __init__(self, in_, k, n_layers, dropout, bn):
+#         super().__init__()
+#         self.out = k * n_layers
+#         layer_in = in_
+#         self.layers = []
+#         for i in range(n_layers):
+#             layer = DenseLayer(layer_in, k, dropout=dropout, bn=bn)
+#             self.layers.append(layer)
+#             setattr(self, 'layer_{}'.format(i), layer)
+#             layer_in += k
+#
+#     def forward(self, x):
+#         inputs = [x]
+#         outputs = []
+#         for i, layer in enumerate(self.layers[:-1]):
+#             outputs.append(layer(inputs[i]))
+#             inputs.append(concat([outputs[i], inputs[i]]))
+#         return torch.cat([self.layers[-1](inputs[-1])] + outputs, 1)
+#
+#
+# class DenseUNetModule(DenseBlock):
+#     def __init__(self, hps: HyperParams, in_: int, out: int):
+#         n_layers = 4
+#         super().__init__(in_, out // n_layers, n_layers,
+#                          dropout=hps.dropout, bn=hps.bn)
+#
+#
+# def DenseUNet():
+#     return DynamicUnet(DownBlock=DenseDownBlock, UpBlock=DenseUpBlock, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
