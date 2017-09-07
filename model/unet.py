@@ -21,7 +21,6 @@ class BaseNet(nn.Module):
         self.bn = bn
         self.activation = activation
         self.dropout = dropout
-        # TODO assign hyperparameters to self
 
         if dropout:
             self.dropout2d = nn.Dropout2d(p=dropout)
@@ -275,8 +274,8 @@ class UpsamplingUnet(BaseNet):
         return F.sigmoid(out)
 
 class DynamicUnet(BaseNet):
-    def __init__(self, DownBlock=UNetDownBlock, UpBlock=UNetUpBlock, nums_filters = [64, 128, 256, 512, 1024]):
-        super().__init__()
+    def __init__(self, DownBlock=UNetDownBlock, UpBlock=UNetUpBlock, nums_filters = [64, 128, 256, 512, 1024], dropout=0.0):
+        super().__init__(dropout=dropout)
 
         self.down = nn.ModuleList([ DownBlock(self.n_channels,  nums_filters[0]) ])
         for i in range(len(nums_filters)-1):
@@ -296,6 +295,7 @@ class DynamicUnet(BaseNet):
         down_outputs = []
         for i in range(len(self.down)):
             down_output = self.down[i](x)
+            down_output = self.dropout2d(down_output)
             down_outputs.append(down_output)
 
             if i < len(self.pool):
@@ -304,6 +304,7 @@ class DynamicUnet(BaseNet):
         x = down_outputs[-1]
         for i in reversed(range(len(self.up))):
             x = self.up[i](down_outputs[i], x)
+            x = self.dropout2d(x)
 
         out =  self.classify(x)
         return F.sigmoid(out)
@@ -324,6 +325,9 @@ def PeterUnet():
 
 def PeterUnet3():
     return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock3, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
+def PeterUnet3_with_dropout():
+    return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock3, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024], dropout=0.5)
 
 def PeterUnet4():
     return DynamicUnet(DownBlock=UNetDownBlock4, UpBlock=UNetUpBlock4, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
