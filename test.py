@@ -152,6 +152,7 @@ if __name__ == "__main__":
 
     tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'], use_crf=True)
 
-    # TODO try both of the following to see if CRF improves performance for validation
     # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True)
+
+    # CRF doesn't seem to improve results in previous experiments:
     # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True, use_crf=True)

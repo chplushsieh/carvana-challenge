@@ -79,6 +79,6 @@ For instance, `python scripts/divisble.py 900 1300`
     - [ ] different UNet mos
     - [ ] try Adam or other optimizers
     - [ ] try different losses
-- [ ] add CRF
+- [x] add CRF
+    - it didn't help
 - [ ] try a memory-efficient DenseNet
-
