@@ -10,7 +10,8 @@ import torch.cuda
 import torch.nn as nn
 import torch.nn.functional as F
 
-__all__ = [ 'SmallUnet', 'OriginalUnet', 'BetterUnet', 'UpsamplingUnet', 'SmallerUpsamplingUnet' ]
+
+
 
 class BaseNet(nn.Module):
     def __init__(self, n_channels=3, n_classes=1, dropout=0.0, bn=1, activation='relu'):
@@ -326,7 +327,7 @@ def PeterUnet():
 def PeterUnet3():
     return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock3, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
 
-def PeterUnet3_with_dropout():
+def PeterUnet3_dropout():
     return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock3, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024], dropout=0.5)
 
 def PeterUnet4():
