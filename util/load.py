@@ -13,6 +13,8 @@ import util.const as const
 import util.tile as tile
 import util.color as color
 import util.scale as scale
+import util.fancy_pca as fancy_pca
+import cv2
 from random import randrange
 
 def get_car_ids(img_names):
@@ -54,7 +56,7 @@ def load_small_imageset():
     small_img_names = get_img_names_from_car_ids(small_ids)
     return small_img_names
 
-def load_train_image(data_dir, img_name, is_hflip=False, hshift=0, vshift=0, color_trans=False, rotate=0, scale_size=0, paddings=None, tile_size=None):
+def load_train_image(data_dir, img_name, is_hflip=False, hshift=0, vshift=0, color_trans=False, rotate=0, scale_size=0, fancy_pca_trans=False, edge_enh_trans=False, paddings=None, tile_size=None):
     img_file_name = tile.get_img_name(img_name)
     img_ext = 'jpg'
     img = load_image_file(data_dir, img_file_name, img_ext, rotate)
@@ -62,6 +64,10 @@ def load_train_image(data_dir, img_name, is_hflip=False, hshift=0, vshift=0, col
 
     if color_trans:
         img = color.transform(img)
+    if fancy_pca_trans:
+        img = fancy_pca.rgb_shift(img)
+    if edge_enh_trans:
+        img = cv2.detailEnhance(img, sigma_s=5, sigma_r=0.1)
 
     img = np.moveaxis(img, 2, 0)
     # img.shape: (3, height, width)

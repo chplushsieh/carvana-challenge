@@ -20,9 +20,11 @@ train:
   color: True
   rotate: True
   scale: True
+  fancy_pca: False
+  edge_enh: False
 
 test:
-  batch_size: 15
+  batch_size: 20
   paddings:  !!python/tuple [0, 1]
   tile_size: !!python/tuple [1280, 1280] # (height, width)
   hflip: False
@@ -30,3 +32,5 @@ test:
   color: False
   rotate: False
   scale: False
+  fancy_pca: False
+  edge_enh: False

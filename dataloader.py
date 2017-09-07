@@ -19,7 +19,7 @@ __all__ = [
 
 
 class LargeDataset(torch.utils.data.dataset.Dataset):
-    def __init__(self, data_dir, ids=None, mask_dir=None, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False, paddings=None, tile_size=None):
+    def __init__(self, data_dir, ids=None, mask_dir=None, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False, fancy_pca_enabled=False, edge_enh_enabled=False, paddings=None, tile_size=None):
         self.data_dir = data_dir
 
         if not ids:
@@ -39,6 +39,8 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         self.color_enabled = color_enabled
         self.rotate_enabled = rotate_enabled
         self.scale_enabled = scale_enabled
+        self.fancy_pca_enabled = fancy_pca_enabled
+        self.edge_enh_enabled = edge_enh_enabled
         self.paddings = paddings
         self.tile_size = tile_size
 
@@ -71,6 +73,16 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         else:
             rotate = 0
 
+        if self.fancy_pca_enabled and (random.random() < 0.5):
+            fancy_pca_trans = True
+        else:
+            fancy_pca_trans = False
+
+        if self.edge_enh_enabled and (random.random() < 0.5):
+            edge_enh_trans = True
+        else:
+            edge_enh_trans = False
+
         if self.scale_enabled and (random.random() < 0.5):
             scale_size = randrange(90,110)/100
         else:
@@ -79,7 +91,7 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         img = load.load_train_image(
             self.data_dir, img_name,
             is_hflip=is_hflip, hshift=hshift, vshift=vshift, color_trans=self.color_enabled, rotate=rotate,
-            scale_size=scale_size, paddings=self.paddings, tile_size=self.tile_size
+            scale_size=scale_size,fancy_pca_trans=fancy_pca_trans, edge_enh_trans=edge_enh_trans,  paddings=self.paddings, tile_size=self.tile_size
         )
 
         if self.is_test():
@@ -97,7 +109,7 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         return (self.mask_dir is None)
 
 
-def get_test_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate, scale):
+def get_test_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate, scale, fancy_pca, edge_enh):
     test_dir = const.TEST_DIR
 
     test_ids = load.list_img_in_dir(test_dir)
@@ -113,6 +125,8 @@ def get_test_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate
         color_enabled=color,
         rotate_enabled=rotate,
         scale_enabled=scale,
+        fancy_pca_enabled=fancy_pca,
+        edge_enh_enabled=edge_enh,
         paddings=paddings,
         tile_size=tile_size,
     )
@@ -126,7 +140,7 @@ def get_test_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate
                             )
     return test_loader, tile_borders
 
-def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False):
+def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False, fancy_pca_enabled=False, edge_enh_enabled=False):
     train_dir = const.TRAIN_DIR
     train_mask_dir = const.TRAIN_MASK_DIR
 
@@ -144,6 +158,8 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=
         color_enabled=color_enabled,
         rotate_enabled=rotate_enabled,
         scale_enabled = scale_enabled,
+        fancy_pca_enabled=fancy_pca_enabled,
+        edge_enh_enabled=edge_enh_enabled,
         paddings=paddings,
         tile_size=tile_size,
     )
@@ -157,14 +173,14 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=
                             )
     return loader, tile_borders
 
-def get_train_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate, scale):
+def get_train_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate, scale, fancy_pca, edge_enh):
     train_imgs = load.load_train_imageset()
-    return get_trainval_loader(batch_size, train_imgs, paddings, tile_size, hflip_enabled=hflip, shift_enabled=shift, color_enabled=color, rotate_enabled=rotate, scale_enabled=scale)
+    return get_trainval_loader(batch_size, train_imgs, paddings, tile_size, hflip_enabled=hflip, shift_enabled=shift, color_enabled=color, rotate_enabled=rotate, scale_enabled=scale, fancy_pca_enabled=fancy_pca, edge_enh_enabled=edge_enh)
 
-def get_val_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate, scale):
+def get_val_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate, scale, fancy_pca, edge_enh):
     val_imgs = load.load_val_imageset()
-    return get_trainval_loader(batch_size, val_imgs, paddings, tile_size, hflip_enabled=hflip, shift_enabled=shift, color_enabled=color, rotate_enabled=rotate, scale_enabled=scale)
+    return get_trainval_loader(batch_size, val_imgs, paddings, tile_size, hflip_enabled=hflip, shift_enabled=shift, color_enabled=color, rotate_enabled=rotate, scale_enabled=scale, fancy_pca_enabled=fancy_pca, edge_enh_enabled=edge_enh)
 
-def get_small_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate, scale):
+def get_small_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate, scale, fancy_pca, edge_enh):
     small_imgs = load.load_small_imageset()
-    return get_trainval_loader(batch_size, small_imgs, paddings, tile_size, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False)
+    return get_trainval_loader(batch_size, small_imgs, paddings, tile_size, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False, fancy_pca_enabled=False, edge_enh_enabled=False)

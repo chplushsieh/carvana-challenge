@@ -8,6 +8,9 @@ My Solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.c
 * pandas
 * pyyaml
 * [crayon](https://github.com/torrvision/crayon)
+* scikit-image
+* [pydensecrf](https://github.com/lucasb-eyer/pydensecrf)
+    * `pip install cython` and then `pip install pydensecrf`
 
 
 ## Usage
@@ -77,6 +80,6 @@ For instance, `python scripts/divisble.py 900 1300`
     - [ ] different UNet mos
     - [ ] try Adam or other optimizers
     - [ ] try different losses
-- [ ] add CRF
+- [x] add CRF
+    - it didn't help
 - [ ] try a memory-efficient DenseNet
-

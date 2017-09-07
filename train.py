@@ -147,7 +147,7 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('exp_name', nargs='?', default='PeterUnet')
+    parser.add_argument('exp_name', nargs='?', default='PeterUnet3_new_aug_1280')
     args = parser.parse_args()
 
     exp_name = args.exp_name
@@ -162,7 +162,9 @@ if __name__ == "__main__":
         cfg['train']['shift'],
         cfg['train']['color'],
         cfg['train']['rotate'],
-        cfg['train']['scale']
+        cfg['train']['scale'],
+        cfg['train']['fancy_pca'],
+        cfg['train']['edge_enh']
     )
 
     # val_data_loader, val_tile_borders = get_small_loader(
@@ -174,7 +176,9 @@ if __name__ == "__main__":
         cfg['test']['shift'],
         cfg['test']['color'],
         cfg['test']['rotate'],
-        cfg['test']['scale']
+        cfg['test']['scale'],
+        cfg['test']['fancy_pca'],
+        cfg['test']['edge_enh']
     )
 
     trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loader=val_data_loader, val_tile_borders=val_tile_borders, DEBUG=False)

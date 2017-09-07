@@ -209,7 +209,6 @@ def merge_preds_if_possible(tile_masks, img_rles, paddings):
       tile_masks: a dict of numpy arrays, with image tile names as keys and predicted masks as values
       img_rles: a dict of strings, with image names as keys and predicted run-length-encoded masks as values
     '''
-    # TODO
 
     def process_merged_mask(img_mask):
         # merged into whole image with shape: (1280, 1920)

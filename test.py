@@ -59,10 +59,21 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
         # compute dice
         masks = (outputs > 0.5).float()
 
-        # apply CRF
+        # apply CRF to image tiles
         if use_crf:
-            pass  # TODO
-            # masks = crf.apply_crf(masks, outputs)
+            print("You're using CRF. Are you sure? In our previous experiments, it has never improved the performance. ")
+            crf_masks = np.zeros(masks.data.size())  # shape: (batch_size, 1, height, width)
+            for img_idx in range(len(img_name)):
+                img  =  images.data[img_idx].cpu().numpy()  # shape: (3, height, width)
+                prob = outputs.data[img_idx].cpu().numpy()  # shape: (1, height, width)
+                crf_masks[img_idx] = crf.apply_crf(img, prob)
+
+                # convert CRF results back into Variable in GPU
+                masks = Variable(torch.from_numpy(crf_masks).float(), volatile=True)
+                if torch.cuda.is_available():
+                    masks = masks.cuda()
+
+                # TODO refactor the above block of code
 
         iter_end = time.time()
 
@@ -77,8 +88,10 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
             for img_idx in range(len(img_name)):
                 tile_masks[img_name[img_idx]] = masks.data[img_idx].cpu().numpy()
 
+            # merge tile predictions into image predictions
             tile.merge_preds_if_possible(tile_masks, img_rles, paddings)
 
+            iter_end = time.time()
             print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
 
         if DEBUG:
@@ -103,7 +116,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
         submit.save_predictions(exp_name, img_rles)
 
     epoch_end = time.time()
-    print('{:.2f} sec spent'.format(epoch_end - epoch_start))
+    print('Total: {:.2f} sec = {:.1f} hour spent'.format(epoch_end - epoch_start, (epoch_end - epoch_start)/3600))
 
     if is_val:
         net.train()  # Change model bacl to 'train' mode
@@ -114,7 +127,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('exp_name', nargs='?', default='PeterUnet')
+    parser.add_argument('exp_name', nargs='?', default='PeterUnet3_all_aug_1280')
     args = parser.parse_args()
 
     exp_name = args.exp_name
@@ -122,7 +135,7 @@ if __name__ == "__main__":
     cfg = config.load_config_file(exp_name)
     # data_loader, tile_borders = get_small_loader(
     data_loader, tile_borders = get_val_loader(
-    # data_loader, tile_borders = get_test_loader(
+    #data_loader, tile_borders = get_test_loader(
         cfg['test']['batch_size'],
         cfg['test']['paddings'],
         cfg['test']['tile_size'],
@@ -130,10 +143,16 @@ if __name__ == "__main__":
         cfg['test']['shift'],
         cfg['test']['color'],
         cfg['test']['rotate'],
-        cfg['test']['scale']
+        cfg['test']['scale'],
+        cfg['test']['fancy_pca'],
+        cfg['test']['edge_enh']
     )
 
     net, _, criterion, _ = exp.load_exp(exp_name)
 
     tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'], use_crf=True)
+
     # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True)
+
+    # CRF doesn't seem to improve results in previous experiments:
+    # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True, use_crf=True)

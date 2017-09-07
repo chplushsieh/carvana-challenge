@@ -20,6 +20,8 @@ train:
   color: True
   rotate: False
   scale: False
+  fancy_pca: False
+  edge_enh: False
 
 test:
   batch_size: 1  # for easier visualize
@@ -30,4 +32,6 @@ test:
   color: False
   rotate: False
   scale: False
+  fancy_pca: False
+  edge_enh: False
   
