@@ -219,6 +219,41 @@ class UNetUpBlock4(nn.Module):
 
         return x
 
+class InceptiondDownModule(nn.Module):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu'):
+        super().__init__()
+        self.l1 = InceptionModule(in_, out, bn, activation)
+
+    def forward(self, x):
+        x = self.l1(x)
+
+        return x
+
+
+class InceptiondUpModule(nn.Module):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu', up='upconv'):
+        super().__init__()
+        self.l1 = InceptionModule(in_, out, bn, activation)
+
+        if up == 'upconv':
+            self.up = nn.ConvTranspose2d(in_, out, 2, stride=2)
+        elif up == 'upsample':
+            self.up = nn.Upsample(scale_factor=2)
+
+
+    def forward(self, skip, x):
+        up = self.up(x)
+        x = torch.cat([up, skip], 1)
+
+        x = self.l1(x)
+
+        return x
+
+
+
+
+
+
 
 class InceptiondDownModule2(nn.Module):
     def __init__(self, in_: int, out: int, *, bn=True, activation='relu'):
@@ -418,6 +453,9 @@ def PeterUnet34():
 
 def PeterUnetInception2():
 	return DynamicUnet(DownBlock=InceptiondDownModule2, UpBlock=InceptiondUpModule2, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
+def PeterUnetInception():
+	return DynamicUnet(DownBlock=InceptiondDownModule, UpBlock=InceptiondUpModule, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
 
 class SmallerUpsamplingUnet(BaseNet):
     def __init__(self):

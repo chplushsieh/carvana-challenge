@@ -11,7 +11,7 @@ log_iter_interval: 100
 snapshot_epoch_interval: 1
 
 train:
-  batch_size: 3
+  batch_size: 6
   accumulated_batch_size: 1
   paddings:  !!python/tuple [0, 1]
   tile_size: !!python/tuple [1280, 1280] # (height, width)
@@ -24,7 +24,7 @@ train:
   edge_enh: False
 
 test:
-  batch_size: 6
+  batch_size: 12
   paddings:  !!python/tuple [0, 1]
   tile_size: !!python/tuple [1280, 1280] # (height, width)
   hflip: False
