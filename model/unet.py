@@ -72,6 +72,45 @@ class Conv3BN(nn.Module):
             x = self.bn(x)
         return x
 
+#---------------
+
+class BasicConv2d(nn.Module):
+    def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0):
+        super().__init__()
+        self.conv = nn.Conv2d(
+            in_planes, out_planes,
+            kernel_size=kernel_size, stride=stride, padding=padding, bias=False)
+        self.bn = nn.BatchNorm2d(out_planes)
+        self.relu = nn.ReLU(inplace=True)
+
+    def forward(self, x):
+        x = self.conv(x)
+        x = self.bn(x)
+        x = self.relu(x)
+        return x
+
+class InceptionModule(nn.Module):
+    def __init__(self, in_: int, out: int, bn, activation):
+        super().__init__()
+        out_1 = out * 3 // 8
+        out_2 = out * 2 // 8
+        self.conv1x1 = BasicConv2d(in_, out_1, kernel_size=1)
+        self.conv3x3_pre = BasicConv2d(in_, in_ // 2, kernel_size=1)
+        self.conv3x3 = BasicConv2d(in_ // 2, out_1, kernel_size=3, padding=1)
+        self.conv5x5_pre = BasicConv2d(in_, in_ // 2, kernel_size=1)
+        self.conv5x5 = BasicConv2d(in_ // 2, out_2, kernel_size=5, padding=2)
+        #assert hps.bn
+        #assert hps.activation == 'relu'
+
+    def forward(self, x):
+        return torch.cat([
+            self.conv1x1(x),
+            self.conv3x3(self.conv3x3_pre(x)),
+            self.conv5x5(self.conv5x5_pre(x)),
+        ], 1)
+
+
+#---------------
 
 class UNetDownBlock(nn.Module):
     def __init__(self, in_: int, out: int, *, bn=True, activation='relu'):
@@ -179,6 +218,47 @@ class UNetUpBlock4(nn.Module):
         x = self.l4(x)
 
         return x
+
+
+class InceptiondDownModule2(nn.Module):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu'):
+        super().__init__()
+        self.l1 = InceptionModule(in_, out, bn, activation)
+        self.l2 = InceptionModule(out, out, bn, activation)
+
+    # self.l3 = InceptionModule(out, out, bn, activation)
+
+    def forward(self, x):
+        x = self.l1(x)
+        x = self.l2(x)
+        # x = self.l3(x)
+        return x
+
+
+class InceptiondUpModule2(nn.Module):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu', up='upconv'):
+        super().__init__()
+        self.l1 = InceptionModule(in_, out, bn, activation)
+        self.l2 = InceptionModule(out, out, bn, activation)
+        # self.l3 = InceptionModule(out, out, bn, activation)
+
+        if up == 'upconv':
+            self.up = nn.ConvTranspose2d(in_, out, 2, stride=2)
+        elif up == 'upsample':
+            self.up = nn.Upsample(scale_factor=2)
+
+
+    def forward(self, skip, x):
+        up = self.up(x)
+        x = torch.cat([up, skip], 1)
+
+        x = self.l1(x)
+        x = self.l2(x)
+        # x = self.l3(x)
+
+        return x
+
+
 
 class Unet(BaseNet): # Improved: add the last Sigmoid layer
     def __init__(self):
@@ -332,6 +412,12 @@ def PeterUnet3_dropout():
 
 def PeterUnet4():
     return DynamicUnet(DownBlock=UNetDownBlock4, UpBlock=UNetUpBlock4, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
+def PeterUnet34():
+    return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock4, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
+def PeterUnetInception2():
+	return DynamicUnet(DownBlock=InceptiondDownModule2, UpBlock=InceptiondUpModule2, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
 
 class SmallerUpsamplingUnet(BaseNet):
     def __init__(self):

@@ -147,7 +147,7 @@ def trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loade
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('exp_name', nargs='?', default='PeterUnet3_new_aug_1280')
+    parser.add_argument('exp_name', nargs='?', default='PeterUnetInception2')
     args = parser.parse_args()
 
     exp_name = args.exp_name
