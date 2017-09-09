@@ -504,50 +504,74 @@ class SmallerUpsamplingUnet(BaseNet):
         out =  self.classify(up1)
         return F.sigmoid(out)
 
-# class DenseLayer(nn.Module):
-#     def __init__(self, in_, out, *, dropout, bn):
-#         super().__init__()
-#         self.bn = nn.BatchNorm2d(in_) if bn else None
-#         self.activation = nn.ReLU(inplace=True)
-#         self.conv = conv3x3(in_, out)
-#         self.dropout = nn.Dropout2d(p=dropout) if dropout else None
-#
-#     def forward(self, x):
-#         x = self.activation(x)
-#         if self.bn is not None:
-#             x = self.bn(x)
-#         x = self.conv(x)
-#         if self.dropout is not None:
-#             x = self.dropout(x)
-#         return x
-#
-# class DenseBlock(nn.Module):
-#     def __init__(self, in_, k, n_layers, dropout, bn):
-#         super().__init__()
-#         self.out = k * n_layers
-#         layer_in = in_
-#         self.layers = []
-#         for i in range(n_layers):
-#             layer = DenseLayer(layer_in, k, dropout=dropout, bn=bn)
-#             self.layers.append(layer)
-#             setattr(self, 'layer_{}'.format(i), layer)
-#             layer_in += k
-#
-#     def forward(self, x):
-#         inputs = [x]
-#         outputs = []
-#         for i, layer in enumerate(self.layers[:-1]):
-#             outputs.append(layer(inputs[i]))
-#             inputs.append(concat([outputs[i], inputs[i]]))
-#         return torch.cat([self.layers[-1](inputs[-1])] + outputs, 1)
-#
-#
-# class DenseUNetModule(DenseBlock):
-#     def __init__(self, hps: HyperParams, in_: int, out: int):
-#         n_layers = 4
-#         super().__init__(in_, out // n_layers, n_layers,
-#                          dropout=hps.dropout, bn=hps.bn)
-#
-#
-# def DenseUNet():
-#     return DynamicUnet(DownBlock=DenseDownBlock, UpBlock=DenseUpBlock, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
+class DenseLayer(nn.Module):
+    def __init__(self, in_, out, *, bn, activation):
+        super().__init__()
+        self.bn = nn.BatchNorm2d(in_) if bn else None
+        self.activation = getattr(F, activation)
+        self.conv = conv3x3(in_, out)
+
+    def forward(self, x):
+        x = self.activation(x, inplace=True)
+        if self.bn is not None:
+            x = self.bn(x)
+        x = self.conv(x)
+        return x
+
+class DenseBlock(nn.Module):
+    def __init__(self, in_, k, n_layers, bn=False, activation='relu'):
+        super().__init__()
+        self.out = k * n_layers
+        layer_in = in_
+        self.layers = []
+        for i in range(n_layers):
+            layer = DenseLayer(layer_in, k, bn=bn, activation=activation)
+            self.layers.append(layer)
+            setattr(self, 'layer_{}'.format(i), layer)
+            layer_in += k
+
+    def forward(self, x):
+        inputs = [x]
+        outputs = []
+        for i, layer in enumerate(self.layers[:-1]):
+            outputs.append(layer(inputs[i]))
+            inputs.append(concat([outputs[i], inputs[i]]))
+        return torch.cat([self.layers[-1](inputs[-1])] + outputs, 1)
+
+
+class DenseUNetModule(DenseBlock):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu'):
+        n_layers = 4
+        super().__init__(in_, out // n_layers, n_layers,
+                         bn, activation)
+
+class DenseDownBlock(nn.Module):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu'):
+        super().__init__()
+        self.l1 = DenseUNetModule(in_, out, bn=bn, activation=activation)
+
+    def forward(self, x):
+        x = self.l1(x)
+        return x
+
+class DenseUpBlock(nn.Module):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu', up='upsample'):
+        super().__init__()
+        self.l1 = DenseUNetModule(in_, out, bn=bn, activation=activation)
+
+        if up == 'upconv':
+            self.up = nn.ConvTranspose2d(in_, out, 2, stride=2)
+        elif up == 'upsample':
+            self.up = nn.Upsample(scale_factor=2)
+
+    def forward(self, skip, x):
+        up = self.up(x)
+        x = torch.cat([up, skip], 1)
+
+        x = self.l1(x)
+        return x
+
+
+def DenseUNet():
+    return DynamicUnet(DownBlock=DenseDownBlock, UpBlock=DenseUpBlock, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
