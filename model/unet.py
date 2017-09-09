@@ -536,7 +536,7 @@ class DenseBlock(nn.Module):
         outputs = []
         for i, layer in enumerate(self.layers[:-1]):
             outputs.append(layer(inputs[i]))
-            inputs.append(concat([outputs[i], inputs[i]]))
+            inputs.append(torch.cat([outputs[i], inputs[i]], 1))
         return torch.cat([self.layers[-1](inputs[-1])] + outputs, 1)
 
 
@@ -573,5 +573,5 @@ class DenseUpBlock(nn.Module):
         return x
 
 
-def DenseUNet():
+def DenseUnet():
     return DynamicUnet(DownBlock=DenseDownBlock, UpBlock=DenseUpBlock, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
