@@ -122,8 +122,8 @@ if __name__ == "__main__":
 
     cfg = config.load_config_file(exp_name)
     # data_loader, tile_borders = get_small_loader(
-    data_loader, tile_borders = get_val_loader(
-    #data_loader, tile_borders = get_test_loader(
+    # data_loader, tile_borders = get_val_loader(
+    data_loader, tile_borders = get_test_loader(
         cfg['test']['batch_size'],
         cfg['test']['paddings'],
         cfg['test']['tile_size'],
@@ -138,9 +138,7 @@ if __name__ == "__main__":
 
     net, _, criterion, _ = exp.load_exp(exp_name)
 
-    tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'], use_crf=True)
+    tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'], use_crf=False)
+    # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True, use_crf=False)
 
-    # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True)
-
-    # CRF doesn't seem to improve results in previous experiments:
-    # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True, use_crf=True)
+    # Note that CRF doesn't seem to improve results in previous experiments
