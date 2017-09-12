@@ -17,7 +17,10 @@ import config
 
 
 
-def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, paddings=(0, 0), use_crf=False, DEBUG=False):
+def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, paddings=None, save_preds=False, use_crf=False, DEBUG=False):
+
+    assert not (is_val and save_preds)  # never save predictions during validation
+    assert not (is_val == False and paddings is None)  # When testing, paddings is required
 
     if torch.cuda.is_available():
         net.cuda()
@@ -138,7 +141,7 @@ if __name__ == "__main__":
 
     net, _, criterion, _ = exp.load_exp(exp_name)
 
-    tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'], use_crf=False)
-    # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True, use_crf=False)
+    tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'], save_preds=True)
+    # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True)
 
     # Note that CRF doesn't seem to improve results in previous experiments
