@@ -32,8 +32,16 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
         epoch_val_loss = 0
         epoch_val_accuracy = 0
     else:
-        tile_masks = {}
-        img_rles = {}
+        print('Testing... ')
+        tile_probs = {}
+
+        if save_preds:
+            print('Predictions will be saved for later post processing. ')
+            print('Make sure you have at least ? GB free disk space. ')
+            img_rles = None
+        else:
+            print('Will generate submit.csv for submission. ')
+            img_rles = {}
 
     epoch_start = time.time()
 
@@ -77,10 +85,10 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
             epoch_val_accuracy += accuracy
         else:
             for img_idx in range(len(img_name)):
-                tile_masks[img_name[img_idx]] = masks.data[img_idx].cpu().numpy()
+                tile_probs[img_name[img_idx]] = outputs.data[img_idx].cpu().numpy()
 
             # merge tile predictions into image predictions
-            tile.merge_preds_if_possible(tile_masks, img_rles, paddings)
+            tile.merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles=img_rles)
 
             iter_end = time.time()
             print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
@@ -104,7 +112,9 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
         print('Validation Loss: {:.4f} Validation Accuracy:{:.5f}'.format(epoch_val_loss, epoch_val_accuracy))
     else:
         assert len(tile_masks) == 0  # all tile predictions should now be merged into image predictions now
-        submit.save_predictions(exp_name, img_rles)
+
+        if not save_preds:
+            submit.save_predictions(exp_name, img_rles)
 
     epoch_end = time.time()
     print('Total: {:.2f} sec = {:.1f} hour spent'.format(epoch_end - epoch_start, (epoch_end - epoch_start)/3600))

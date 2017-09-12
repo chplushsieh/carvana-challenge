@@ -10,6 +10,7 @@ TRAIN_IMAGESET_PATH = os.path.join(DATA_DIR, 'train.csv')
 VAL_IMAGESET_PATH   = os.path.join(DATA_DIR, 'val.csv')
 
 OUTPUT_DIR = './output'
+SAVED_PREDS_DIR_NAME = 'predictions'
 
 # Images are of size 1918 * 1280
 img_size = (1280, 1918) # (height, width)
