@@ -40,7 +40,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
             print('Make sure you have at least ? GB free disk space. ')
             img_rles = None
         else:
-            print('Will generate submit.csv for submission. ')
+            print('Will generate submission.csv for submission. ')
             img_rles = {}
 
     epoch_start = time.time()
