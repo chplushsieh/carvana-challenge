@@ -158,7 +158,7 @@ class UNetDownBlock3(nn.Module):
         return x
 
 class UNetUpBlock3(nn.Module):
-    def __init__(self, in_: int, out: int, *, bn=True, activation='relu', up='upconv'):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu', up='upsample'):
         super().__init__()
         self.l1 = Conv3BN(in_, out, bn, activation)
         self.l2 = Conv3BN(out, out, bn, activation)
@@ -196,7 +196,7 @@ class UNetDownBlock4(nn.Module):
         return x
 
 class UNetUpBlock4(nn.Module):
-    def __init__(self, in_: int, out: int, *, bn=True, activation='relu', up='upconv'):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu', up='upsample'):
         super().__init__()
         self.l1 = Conv3BN(in_, out, bn, activation)
         self.l2 = Conv3BN(out, out, bn, activation)
@@ -231,7 +231,7 @@ class InceptiondDownModule(nn.Module):
 
 
 class InceptiondUpModule(nn.Module):
-    def __init__(self, in_: int, out: int, *, bn=True, activation='relu', up='upconv'):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu', up='upsample'):
         super().__init__()
         self.l1 = InceptionModule(in_, out, bn, activation)
 
@@ -271,7 +271,7 @@ class InceptiondDownModule2(nn.Module):
 
 
 class InceptiondUpModule2(nn.Module):
-    def __init__(self, in_: int, out: int, *, bn=True, activation='relu', up='upconv'):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu', up='upsample'):
         super().__init__()
         self.l1 = InceptionModule(in_, out, bn, activation)
         self.l2 = InceptionModule(out, out, bn, activation)
@@ -447,6 +447,9 @@ def PeterUnet3_dropout():
 
 def PeterUnet4():
     return DynamicUnet(DownBlock=UNetDownBlock4, UpBlock=UNetUpBlock4, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
+def PeterUnet4_dropout():
+    return DynamicUnet(DownBlock=UNetDownBlock4, UpBlock=UNetUpBlock4, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024], dropout=0.5)
 
 def PeterUnet34():
     return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock4, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
