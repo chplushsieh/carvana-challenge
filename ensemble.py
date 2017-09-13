@@ -15,6 +15,20 @@ import util.submit as submit
 # apply RLE
 # save into submission.csv
 
+def ensemble(ensembler_loader):
+    img_rles = {}
+
+    for i, (img_name, rle) in enumerate(ensembler_loader):
+        img_rles[img_name] = rle
+
+    # create ./output/ensemble/ folder
+    ensemble_dir = os.path.join(const.OUTPUT_DIR, 'ensemble')
+    exp.create_if_not_exist(ensemble_dir)
+
+    # save submission.csv
+    submit.save_predictions('ensemble', img_rles)
+    return
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -29,3 +43,7 @@ if __name__ == "__main__":
     exp_names = args.exps
 
     print('The predictions made by {} will be ensembled. '.format(exp_names))
+
+    ensembler_loader = get_ensembler_loader(exp_names)
+
+    ensemble(ensembler_loader)

@@ -3,14 +3,9 @@ import torch.utils.data
 
 import util.const as const
 import util.load as load
+import util.submit as submit
+import util.run_length as run_length
 
-__all__ = [
-    'get_small_loader',
-
-    'get_train_loader',
-    'get_val_loader',
-    'get_test_loader',
-]
 
 
 class Ensembler(torch.utils.data.dataset.Dataset):
@@ -18,6 +13,7 @@ class Ensembler(torch.utils.data.dataset.Dataset):
         self.pred_dirs = pred_dirs
 
         # TODO verify img_names in pred_dirs
+
         self.data_files = load.list_img_in_dir(pred_dirs[0])
 
         return
@@ -28,18 +24,33 @@ class Ensembler(torch.utils.data.dataset.Dataset):
     def __getitem__(self, idx):
 
         img_name = self.data_files[idx]
-        target = load.load_train_mask(img_name)
 
-        return img_name, img, target
+        ensembled = np.zeros(const.img_size)
+
+        for pred_dir in self.pred_dirs:
+            pred_path = os.path.join(pred_dir, img_name + '.npy')
+            pred = np.load(pred_path)
+
+            ensembled = np.add(ensembled, pred)
+
+        ensembled = np.divide(ensembled, len(self.pred_dirs))
+
+        # generate image mask
+        img_mask = np.zeros(ensembled.shape)
+        img_mask[ensembled > 0.5] = 1
+
+        rle = run_length.encode(img_mask)
+
+        return img_name, rle
 
 
-def get_ensembler_loader():
-    print('Number of Images:', len(car_ids))
+def get_ensembler_loader(exp_names):
+
+    pred_dirs = [ submit.get_pred_dir(exp_name) for exp_name in exp_names ]
 
     dataset = Ensembler(
-        train_dir
+        pred_dirs
     )
-    tile_borders = dataset.get_tile_borders()
 
     loader = torch.utils.data.dataloader.DataLoader(
                                 dataset,
