@@ -42,13 +42,15 @@ My Solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.c
 
    Images are all of size 1918 x 1280    
 
-2. Run `crayon` and then `python train.py`
+2. Before training, start `crayon` by running `docker run -d -p 8888:8888 -p 8889:8889 --name crayon alband/crayon`
+
+3. Run `python train.py`
 
 3. Run `python test.py <experiment_name>`
 
    If you'd like to ensemble results from more than one experiemnts, simeply run `test.py` as many times as you want.
 
-   For example, `python test.py PeterUnet3_dropout` and then `python test.py PeterUnet4` will automatically ensemble and save their predictions in `./output/ensemble/prob`. Ensembled experiment names will be saved in `./output/ensemble/models_ensembled.txt`
+   For example, Running `python test.py PeterUnet3_dropout` and then `python test.py PeterUnet4` will automatically ensemble and save their predictions in `./output/ensemble/prob`. Ensembled experiment names will be saved in `./output/ensemble/models_ensembled.txt`
 
    :warning: Before you run `test.py` the first time, make sure you have at least `500GB` free disk space to save prediction results. 
 
