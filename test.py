@@ -11,15 +11,16 @@ import util.visualization as viz
 import util.submit as submit
 import util.tile as tile
 import util.crf as crf
+import util.ensemble as ensemble
 
 from dataloader import *
 import config
 
 
 
-def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, paddings=None, save_preds=False, use_crf=False, DEBUG=False):
+def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, paddings=None, is_ensemble=False, use_crf=False, DEBUG=False):
 
-    assert not (is_val and save_preds)  # never save predictions during validation
+    assert not (is_val and is_ensemble)  # never save predictions during validation
     assert not (is_val == False and paddings is None)  # When testing, paddings is required
 
     if torch.cuda.is_available():
@@ -35,7 +36,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
         print('Testing... ')
         tile_probs = {}
 
-        if save_preds:
+        if is_ensemble:
             print('Predictions will be saved for later post processing. ')
             print('Make sure you have at least 500 GB free disk space. ')
             img_rles = None
@@ -88,7 +89,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
                 tile_probs[img_name[img_idx]] = outputs.data[img_idx].cpu().numpy()
 
             # merge tile predictions into image predictions
-            tile.merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles=img_rles)
+            tile.merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles, is_ensemble=is_ensemble)
 
             iter_end = time.time()
             print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
@@ -113,7 +114,9 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
     else:
         assert len(tile_probs) == 0  # all tile predictions should now be merged into image predictions now
 
-        if not save_preds:
+        if is_ensemble:
+            ensemble.mark_model_ensembled(exp_name)
+        else:
             submit.save_predictions(exp_name, img_rles)
 
     epoch_end = time.time()
@@ -151,7 +154,7 @@ if __name__ == "__main__":
 
     net, _, criterion, _ = exp.load_exp(exp_name)
 
-    tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'], save_preds=True)
+    tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'], is_ensemble=True)
     # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True)
 
     # Note that CRF doesn't seem to improve results in previous experiments

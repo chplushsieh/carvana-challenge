@@ -204,12 +204,16 @@ def crop_tile(img, tile_pos, tile_size, tile_layout, tile_border):
 
     return cropped_img
 
-def merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles=None):
+def merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles, is_ensemble=False):
     '''
     input:
       tile_probs: a dict of numpy arrays, with image tile names as keys and predicted probibility maps as values
       img_rles: a dict of strings, with image names as keys and predicted run-length-encoded masks as values
     '''
+    if is_ensemble:
+        assert img_rles is None
+    else:
+        assert img_rles is not None
 
     if len(tile_probs) == 0:
         return
@@ -240,16 +244,17 @@ def merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles=None):
             img_prob = remove_paddings(img_prob, paddings)
             assert img_prob.shape == const.img_size  # image shape: (1280, 1918)
 
-            if img_rles is not None:
+            if is_ensemble:
+                # save predictions
+                submit.save_prob_map(exp_name, img_name, img_prob)
+            else:
                 # generate image mask from image probability map
                 img_mask = np.zeros(img_prob.shape)
                 img_mask[img_prob > 0.5] = 1
 
                 # employ Run Length Encoding
                 img_rles[img_name] = run_length.encode(img_mask)
-            else:
-                # save predictions
-                submit.save_prob_map(exp_name, img_name, img_prob)
+
 
             # remove merged tiles from tile_probs
             remove_keys_from_dict(tiles_by_imgs[img_name], tile_probs)

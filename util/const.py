@@ -10,7 +10,12 @@ TRAIN_IMAGESET_PATH = os.path.join(DATA_DIR, 'train.csv')
 VAL_IMAGESET_PATH   = os.path.join(DATA_DIR, 'val.csv')
 
 OUTPUT_DIR = './output'
-SAVED_PREDS_DIR_NAME = 'predictions'
+
+ENSEMBLE_DIR_NAME = 'ensemble'
+ENSEMBLE_DIR = os.path.join(OUTPUT_DIR, ENSEMBLE_DIR_NAME)
+ENSEMBLED_MODELS_PATH = os.path.join(ENSEMBLE_DIR, 'models_ensembled.txt')
+ENSEMBLE_PROB_DIR = os.path.join(OUTPUT_DIR, 'probs')
+
 
 # Images are of size 1918 * 1280
 img_size = (1280, 1918) # (height, width)
