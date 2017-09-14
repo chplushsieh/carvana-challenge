@@ -12,18 +12,23 @@ class Ensembler(torch.utils.data.dataset.Dataset):
     def __init__(self, pred_dirs):
         self.pred_dirs = pred_dirs
 
-        # TODO verify img_names in pred_dirs
+        img_names = load.list_npy_in_dir(pred_dirs[0])
 
-        self.data_files = load.list_npy_in_dir(pred_dirs[0])
+        # verify that all models have predicted for the same set of images
+        for pred_dir in pred_dirs:
+            cur_img_names = load.list_npy_in_dir(pred_dir)
+            assert set(img_names) == set(cur_img_names)
+
+        self.img_names = img_names
 
         return
 
     def __len__(self):
-        return len(self.data_files)
+        return len(self.img_names)
 
     def __getitem__(self, idx):
 
-        img_name = self.data_files[idx]
+        img_name = self.img_names[idx]
 
         ensembled = np.zeros(const.img_size)
 
