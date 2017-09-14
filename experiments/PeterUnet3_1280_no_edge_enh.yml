@@ -3,7 +3,7 @@ learning_rate: 1e-4
 
 momentum: 0
 weight_decay: 0
-criterion: BoundaryWeightedLoss
+criterion: HengLoss
 
 num_epochs: 101
 
@@ -20,6 +20,8 @@ train:
   color: True
   rotate: True
   scale: True
+  fancy_pca: True
+  edge_enh: False
 
 test:
   batch_size: 15
@@ -30,3 +32,5 @@ test:
   color: False
   rotate: False
   scale: False
+  fancy_pca: False
+  edge_enh: False
