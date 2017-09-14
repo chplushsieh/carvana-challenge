@@ -7,6 +7,11 @@ def get_models_ensembled():
 
     ensembled_models_path = const.ENSEMBLED_MODELS_PATH
 
+    # create empty file if it doesn't exist
+    if not os.path.isfile(ensembled_models_path):
+        open(ensembled_models_path, 'a').close()
+
+    # read file content
     with open(ensembled_models_path, newline='', ) as f:
         reader = csv.reader(f)
         for row in reader:
