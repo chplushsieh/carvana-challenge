@@ -20,7 +20,7 @@ train:
   color: True
   rotate: True
   scale: True
-  fancy_pca: False
+  fancy_pca: True
   edge_enh: False
 
 test:
