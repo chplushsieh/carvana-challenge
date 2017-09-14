@@ -44,7 +44,15 @@ Images are all of size 1918 x 1280
 
 2. Run `crayon` and then `python train.py`
 
-3. Run `python test.py`
+3. Run `python test.py <experiment_name>`
+
+
+If you'd like to ensemble results from more than one experiemnts, simeply run `test.py` as many times as you want.
+
+For example, `python test.py PeterUnet3_dropout` and then `python test.py PeterUnet4` will automatically ensemble and save their predictions in `./output/ensemble/prob`
+
+5. Run `python run_rle_for_ensemble` to generate submission at `./output/ensemble/submission.csv`
+
 
 ### Other Scripts
 
