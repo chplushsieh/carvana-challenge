@@ -1,17 +1,20 @@
 import torch
 import torch.utils.data
 
+import os
+
+import numpy as np
+
 import util.const as const
 import util.load as load
 import util.submit as submit
 import util.run_length as run_length
 
 
-
 class RLErunner(torch.utils.data.dataset.Dataset):
     def __init__(self):
         self.pred_dir = const.ENSEMBLE_PROB_DIR
-        self.img_names = load.list_npy_in_dir(pred_dir)
+        self.img_names = load.list_npy_in_dir(self.pred_dir)
         return
 
     def __len__(self):

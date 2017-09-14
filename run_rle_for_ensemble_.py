@@ -1,8 +1,4 @@
-import numpy as np
-
-import time
-
-import util.exp as exp
+import util.ensemble as ensemble
 import util.submit as submit
 import util.const as const
 
@@ -12,6 +8,12 @@ def apply_rle(rle_loader):
     img_rles = {}
 
     for i, (img_name, rle) in enumerate(rle_loader):
+        assert len(img_name) == 1
+        assert len(rle) == 1
+
+        img_name = img_name[0]
+        rle = rle[0]
+
         img_rles[img_name] = rle
 
     # save submission.csv
@@ -21,9 +23,8 @@ def apply_rle(rle_loader):
 
 if __name__ == "__main__":
 
-    exp_names = args.exps
-
-    print('The predictions made by {} will be ensembled. '.format(exp_names))
+    exp_names = ensemble.get_models_ensembled()
+    print('The predictions are ensemble by {}. '.format(exp_names))
 
     rle_loader = rle_loader.get_rle_loader()
 

@@ -1,15 +1,22 @@
 import os
+import csv
 
 import util.const as const
+
+def create_file_if_not_exist(file_path):
+    # create empty file if it doesn't exist
+    if not os.path.isfile(file_path):
+        open(file_path, 'a').close()
+
+    return
+
 
 def get_models_ensembled():
     model_names = []
 
     ensembled_models_path = const.ENSEMBLED_MODELS_PATH
 
-    # create empty file if it doesn't exist
-    if not os.path.isfile(ensembled_models_path):
-        open(ensembled_models_path, 'a').close()
+    create_file_if_not_exist(ensembled_models_path)
 
     # read file content
     with open(ensembled_models_path, newline='', ) as f:
@@ -22,9 +29,11 @@ def get_models_ensembled():
 def mark_model_ensembled(exp_name):
     ensembled_models_path = const.ENSEMBLED_MODELS_PATH
 
+    create_file_if_not_exist(ensembled_models_path)
+
     # open file in 'append' mode
     with open(ensembled_models_path, 'a', newline='') as f:
-        f.write(exp_name)  # insert as the last line
+        f.write('\n' + exp_name)  # insert as the last line
 
     return
 
