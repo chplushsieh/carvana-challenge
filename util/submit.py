@@ -25,6 +25,10 @@ def save_prob_map(exp_name, img_name, img_prob):
     exp.create_if_not_exist(save_dir)
 
     save_path = os.path.join(save_dir, img_name + '.npy')
+
+    # img_prob.dtype == np.float64
+    img_prob = img_prob.astype(np.float16) # cast to smallest possible float data type
+    # One float16 1280x1918 image takes about 4.9 MB storage
     np.save(save_path, img_prob)
 
     return

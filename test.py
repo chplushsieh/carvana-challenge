@@ -37,7 +37,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
 
         if save_preds:
             print('Predictions will be saved for later post processing. ')
-            print('Make sure you have at least ? GB free disk space. ')
+            print('Make sure you have at least 500 GB free disk space. ')
             img_rles = None
         else:
             print('Will generate submission.csv for submission. ')
@@ -72,7 +72,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
 
         # apply CRF to image tiles
         if use_crf:
-            masks = run_crf(masks)
+            masks = crf.run_crf(masks)
 
         iter_end = time.time()
 
@@ -111,7 +111,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
         epoch_val_accuracy /= len(data_loader)
         print('Validation Loss: {:.4f} Validation Accuracy:{:.5f}'.format(epoch_val_loss, epoch_val_accuracy))
     else:
-        assert len(tile_masks) == 0  # all tile predictions should now be merged into image predictions now
+        assert len(tile_probs) == 0  # all tile predictions should now be merged into image predictions now
 
         if not save_preds:
             submit.save_predictions(exp_name, img_rles)
