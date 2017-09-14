@@ -52,7 +52,7 @@ My Solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.c
 
    :warning: Before you run `test.py` the first time, make sure you have at least `500GB` free disk space to save prediction results. 
 
-5. Run `python run_rle_for_ensemble` to generate submission at `./output/ensemble/submission.csv`
+5. Run `python run_rle_for_ensemble.py` to generate submission at `./output/ensemble/submission.csv`
 
 
 ### Other Scripts
