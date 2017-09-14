@@ -61,7 +61,7 @@ My Solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.c
 
 * To find numbers that are divislbe by `2^n`, run `python scripts/divisble.py <start_number> <end_number>`
 
-For instance, `python scripts/divisble.py 900 1300`
+   For instance, `python scripts/divisble.py 900 1300`
 
 ## To-dos
 
