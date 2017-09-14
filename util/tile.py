@@ -5,6 +5,7 @@ import math
 
 import util.const as const
 import util.run_length as run_length
+import util.submit as submit
 
 __all__ = [ 'pad_image', 'generate_tile_names', 'get_tile_layout', 'get_img_name', 'get_tile', 'stitch_predictions', 'merge_preds_if_possible' ]
 
@@ -203,46 +204,55 @@ def crop_tile(img, tile_pos, tile_size, tile_layout, tile_border):
 
     return cropped_img
 
-def merge_preds_if_possible(tile_masks, img_rles, paddings):
+def merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles=None):
     '''
     input:
-      tile_masks: a dict of numpy arrays, with image tile names as keys and predicted masks as values
+      tile_probs: a dict of numpy arrays, with image tile names as keys and predicted probibility maps as values
       img_rles: a dict of strings, with image names as keys and predicted run-length-encoded masks as values
     '''
 
-    def process_merged_mask(img_mask):
-        # merged into whole image with shape: (1280, 1920)
-        img_mask = remove_paddings(img_mask, paddings)
-        assert img_mask.shape == const.img_size  # image shape: (1280, 1918)
-
-        # employ Run Length Encoding
-        img_mask = run_length.encode(img_mask)
-        return img_mask
-
-    if len(tile_masks) == 0:
+    if len(tile_probs) == 0:
         return
 
-    tile_names = list(tile_masks.keys())
-    tile_size = tile_masks[tile_names[0]].shape[1:]
-    padded_img_size = np.add(const.img_size, np.multiply(paddings, 2))
+    # get tile names of computed probability maps
+    tile_names = list(tile_probs.keys())
 
+    # compute number of tiles in a image
+    tile_size = tile_probs[tile_names[0]].shape[1:]
+    padded_img_size = np.add(const.img_size, np.multiply(paddings, 2))
     tile_layout, _ = get_tile_layout(tile_size, padded_img_size)
     num_of_rows, num_of_cols = tile_layout
     num_tiles = num_of_rows * num_of_cols
 
+    # get image names from tile names
     tiles_by_imgs = group_tile_names(tile_names)
     img_names = tiles_by_imgs.keys()
+
     for img_name in img_names:
         if len(tiles_by_imgs[img_name]) == num_tiles:
             # all tiles of this image are here and ready to be merged
 
-            tile_masks_of_one_image = create_dict_from_dict(tiles_by_imgs[img_name], tile_masks)
+            tile_probs_of_one_image = create_dict_from_dict(tiles_by_imgs[img_name], tile_probs)
 
-            img_mask = merge_tiles(tile_masks_of_one_image, tile_layout)
-            img_rles[img_name] = process_merged_mask(img_mask)
+            img_prob = merge_tiles(tile_probs_of_one_image, tile_layout)
 
-            # remove merged tiles from tile_masks
-            remove_keys_from_dict(tiles_by_imgs[img_name], tile_masks)
+            # merged into whole image with shape: (1280, 1920)
+            img_prob = remove_paddings(img_prob, paddings)
+            assert img_prob.shape == const.img_size  # image shape: (1280, 1918)
+
+            if img_rles is not None:
+                # generate image mask from image probability map
+                img_mask = np.zeros(img_prob.shape)
+                img_mask[img_prob > 0.5] = 1
+
+                # employ Run Length Encoding
+                img_rles[img_name] = run_length.encode(img_mask)
+            else:
+                # save predictions
+                submit.save_prob_map(exp_name, img_name, img_prob)
+
+            # remove merged tiles from tile_probs
+            remove_keys_from_dict(tiles_by_imgs[img_name], tile_probs)
     return
 
 def group_tile_names(tile_names):

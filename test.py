@@ -17,7 +17,10 @@ import config
 
 
 
-def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, paddings=(0, 0), use_crf=False, DEBUG=False):
+def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, paddings=None, save_preds=False, use_crf=False, DEBUG=False):
+
+    assert not (is_val and save_preds)  # never save predictions during validation
+    assert not (is_val == False and paddings is None)  # When testing, paddings is required
 
     if torch.cuda.is_available():
         net.cuda()
@@ -29,8 +32,16 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
         epoch_val_loss = 0
         epoch_val_accuracy = 0
     else:
-        tile_masks = {}
-        img_rles = {}
+        print('Testing... ')
+        tile_probs = {}
+
+        if save_preds:
+            print('Predictions will be saved for later post processing. ')
+            print('Make sure you have at least ? GB free disk space. ')
+            img_rles = None
+        else:
+            print('Will generate submission.csv for submission. ')
+            img_rles = {}
 
     epoch_start = time.time()
 
@@ -61,19 +72,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
 
         # apply CRF to image tiles
         if use_crf:
-            print("You're using CRF. Are you sure? In our previous experiments, it has never improved the performance. ")
-            crf_masks = np.zeros(masks.data.size())  # shape: (batch_size, 1, height, width)
-            for img_idx in range(len(img_name)):
-                img  =  images.data[img_idx].cpu().numpy()  # shape: (3, height, width)
-                prob = outputs.data[img_idx].cpu().numpy()  # shape: (1, height, width)
-                crf_masks[img_idx] = crf.apply_crf(img, prob)
-
-                # convert CRF results back into Variable in GPU
-                masks = Variable(torch.from_numpy(crf_masks).float(), volatile=True)
-                if torch.cuda.is_available():
-                    masks = masks.cuda()
-
-                # TODO refactor the above block of code
+            masks = run_crf(masks)
 
         iter_end = time.time()
 
@@ -86,10 +85,10 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
             epoch_val_accuracy += accuracy
         else:
             for img_idx in range(len(img_name)):
-                tile_masks[img_name[img_idx]] = masks.data[img_idx].cpu().numpy()
+                tile_probs[img_name[img_idx]] = outputs.data[img_idx].cpu().numpy()
 
             # merge tile predictions into image predictions
-            tile.merge_preds_if_possible(tile_masks, img_rles, paddings)
+            tile.merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles=img_rles)
 
             iter_end = time.time()
             print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
@@ -113,7 +112,9 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
         print('Validation Loss: {:.4f} Validation Accuracy:{:.5f}'.format(epoch_val_loss, epoch_val_accuracy))
     else:
         assert len(tile_masks) == 0  # all tile predictions should now be merged into image predictions now
-        submit.save_predictions(exp_name, img_rles)
+
+        if not save_preds:
+            submit.save_predictions(exp_name, img_rles)
 
     epoch_end = time.time()
     print('Total: {:.2f} sec = {:.1f} hour spent'.format(epoch_end - epoch_start, (epoch_end - epoch_start)/3600))
@@ -134,8 +135,8 @@ if __name__ == "__main__":
 
     cfg = config.load_config_file(exp_name)
     # data_loader, tile_borders = get_small_loader(
-    data_loader, tile_borders = get_val_loader(
-    #data_loader, tile_borders = get_test_loader(
+    # data_loader, tile_borders = get_val_loader(
+    data_loader, tile_borders = get_test_loader(
         cfg['test']['batch_size'],
         cfg['test']['paddings'],
         cfg['test']['tile_size'],
@@ -150,9 +151,7 @@ if __name__ == "__main__":
 
     net, _, criterion, _ = exp.load_exp(exp_name)
 
-    tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'], use_crf=True)
-
+    tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'], save_preds=True)
     # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True)
 
-    # CRF doesn't seem to improve results in previous experiments:
-    # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True, use_crf=True)
+    # Note that CRF doesn't seem to improve results in previous experiments

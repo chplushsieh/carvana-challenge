@@ -1,11 +1,26 @@
 import time
 import numpy as np
+import torch
+from torch.autograd import Variable
 
 import pydensecrf.densecrf as dcrf
 from pydensecrf.utils import compute_unary, create_pairwise_bilateral, create_pairwise_gaussian, unary_from_softmax
 
+def run_crf(masks):
+    print("You're using CRF. Are you sure? In our previous experiments, it has never improved the performance. ")
+    crf_masks = np.zeros(masks.data.size())  # shape: (batch_size, 1, height, width)
+    for img_idx in range(len(img_name)):
+        img  =  images.data[img_idx].cpu().numpy()  # shape: (3, height, width)
+        prob = outputs.data[img_idx].cpu().numpy()  # shape: (1, height, width)
+        crf_masks[img_idx] = crf(img, prob)
 
-def apply_crf(img, prob):
+        # convert CRF results back into Variable in GPU
+        masks = Variable(torch.from_numpy(crf_masks).float(), volatile=True)
+        if torch.cuda.is_available():
+            masks = masks.cuda()
+    return masks
+
+def crf(img, prob):
     '''
     input:
       img: numpy array of shape (num of channels, height, width)
