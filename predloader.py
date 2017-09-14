@@ -14,7 +14,7 @@ class Ensembler(torch.utils.data.dataset.Dataset):
 
         # TODO verify img_names in pred_dirs
 
-        self.data_files = load.list_img_in_dir(pred_dirs[0])
+        self.data_files = load.list_npy_in_dir(pred_dirs[0])
 
         return
 
@@ -30,6 +30,7 @@ class Ensembler(torch.utils.data.dataset.Dataset):
         for pred_dir in self.pred_dirs:
             pred_path = os.path.join(pred_dir, img_name + '.npy')
             pred = np.load(pred_path)
+            # TODO handle the case if file not found
 
             ensembled = np.add(ensembled, pred)
 

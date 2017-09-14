@@ -137,8 +137,13 @@ def list_img_in_dir(dir):
 
 def list_csv_in_dir(dir):
     onlyfiles = [ f for f in listdir(dir) if isfile(join(dir, f))]
-    onlyjpgs = [os.path.splitext(f)[0] for f in onlyfiles if os.path.splitext(f)[1] == '.csv']
-    return onlyjpgs
+    onlycsvs = [os.path.splitext(f)[0] for f in onlyfiles if os.path.splitext(f)[1] == '.csv']
+    return onlycsvs
+
+def list_npy_in_dir(dir):
+    onlyfiles = [ f for f in listdir(dir) if isfile(join(dir, f))]
+    onlynpys = [os.path.splitext(f)[0] for f in onlyfiles if os.path.splitext(f)[1] == '.npy']
+    return onlynpys
 
 def get_img_shape(image_path):
     im = Image.open(image_path)
