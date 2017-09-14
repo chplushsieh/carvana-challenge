@@ -18,39 +18,50 @@ My Solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.c
 ### Train/Test
 1. Extract data downloaded from Kaggle to `./data`:
 
-```
-data
-├── metadata.csv
-├── sample_submission.csv
-├── test_hq
-│   ├── 0004d4463b50_01.jpg
-│   ├── 0004d4463b50_02.jpg
-        ...
-│   └── 846faa0eb79f_04.jpg
-├── train_hq
-│   ├── 00087a6bd4dc_01.jpg
-│   ├── 00087a6bd4dc_02.jpg
-        ...
-│   └── fff9b3a5373f_16.jpg
-├── train_masks
-│   ├── 00087a6bd4dc_01_mask.gif
-│   ├── 00087a6bd4dc_02_mask.gif
-        ...
-│   └── fff9b3a5373f_16_mask.gif
-└── train_masks.csv
-```
+   ```
+   data
+   ├── metadata.csv
+   ├── sample_submission.csv
+   ├── test_hq
+   │   ├── 0004d4463b50_01.jpg
+   │   ├── 0004d4463b50_02.jpg
+           ...
+   │   └── 846faa0eb79f_04.jpg
+   ├── train_hq
+   │   ├── 00087a6bd4dc_01.jpg
+   │   ├── 00087a6bd4dc_02.jpg
+           ...
+   │   └── fff9b3a5373f_16.jpg
+   ├── train_masks
+   │   ├── 00087a6bd4dc_01_mask.gif
+   │   ├── 00087a6bd4dc_02_mask.gif
+           ...
+   │   └── fff9b3a5373f_16_mask.gif
+   └── train_masks.csv
+   ```
 
-Images are all of size 1918 x 1280    
+   Images are all of size 1918 x 1280    
 
-2. Run `crayon` and then `python train.py`
+2. Before training, start `crayon` by running `docker run -d -p 8888:8888 -p 8889:8889 --name crayon alband/crayon`
 
-3. Run `python test.py`
+3. Run `python train.py`
+
+3. Run `python test.py <experiment_name>`
+
+   If you'd like to ensemble results from more than one experiemnts, simeply run `test.py` as many times as you want.
+
+   For example, running `python test.py PeterUnet3_dropout` and then `python test.py PeterUnet4` will automatically save average predictions of `PeterUnet3_dropout.yml` and `PeterUnet4.yml` in `./output/ensemble/prob`. Ensembled experiment names will be saved in `./output/ensemble/models_ensembled.txt`
+
+   :warning: Before you run `test.py` the first time, make sure you have at least `500GB` free disk space to save prediction results. 
+
+5. Run `python run_rle_for_ensemble.py` to generate submission at `./output/ensemble/submission.csv`
+
 
 ### Other Scripts
 
 * To find numbers that are divislbe by `2^n`, run `python scripts/divisble.py <start_number> <end_number>`
 
-For instance, `python scripts/divisble.py 900 1300`
+   For instance, `python scripts/divisble.py 900 1300`
 
 ## To-dos
 

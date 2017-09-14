@@ -6,6 +6,7 @@ import pandas as pd
 
 import util.exp as exp
 import util.const as const
+import util.ensemble as ensemble
 
 def get_pred_dir(exp_name):
     pred_dir = os.path.join(const.OUTPUT_DIR, exp_name, const.SAVED_PREDS_DIR_NAME)
@@ -21,10 +22,22 @@ def save_prob_map(exp_name, img_name, img_prob):
 
     assert img_prob.shape == const.img_size  # image shape: (1280, 1918)
 
-    save_dir = get_pred_dir(exp_name)
-    exp.create_if_not_exist(save_dir)
+    exp.create_if_not_exist(const.ENSEMBLE_PROB_DIR)
+    save_path = os.path.join(const.ENSEMBLE_PROB_DIR, img_name + '.npy')
 
-    save_path = os.path.join(save_dir, img_name + '.npy')
+    if os.path.isfile(save_path):
+        saved_prob = np.load(save_path)
+
+        saved_prob_weight, img_prob_weight = ensemble.get_ensemble_weights()
+        weighted_saved_prob = np.multiply(saved_prob, saved_prob_weight)
+        weighted_img_prob = np.multiply(img_prob, img_prob_weight)
+
+        img_prob = np.add(weighted_img_prob, weighted_saved_prob)
+
+    # img_prob.dtype == np.float64
+    img_prob = img_prob.astype(np.float16) # cast to smallest possible float data type
+    # One float16 1280x1918 image takes about 4.9 MB storage
+
     np.save(save_path, img_prob)
 
     return

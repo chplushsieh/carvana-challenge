@@ -58,10 +58,27 @@ class SmallUnet(BaseNet):
 def conv3x3(in_, out):
     return nn.Conv2d(in_, out, 3, padding=1)
 
+def dilation_conv3x3(in_, out, dilation=1):
+    return nn.Conv2d(in_, out, 3, dilation=dilation, padding=dilation)
+
 class Conv3BN(nn.Module):
     def __init__(self, in_: int, out: int, bn, activation):
         super().__init__()
         self.conv = conv3x3(in_, out)
+        self.activation = getattr(F, activation)
+        self.bn = nn.BatchNorm2d(out) if bn else None
+
+    def forward(self, x):
+        x = self.conv(x)
+        x = self.activation(x, inplace=True)
+        if self.bn is not None:
+            x = self.bn(x)
+        return x
+
+class Dilation_Conv3BN(nn.Module):
+    def __init__(self, in_: int, out: int, bn, activation, dilation=1):
+        super().__init__()
+        self.conv = dilation_conv3x3(in_, out, dilation)
         self.activation = getattr(F, activation)
         self.bn = nn.BatchNorm2d(out) if bn else None
 
@@ -218,6 +235,43 @@ class UNetUpBlock4(nn.Module):
         x = self.l4(x)
 
         return x
+
+class DilationDownBlock3(nn.Module):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu'):
+        super().__init__()
+        self.l1 = Dilation_Conv3BN(in_, out, bn, activation, dilation=1)
+        self.l2 = Dilation_Conv3BN(out, out, bn, activation, dilation=2)
+        self.l3 = Dilation_Conv3BN(out, out, bn, activation, dilation=3)
+
+    def forward(self, x):
+        x = self.l1(x)
+        x = self.l2(x)
+        x = self.l3(x)
+        return x
+
+class DilationUpBlock3(nn.Module):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu', up='upsample'):
+        super().__init__()
+        self.l1 = Dilation_Conv3BN(in_, out, bn, activation, dilation=1)
+        self.l2 = Dilation_Conv3BN(out, out, bn, activation, dilation=2)
+        self.l3 = Dilation_Conv3BN(out, out, bn, activation, dilation=3)
+
+        if up == 'upconv':
+            self.up = nn.ConvTranspose2d(in_, out, 2, stride=2)
+        elif up == 'upsample':
+            self.up = nn.Upsample(scale_factor=2)
+
+    def forward(self, skip, x):
+        up = self.up(x)
+        x = torch.cat([up, skip], 1)
+
+        x = self.l1(x)
+        x = self.l2(x)
+        x = self.l3(x)
+
+        return x
+
+
 
 class InceptiondDownModule(nn.Module):
     def __init__(self, in_: int, out: int, *, bn=True, activation='relu'):
@@ -578,3 +632,6 @@ class DenseUpBlock(nn.Module):
 
 def DenseUnet():
     return DynamicUnet(DownBlock=DenseDownBlock, UpBlock=DenseUpBlock, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
+def HDCUnet3():
+    return DynamicUnet(DownBlock=DilationDownBlock3, UpBlock=DilationUpBlock3, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
