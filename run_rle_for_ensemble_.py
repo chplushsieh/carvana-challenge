@@ -26,6 +26,8 @@ if __name__ == "__main__":
     exp_names = ensemble.get_models_ensembled()
     print('The predictions are ensemble by {}. '.format(exp_names))
 
+    # TODO print the augmentations as along as the models 
+
     rle_loader = rle_loader.get_rle_loader()
 
     apply_rle(rle_loader)

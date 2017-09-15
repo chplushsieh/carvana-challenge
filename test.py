@@ -137,6 +137,9 @@ if __name__ == "__main__":
     exp_name = args.exp_name
 
     cfg = config.load_config_file(exp_name)
+
+    # TODO add a loop to iterate thru all kinds of test time augmentations
+
     # data_loader, tile_borders = get_small_loader(
     # data_loader, tile_borders = get_val_loader(
     data_loader, tile_borders = get_test_loader(
@@ -151,6 +154,7 @@ if __name__ == "__main__":
         cfg['test']['fancy_pca'],
         cfg['test']['edge_enh']
     )
+    # TODO call test data loader with one certain augmentation
 
     net, _, criterion, _ = exp.load_exp(exp_name)
 

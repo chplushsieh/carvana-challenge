@@ -17,7 +17,7 @@ __all__ = [
     'get_test_loader',
 ]
 
-
+# TODO modify this class to make it *always* apply one certain kind of augmententation to the images
 class LargeDataset(torch.utils.data.dataset.Dataset):
     def __init__(self, data_dir, ids=None, mask_dir=None, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False, fancy_pca_enabled=False, edge_enh_enabled=False, paddings=None, tile_size=None):
         self.data_dir = data_dir
@@ -117,10 +117,11 @@ def get_test_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate
 
     print('Number of Test Images:', len(test_ids))
 
+    # TODO declare a dataset with one certain augmentation *always* enabled
     test_dataset = LargeDataset(
         test_dir,
         ids=test_ids,
-        hflip_enabled=hflip, # No random flipping for inference
+        hflip_enabled=hflip,
         shift_enabled=shift,
         color_enabled=color,
         rotate_enabled=rotate,
