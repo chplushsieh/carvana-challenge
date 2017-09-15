@@ -33,6 +33,7 @@ def mark_model_ensembled(exp_name):
 
     # open file in 'append' mode
     with open(ensembled_models_path, 'a', newline='') as f:
+        # TODO save 'PeterUnet4,flip' instead of just 'PeterUnet4'
         f.write(exp_name + '\n')  # insert as the last line
 
     return

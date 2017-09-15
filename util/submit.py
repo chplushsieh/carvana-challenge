@@ -29,6 +29,8 @@ def save_prob_map(exp_name, img_name, img_prob):
         saved_prob = np.load(save_path)
 
         saved_prob_weight, img_prob_weight = ensemble.get_ensemble_weights()
+        # TODO For test time aug, only add the part which got predicted in the current aug to the saved saved prob
+        # Maybe use a mask to help achieve this?
         weighted_saved_prob = np.multiply(saved_prob, saved_prob_weight)
         weighted_img_prob = np.multiply(img_prob, img_prob_weight)
 
