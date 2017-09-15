@@ -347,6 +347,47 @@ class InceptiondUpModule2(nn.Module):
 
         return x
 
+class DUC(nn.Module):
+    def __init__(self, inplanes, planes, upscale_factor=2):
+        super(DUC, self).__init__()
+        self.relu = nn.ReLU()
+        self.conv = nn.Conv2d(inplanes, planes, kernel_size=3,
+                              padding=1)
+        self.bn = nn.BatchNorm2d(planes)
+        self.pixel_shuffle = nn.PixelShuffle(upscale_factor)
+
+    def forward(self, x):
+        x = self.conv(x)
+        x = self.bn(x)
+        x = self.relu(x)
+        x = self.pixel_shuffle(x)
+        return x
+
+class UNetUpBlock3DUC(nn.Module):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu', up='upconv'):
+        super().__init__()
+        self.l1 = Conv3BN(in_, out, bn, activation)
+        self.l2 = Conv3BN(out, out, bn, activation)
+        self.l3 = Conv3BN(out, out, bn, activation)
+
+        #if up == 'upconv':
+        #    self.up = nn.ConvTranspose2d(in_, out, 2, stride=2)
+        #elif up == 'upsample':
+        #    self.up = nn.Upsample(scale_factor=2)
+        channel=in_-out
+        self.up = DUC(channel, channel*4)
+
+
+    def forward(self, skip, x):
+        up = self.up(x)
+        x = torch.cat([up, skip], 1)
+
+        x = self.l1(x)
+        x = self.l2(x)
+        x = self.l3(x)
+
+        return x
+
 
 
 class Unet(BaseNet): # Improved: add the last Sigmoid layer
@@ -508,11 +549,14 @@ def PeterUnet4_dropout():
 def PeterUnet34():
     return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock4, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
 
+def PeterUnet3DUC():
+    return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock3DUC, nums_filters=[8, 16, 32, 64, 128, 256, 512, 1024])
+
 def PeterUnetInception2():
-	return DynamicUnet(DownBlock=InceptiondDownModule2, UpBlock=InceptiondUpModule2, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+    return DynamicUnet(DownBlock=InceptiondDownModule2, UpBlock=InceptiondUpModule2, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
 
 def PeterUnetInception():
-	return DynamicUnet(DownBlock=InceptiondDownModule, UpBlock=InceptiondUpModule, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+    return DynamicUnet(DownBlock=InceptiondDownModule, UpBlock=InceptiondUpModule, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
 
 class SmallerUpsamplingUnet(BaseNet):
     def __init__(self):
