@@ -24,7 +24,7 @@ train:
   edge_enh: False
 
 test:
-  batch_size: 12
+  batch_size: 10
   paddings:  !!python/tuple [0, 1]
   tile_size: !!python/tuple [1280, 1280] # (height, width)
   hflip: False
