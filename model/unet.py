@@ -236,6 +236,49 @@ class UNetUpBlock4(nn.Module):
 
         return x
 
+class UNetDownBlock5(nn.Module):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu'):
+        super().__init__()
+        self.l1 = Conv3BN(in_, out, bn, activation)
+        self.l2 = Conv3BN(out, out, bn, activation)
+        self.l3 = Conv3BN(out, out, bn, activation)
+        self.l4 = Conv3BN(out, out, bn, activation)
+        self.l5 = Conv3BN(out, out, bn, activation)
+
+    def forward(self, x):
+        x = self.l1(x)
+        x = self.l2(x)
+        x = self.l3(x)
+        x = self.l4(x)
+        x = self.l5(x)
+        return x
+
+class UNetUpBlock5(nn.Module):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu', up='upsample'):
+        super().__init__()
+        self.l1 = Conv3BN(in_, out, bn, activation)
+        self.l2 = Conv3BN(out, out, bn, activation)
+        self.l3 = Conv3BN(out, out, bn, activation)
+        self.l4 = Conv3BN(out, out, bn, activation)
+        self.l5 = Conv3BN(out, out, bn, activation)
+
+        if up == 'upconv':
+            self.up = nn.ConvTranspose2d(in_, out, 2, stride=2)
+        elif up == 'upsample':
+            self.up = nn.Upsample(scale_factor=2)
+
+    def forward(self, skip, x):
+        up = self.up(x)
+        x = torch.cat([up, skip], 1)
+
+        x = self.l1(x)
+        x = self.l2(x)
+        x = self.l3(x)
+        x = self.l4(x)
+        x = self.l5(x)
+
+        return x
+
 class DilationDownBlock3(nn.Module):
     def __init__(self, in_: int, out: int, *, bn=True, activation='relu'):
         super().__init__()
@@ -542,6 +585,9 @@ def PeterUnet3_dropout():
 
 def PeterUnet4():
     return DynamicUnet(DownBlock=UNetDownBlock4, UpBlock=UNetUpBlock4, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
+def PeterUnet5():
+    return DynamicUnet(DownBlock=UNetDownBlock5, UpBlock=UNetUpBlock5, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
 
 def PeterUnet4_dropout():
     return DynamicUnet(DownBlock=UNetDownBlock4, UpBlock=UNetUpBlock4, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024], dropout=0.5)
