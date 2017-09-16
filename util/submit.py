@@ -19,6 +19,7 @@ def save_prob_map(exp_name, img_name, img_prob):
       img_name: a string, name of the image
       img_prob: an numpy array of probability of each pixel being foreground(car)
     '''
+    func_start = time.time()
 
     assert img_prob.shape == const.img_size  # image shape: (1280, 1918)
 
@@ -41,7 +42,8 @@ def save_prob_map(exp_name, img_name, img_prob):
     # One float16 1280x1918 image takes about 4.9 MB storage
 
     np.save(save_path, img_prob)
-
+    func_end = time.time()
+    print('Saving probability map takes {:.2f} sec. '.format(func_end - func_start))
     return
 
 
