@@ -19,7 +19,7 @@ def save_prob_map(exp_name, img_name, img_prob):
       img_name: a string, name of the image
       img_prob: an numpy array of probability of each pixel being foreground(car)
     '''
-    func_start = time.time()
+
 
     assert img_prob.shape == const.img_size  # image shape: (1280, 1918)
 
@@ -27,23 +27,34 @@ def save_prob_map(exp_name, img_name, img_prob):
     save_path = os.path.join(const.ENSEMBLE_PROB_DIR, img_name + '.npy')
 
     if os.path.isfile(save_path):
+        func_start = time.time()
         saved_prob = np.load(save_path)
+        func_end = time.time()
+        #print('Loading probability map takes {:.2f} sec. '.format(func_end - func_start))
 
         saved_prob_weight, img_prob_weight = ensemble.get_ensemble_weights()
         # TODO For test time aug, only add the part which got predicted in the current aug to the saved saved prob
         # Maybe use a mask to help achieve this?
+        func_start = time.time()
+        saved_prob = saved_prob.astype(np.float64)
         weighted_saved_prob = np.multiply(saved_prob, saved_prob_weight)
+        func_end = time.time()
+        #print('weighted_saved_prob takes {:.2f} sec. '.format(func_end - func_start))
+
+        func_start = time.time()
         weighted_img_prob = np.multiply(img_prob, img_prob_weight)
+        func_end = time.time()
+        #print('weighted_img_prob takes {:.2f} sec. '.format(func_end - func_start))
 
         img_prob = np.add(weighted_img_prob, weighted_saved_prob)
 
     # img_prob.dtype == np.float64
     img_prob = img_prob.astype(np.float16) # cast to smallest possible float data type
     # One float16 1280x1918 image takes about 4.9 MB storage
-
+    func_start = time.time()
     np.save(save_path, img_prob)
     func_end = time.time()
-    print('Saving probability map takes {:.2f} sec. '.format(func_end - func_start))
+    #print('Saving probability map takes {:.2f} sec. '.format(func_end - func_start))
     return
 
 

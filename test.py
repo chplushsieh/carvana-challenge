@@ -90,7 +90,11 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
                 tile_probs[img_name[img_idx]] = outputs.data[img_idx].cpu().numpy()
 
             # merge tile predictions into image predictions
+
+            func_start = time.time()
             tile.merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles, is_ensemble=is_ensemble)
+            func_end = time.time()
+            #print('merge_preds takes {:.2f} sec. '.format(func_end - func_start))
 
             iter_end = time.time()
             print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
