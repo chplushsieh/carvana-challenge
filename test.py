@@ -19,7 +19,7 @@ import config
 
 
 def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, paddings=None, is_ensemble=False, use_crf=False, DEBUG=False):
-
+    func_start = time.time()
     assert not (is_val and is_ensemble)  # never save predictions during validation
     assert not (is_val == False and paddings is None)  # When testing, paddings is required
 
@@ -45,6 +45,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
             img_rles = {}
 
     epoch_start = time.time()
+    print('Model prepared: {:.2f} sec spent'.format(epoch_start - func_start))
 
     for i, (img_name, images, targets) in enumerate(data_loader):
         iter_start = time.time()
@@ -130,6 +131,8 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
 
 
 if __name__ == "__main__":
+    program_start = time.time()
+
     parser = argparse.ArgumentParser()
     parser.add_argument('exp_name', nargs='?', default='PeterUnet3_all_aug_1280')
     args = parser.parse_args()
@@ -157,6 +160,9 @@ if __name__ == "__main__":
     # TODO call test data loader with one certain augmentation
 
     net, _, criterion, _ = exp.load_exp(exp_name)
+
+    model_loaded = time.time()
+    print('Model loaded: {:.2f} sec spent'.format(model_loaded - program_start))
 
     tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'], is_ensemble=True)
     # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True)
