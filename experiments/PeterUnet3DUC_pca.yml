@@ -1,0 +1,36 @@
+optimizer: RMSprop
+learning_rate: 1e-4
+
+momentum: 0
+weight_decay: 0
+criterion: HengLoss
+
+num_epochs: 101
+
+log_iter_interval: 100
+snapshot_epoch_interval: 1
+
+train:
+  batch_size: 5
+  accumulated_batch_size: 1
+  paddings:  !!python/tuple [0, 1]
+  tile_size: !!python/tuple [1280, 1280] # (height, width)
+  hflip: True
+  shift: True
+  color: True
+  rotate: True
+  scale: True
+  fancy_pca: True
+  edge_enh: False
+
+test:
+  batch_size: 10
+  paddings:  !!python/tuple [0, 1]
+  tile_size: !!python/tuple [1280, 1280] # (height, width)
+  hflip: False
+  shift: False
+  color: False
+  rotate: False
+  scale: False
+  fancy_pca: False
+  edge_enh: False
