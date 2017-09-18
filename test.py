@@ -150,8 +150,7 @@ if __name__ == "__main__":
     cfg = config.load_config_file(exp_name)
 
     net, _, criterion, _ = exp.load_exp(exp_name)
-
-    # TODO update all .yml files
+    
     TTA_funcs = augmentation.get_TTA_funcs(cfg['test']['test_time_aug'])
 
     for aug_name, test_time_aug, reverse_test_time_aug in TTA_funcs:
