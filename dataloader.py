@@ -13,6 +13,7 @@ import util.augmentation as augmentation
 
 __all__ = [
     'get_small_loader',
+    'get_small_test_loader',
 
     'get_train_loader',
     'get_val_loader',
@@ -160,7 +161,7 @@ def get_test_loader(batch_size, paddings, tile_size, test_time_aug):
                             )
     return test_loader, tile_borders
 
-def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False, fancy_pca_enabled=False, edge_enh_enabled=False):
+def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False, fancy_pca_enabled=False, edge_enh_enabled=False, test_time_aug=None):
     train_dir = const.TRAIN_DIR
     train_mask_dir = const.TRAIN_MASK_DIR
 
@@ -179,7 +180,7 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=
         fancy_pca_enabled=fancy_pca_enabled,
         edge_enh_enabled=edge_enh_enabled,
 
-        test_time_aug=None,
+        test_time_aug=test_time_aug,
 
         paddings=paddings,
         tile_size=tile_size,
@@ -205,3 +206,8 @@ def get_val_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate,
 def get_small_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate, scale, fancy_pca, edge_enh):
     small_imgs = load.load_small_imageset()
     return get_trainval_loader(batch_size, small_imgs, paddings, tile_size, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False, fancy_pca_enabled=False, edge_enh_enabled=False)
+
+def get_small_test_loader(batch_size, paddings, tile_size, test_time_aug):
+    small_imgs = load.load_small_imageset()
+    return get_trainval_loader(batch_size, small_imgs, paddings, tile_size, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False, fancy_pca_enabled=False, edge_enh_enabled=False, test_time_aug=test_time_aug)
+
