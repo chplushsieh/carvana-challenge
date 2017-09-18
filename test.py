@@ -19,14 +19,14 @@ import config
 
 
 
-def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, test_time_aug_name=TTA_name, reverse_test_time_aug=None, paddings=None, is_ensemble=False, use_crf=False, DEBUG=False):
+def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, test_time_aug_name=None, reverse_test_time_aug=None, paddings=None, is_ensemble=False, use_crf=False, DEBUG=False):
     if is_val:
         assert paddings is None  # When validating, paddings is not used
         assert not is_ensemble  # Never save predictions during validation
-        assert reverse_test_time_aug  # No need to do Test Time augmententation when validating
+        assert test_time_aug_name is None  # No need to do Test Time augmententation when validating
     else:
         assert paddings is not None  # When testing, paddings is required
-        assert reverse_test_time_aug  # Test Time augmentation function is required when testing
+        assert test_time_aug_name is not None  # Test Time augmentation function is required when testing
 
 
     if torch.cuda.is_available():
@@ -150,12 +150,13 @@ if __name__ == "__main__":
     cfg = config.load_config_file(exp_name)
 
     net, _, criterion, _ = exp.load_exp(exp_name)
-    
+
     TTA_funcs = augmentation.get_TTA_funcs(cfg['test']['test_time_aug'])
 
     for aug_name, test_time_aug, reverse_test_time_aug in TTA_funcs:
         print('Now running Test Tiem Augmentaion: {}'.format(aug_name))
 
+        # data_loader, tile_borders = get_small_test_loader(
         data_loader, tile_borders = get_test_loader(
             cfg['test']['batch_size'],
             cfg['test']['paddings'],
