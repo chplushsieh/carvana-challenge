@@ -25,8 +25,4 @@ test:
   batch_size: 15
   paddings:  !!python/tuple [0, 1]
   tile_size: !!python/tuple [1280, 1280] # (height, width)
-  hflip: False
-  shift: False
-  color: False
-  rotate: False
-  scale: False
+  test_time_aug: True
