@@ -8,6 +8,8 @@ from random import randrange
 import util.const as const
 import util.load as load
 import util.tile as tile
+import util.augmentation as augmentation
+
 
 __all__ = [
     'get_small_loader',
@@ -17,9 +19,11 @@ __all__ = [
     'get_test_loader',
 ]
 
-# TODO modify this class to make it *always* apply one certain kind of augmententation to the images
+
 class LargeDataset(torch.utils.data.dataset.Dataset):
-    def __init__(self, data_dir, ids=None, mask_dir=None, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False, fancy_pca_enabled=False, edge_enh_enabled=False, paddings=None, tile_size=None):
+    def __init__(self, data_dir, ids=None, mask_dir=None,
+                 hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False, fancy_pca_enabled=False, edge_enh_enabled=False,
+                 test_time_aug=None, paddings=None, tile_size=None):
         self.data_dir = data_dir
 
         if not ids:
@@ -34,6 +38,7 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
             _, self.tile_borders = tile.get_tile_layout(tile_size, padded_img_size)
 
         self.mask_dir = mask_dir
+
         self.hflip_enabled = hflip_enabled
         self.shift_enabled = shift_enabled
         self.color_enabled = color_enabled
@@ -41,6 +46,19 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         self.scale_enabled = scale_enabled
         self.fancy_pca_enabled = fancy_pca_enabled
         self.edge_enh_enabled = edge_enh_enabled
+
+        if test_time_aug is not None:
+            # No random applyed data augmentation while using Test Time Augmentation
+            assert not hflip_enabled
+            assert not shift_enabled
+            assert not color_enabled
+            assert not rotate_enabled
+            assert not scale_enabled
+            assert not fancy_pca_enabled
+            assert not edge_enh_enabled
+
+        self.test_time_aug = test_time_aug
+
         self.paddings = paddings
         self.tile_size = tile_size
 
@@ -64,34 +82,30 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         is_hflip = self.hflip_enabled and (random.random() < 0.5)
 
         if self.shift_enabled:
-            hshift, vshift = randrange(-25, 25), randrange(-120, 120)
+            vshift, hshift = randrange(-120, 120), randrange(-25, 25)
         else:
-            hshift, vshift = 0, 0
+            vshift, hshift = 0, 0
 
         if self.rotate_enabled and (random.random() < 0.5):
             rotate = randrange(-5,5)
         else:
             rotate = 0
 
-        if self.fancy_pca_enabled and (random.random() < 0.5):
-            fancy_pca_trans = True
-        else:
-            fancy_pca_trans = False
-
-        if self.edge_enh_enabled and (random.random() < 0.5):
-            edge_enh_trans = True
-        else:
-            edge_enh_trans = False
+        is_fancy_pca_trans = self.fancy_pca_enabled and (random.random() < 0.5)
+        is_edge_enh_trans = self.edge_enh_enabled and (random.random() < 0.5)
 
         if self.scale_enabled and (random.random() < 0.5):
             scale_size = randrange(90,110)/100
         else:
             scale_size = 0
 
+        # TODO refactor these data aug to use functions in util.augmentation.py
+
         img = load.load_train_image(
             self.data_dir, img_name,
-            is_hflip=is_hflip, hshift=hshift, vshift=vshift, color_trans=self.color_enabled, rotate=rotate,
-            scale_size=scale_size,fancy_pca_trans=fancy_pca_trans, edge_enh_trans=edge_enh_trans,  paddings=self.paddings, tile_size=self.tile_size
+            is_hflip=is_hflip, hshift=hshift, vshift=vshift, rotate=rotate, scale_size=scale_size,
+            is_color_trans=self.color_enabled,  is_fancy_pca_trans=is_fancy_pca_trans, is_edge_enh_trans=is_edge_enh_trans,
+            test_time_aug=self.test_time_aug, paddings=self.paddings, tile_size=self.tile_size
         )
 
         if self.is_test():
@@ -100,7 +114,7 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
             target = load.load_train_mask(
                 self.mask_dir, img_name,
                 is_hflip=is_hflip, hshift=hshift, vshift=vshift, rotate=rotate, scale_size=scale_size,
-                paddings=self.paddings, tile_size=self.tile_size
+                test_time_aug=self.test_time_aug, paddings=self.paddings, tile_size=self.tile_size
             )
 
         return img_name, img, target
@@ -109,7 +123,7 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
         return (self.mask_dir is None)
 
 
-def get_test_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate, scale, fancy_pca, edge_enh):
+def get_test_loader(batch_size, paddings, tile_size, test_time_aug):
     test_dir = const.TEST_DIR
 
     test_ids = load.list_img_in_dir(test_dir)
@@ -117,19 +131,24 @@ def get_test_loader(batch_size, paddings, tile_size, hflip, shift, color, rotate
 
     print('Number of Test Images:', len(test_ids))
 
-    # TODO declare a dataset with one certain augmentation *always* enabled
     test_dataset = LargeDataset(
         test_dir,
         ids=test_ids,
-        hflip_enabled=hflip,
-        shift_enabled=shift,
-        color_enabled=color,
-        rotate_enabled=rotate,
-        scale_enabled=scale,
-        fancy_pca_enabled=fancy_pca,
-        edge_enh_enabled=edge_enh,
+
+        hflip_enabled=False,
+        shift_enabled=False,
+        color_enabled=False,
+        rotate_enabled=False,
+        scale_enabled=False,
+        fancy_pca_enabled=False,
+        edge_enh_enabled=False,
+
+        test_time_aug=test_time_aug,
+
         paddings=paddings,
         tile_size=tile_size,
+
+
     )
     tile_borders = test_dataset.get_tile_borders()
 
@@ -147,13 +166,11 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=
 
     print('Number of Images:', len(car_ids))
 
-    # TODO make a parent class CarDataset of LargeDataset
-    # which, unlike LargeDataset, read the entire data in memory for faster access
-    # use that class for trainval use
     dataset = LargeDataset(
         train_dir,
         ids=car_ids,
         mask_dir=train_mask_dir,
+
         hflip_enabled=hflip_enabled,
         shift_enabled=shift_enabled,
         color_enabled=color_enabled,
@@ -161,6 +178,9 @@ def get_trainval_loader(batch_size, car_ids, paddings, tile_size, hflip_enabled=
         scale_enabled = scale_enabled,
         fancy_pca_enabled=fancy_pca_enabled,
         edge_enh_enabled=edge_enh_enabled,
+
+        test_time_aug=None,
+
         paddings=paddings,
         tile_size=tile_size,
     )

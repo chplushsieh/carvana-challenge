@@ -204,16 +204,19 @@ def crop_tile(img, tile_pos, tile_size, tile_layout, tile_border):
 
     return cropped_img
 
-def merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles, is_ensemble=False):
+def merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles, is_ensemble=False, reverse_test_time_aug=None):
     '''
     input:
       tile_probs: a dict of numpy arrays, with image tile names as keys and predicted probibility maps as values
       img_rles: a dict of strings, with image names as keys and predicted run-length-encoded masks as values
+      is_ensemble: a boolean indicating if this is in ensemble mode or not
+      reverse_test_time_aug: a function that reverse the test time augmentation done to the input test image
     '''
     if is_ensemble:
         assert img_rles is None
     else:
         assert img_rles is not None
+        assert reverse_test_time_aug is None  # Never do Test Time augmentation right before submitting
 
     if len(tile_probs) == 0:
         return
@@ -243,6 +246,10 @@ def merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles, is_ensembl
             # merged into whole image with shape: (1280, 1920)
             img_prob = remove_paddings(img_prob, paddings)
             assert img_prob.shape == const.img_size  # image shape: (1280, 1918)
+
+            # undo applied data augmentation for Test Time Augmentation
+            if reverse_test_time_aug is not None:
+                img_prob = reverse_test_time_aug(img_prob)
 
             if is_ensemble:
                 # save predictions

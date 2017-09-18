@@ -56,17 +56,20 @@ def load_small_imageset():
     small_img_names = get_img_names_from_car_ids(small_ids)
     return small_img_names
 
-def load_train_image(data_dir, img_name, is_hflip=False, hshift=0, vshift=0, color_trans=False, rotate=0, scale_size=0, fancy_pca_trans=False, edge_enh_trans=False, paddings=None, tile_size=None):
+def load_train_image(data_dir, img_name,
+                     is_hflip=False, hshift=0, vshift=0, rotate=0, scale_size=0,
+                     is_color_trans=False, is_fancy_pca_trans=False, is_edge_enh_trans=False,
+                     test_time_aug=None, paddings=None, tile_size=None):
     img_file_name = tile.get_img_name(img_name)
     img_ext = 'jpg'
     img = load_image_file(data_dir, img_file_name, img_ext, rotate)
     # img.shape: (height, width, 3)
 
-    if color_trans:
+    if is_color_trans:
         img = color.transform(img)
-    if fancy_pca_trans:
+    if is_fancy_pca_trans:
         img = fancy_pca.rgb_shift(img)
-    if edge_enh_trans:
+    if is_edge_enh_trans:
         img = cv2.detailEnhance(img, sigma_s=5, sigma_r=0.1)
 
     img = np.moveaxis(img, 2, 0)
@@ -74,7 +77,9 @@ def load_train_image(data_dir, img_name, is_hflip=False, hshift=0, vshift=0, col
 
     return preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, tile_size)
 
-def load_train_mask(data_dir, img_name, is_hflip=False, hshift=0, vshift=0, rotate=0, scale_size=0, paddings=None, tile_size=None):
+def load_train_mask(data_dir, img_name,
+                    is_hflip=False, hshift=0, vshift=0, rotate=0, scale_size=0,
+                    test_time_aug=None, paddings=None, tile_size=None):
     img_file_name = tile.get_img_name(img_name) + '_mask'
     img_ext = 'gif'
     img = load_image_file(data_dir, img_file_name, img_ext, rotate)
@@ -84,6 +89,8 @@ def load_train_mask(data_dir, img_name, is_hflip=False, hshift=0, vshift=0, rota
     # img.shape: (1, height, width)
 
     return preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, tile_size)
+
+# TODO switch to use funcs in augmentation.py for data aug
 
 def preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, tile_size):
     '''
@@ -109,10 +116,10 @@ def preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, ti
     if scale_size > 0 :
         img = scale.resize_image(img, scale_size).copy()
 
-    if paddings:
+    if paddings is not None:
         img = tile.pad_image(img, paddings)
 
-    if tile_size:
+    if tile_size is not None:
         img = tile.get_tile(img, img_name, tile_size)
 
     return img

@@ -12,16 +12,22 @@ import util.submit as submit
 import util.tile as tile
 import util.crf as crf
 import util.ensemble as ensemble
+import util.augmentation as augmentation
 
 from dataloader import *
 import config
 
 
 
-def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, paddings=None, is_ensemble=False, use_crf=False, DEBUG=False):
-    func_start = time.time()
-    assert not (is_val and is_ensemble)  # never save predictions during validation
-    assert not (is_val == False and paddings is None)  # When testing, paddings is required
+def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, test_time_aug_name=TTA_name, reverse_test_time_aug=None, paddings=None, is_ensemble=False, use_crf=False, DEBUG=False):
+    if is_val:
+        assert paddings is None  # When validating, paddings is not used
+        assert not is_ensemble  # Never save predictions during validation
+        assert reverse_test_time_aug  # No need to do Test Time augmententation when validating
+    else:
+        assert paddings is not None  # When testing, paddings is required
+        assert reverse_test_time_aug  # Test Time augmentation function is required when testing
+
 
     if torch.cuda.is_available():
         net.cuda()
@@ -45,7 +51,6 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
             img_rles = {}
 
     epoch_start = time.time()
-    print('Model prepared: {:.2f} sec spent'.format(epoch_start - func_start))
 
     for i, (img_name, images, targets) in enumerate(data_loader):
         iter_start = time.time()
@@ -92,7 +97,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
             # merge tile predictions into image predictions
 
             func_start = time.time()
-            tile.merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles, is_ensemble=is_ensemble)
+            tile.merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles, is_ensemble=is_ensemble, reverse_test_time_aug=reverse_test_time_aug)
             func_end = time.time()
             #print('merge_preds takes {:.2f} sec. '.format(func_end - func_start))
 
@@ -120,7 +125,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
         assert len(tile_probs) == 0  # all tile predictions should now be merged into image predictions now
 
         if is_ensemble:
-            ensemble.mark_model_ensembled(exp_name)
+            ensemble.mark_model_ensembled(exp_name, test_time_aug_name)
         else:
             submit.save_predictions(exp_name, img_rles)
 
@@ -135,7 +140,6 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, pa
 
 
 if __name__ == "__main__":
-    program_start = time.time()
 
     parser = argparse.ArgumentParser()
     parser.add_argument('exp_name', nargs='?', default='PeterUnet3_all_aug_1280')
@@ -145,30 +149,23 @@ if __name__ == "__main__":
 
     cfg = config.load_config_file(exp_name)
 
-    # TODO add a loop to iterate thru all kinds of test time augmentations
-
-    # data_loader, tile_borders = get_small_loader(
-    # data_loader, tile_borders = get_val_loader(
-    data_loader, tile_borders = get_test_loader(
-        cfg['test']['batch_size'],
-        cfg['test']['paddings'],
-        cfg['test']['tile_size'],
-        cfg['test']['hflip'],
-        cfg['test']['shift'],
-        cfg['test']['color'],
-        cfg['test']['rotate'],
-        cfg['test']['scale'],
-        cfg['test']['fancy_pca'],
-        cfg['test']['edge_enh']
-    )
-    # TODO call test data loader with one certain augmentation
-
     net, _, criterion, _ = exp.load_exp(exp_name)
 
-    model_loaded = time.time()
-    print('Model loaded: {:.2f} sec spent'.format(model_loaded - program_start))
+    # TODO update all .yml files
+    TTA_funcs = augmentation.get_TTA_funcs(cfg['test']['test_time_aug'])
 
-    tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'], is_ensemble=True)
-    # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True)
+    for aug_name, test_time_aug, reverse_test_time_aug in TTA_funcs:
+        print('Now running Test Tiem Augmentaion: {}'.format(aug_name))
 
-    # Note that CRF doesn't seem to improve results in previous experiments
+        data_loader, tile_borders = get_test_loader(
+            cfg['test']['batch_size'],
+            cfg['test']['paddings'],
+            cfg['test']['tile_size'],
+            test_time_aug,
+        )
+
+        tester(exp_name, data_loader, tile_borders, net, criterion, paddings=cfg['test']['paddings'], test_time_aug_name=aug_name, reverse_test_time_aug=reverse_test_time_aug, is_ensemble=True)
+        # epoch_val_loss, epoch_val_accuracy = tester(exp_name, data_loader, tile_borders, net, criterion, is_val=True)
+
+        # Note that CRF doesn't seem to improve results in previous experiments
+    # for loop ends

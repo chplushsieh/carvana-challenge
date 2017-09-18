@@ -33,8 +33,10 @@ def save_prob_map(exp_name, img_name, img_prob):
         #print('Loading probability map takes {:.2f} sec. '.format(func_end - func_start))
 
         saved_prob_weight, img_prob_weight = ensemble.get_ensemble_weights()
+
         # TODO For test time aug, only add the part which got predicted in the current aug to the saved saved prob
         # Maybe use a mask to help achieve this?
+
         func_start = time.time()
         saved_prob = saved_prob.astype(np.float64)
         weighted_saved_prob = np.multiply(saved_prob, saved_prob_weight)

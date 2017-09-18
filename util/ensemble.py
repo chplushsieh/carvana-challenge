@@ -26,15 +26,14 @@ def get_models_ensembled():
 
     return model_names
 
-def mark_model_ensembled(exp_name):
+def mark_model_ensembled(exp_name, test_time_aug_name):
     ensembled_models_path = const.ENSEMBLED_MODELS_PATH
 
     create_file_if_not_exist(ensembled_models_path)
 
     # open file in 'append' mode
     with open(ensembled_models_path, 'a', newline='') as f:
-        # TODO save 'PeterUnet4,flip' instead of just 'PeterUnet4'
-        f.write(exp_name + '\n')  # insert as the last line
+        f.write(exp_name + ',' + test_time_aug_name + '\n')  # insert as the last line
 
     return
 
