@@ -37,8 +37,7 @@ def crf(img, prob):
 
     img = np.swapaxes(img, 0, 2)
     # img.shape: (width, height, num of channels)
-
-    # TODO
+    
     num_iter = 5
 
     prob = np.swapaxes(prob, 1, 2)  # shape: (1, width, height)
