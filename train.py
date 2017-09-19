@@ -172,13 +172,7 @@ if __name__ == "__main__":
         cfg['test']['batch_size'],
         cfg['test']['paddings'],
         cfg['test']['tile_size'],
-        cfg['test']['hflip'],
-        cfg['test']['shift'],
-        cfg['test']['color'],
-        cfg['test']['rotate'],
-        cfg['test']['scale'],
-        cfg['test']['fancy_pca'],
-        cfg['test']['edge_enh']
+        False, False, False, False, False, False, False
     )
 
     trainer(exp_name, train_data_loader, train_tile_borders, cfg, val_data_loader=val_data_loader, val_tile_borders=val_tile_borders, DEBUG=False)
