@@ -44,7 +44,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, te
 
         if is_ensemble:
             print('Predictions will be saved for later post processing. ')
-            print('Make sure you have at least 500 GB free disk space. ')
+            print('Make sure you have at least 250 GB free disk space. ')
             img_rles = None
         else:
             print('Will generate submission.csv for submission. ')

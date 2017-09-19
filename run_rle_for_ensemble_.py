@@ -1,3 +1,5 @@
+import time
+
 import util.ensemble as ensemble
 import util.submit as submit
 import util.const as const
@@ -8,6 +10,7 @@ def apply_rle(rle_loader):
     img_rles = {}
 
     for i, (img_name, rle) in enumerate(rle_loader):
+        iter_start = time.time()
         assert len(img_name) == 1
         assert len(rle) == 1
 
@@ -15,6 +18,8 @@ def apply_rle(rle_loader):
         rle = rle[0]
 
         img_rles[img_name] = rle
+        if (i % 1000) == 0:
+            print('Iter {} / {}, time spent: {} sec'.format(i, len(rle_loader), time.time() - iter_start))
 
     # save submission.csv
     submit.save_predictions(const.ENSEMBLE_DIR_NAME, img_rles)
