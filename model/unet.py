@@ -315,6 +315,45 @@ class DilationUpBlock3(nn.Module):
         return x
 
 
+class DilationDownBlock124(nn.Module):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu'):
+        super().__init__()
+        self.l1 = Dilation_Conv3BN(in_, out, bn, activation, dilation=1)
+        self.l2 = Dilation_Conv3BN(out, out, bn, activation, dilation=2)
+        self.l3 = Dilation_Conv3BN(out, out, bn, activation, dilation=4)
+
+    def forward(self, x):
+        x = self.l1(x)
+        x = self.l2(x)
+        x = self.l3(x)
+        return x
+
+class DilationUpBlock124(nn.Module):
+    def __init__(self, in_: int, out: int, *, bn=True, activation='relu', up='upsample'):
+        super().__init__()
+        self.l1 = Dilation_Conv3BN(in_, out, bn, activation, dilation=1)
+        self.l2 = Dilation_Conv3BN(out, out, bn, activation, dilation=2)
+        self.l3 = Dilation_Conv3BN(out, out, bn, activation, dilation=4)
+
+        if up == 'upconv':
+            self.up = nn.ConvTranspose2d(in_, out, 2, stride=2)
+        elif up == 'upsample':
+            self.up = nn.Upsample(scale_factor=2)
+
+    def forward(self, skip, x):
+        up = self.up(x)
+        x = torch.cat([up, skip], 1)
+
+        x = self.l1(x)
+        x = self.l2(x)
+        x = self.l3(x)
+
+        return x
+
+
+
+
+
 
 class InceptiondDownModule(nn.Module):
     def __init__(self, in_: int, out: int, *, bn=True, activation='relu'):
@@ -725,3 +764,6 @@ def DenseUnet():
 
 def HDCUnet3():
     return DynamicUnet(DownBlock=DilationDownBlock3, UpBlock=DilationUpBlock3, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
+def HDCUnet124():
+    return DynamicUnet(DownBlock=DilationDownBlock124, UpBlock=DilationUpBlock124, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
