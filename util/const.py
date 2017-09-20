@@ -11,10 +11,10 @@ VAL_IMAGESET_PATH   = os.path.join(DATA_DIR, 'val.csv')
 
 OUTPUT_DIR = './output'
 
-ENSEMBLE_DIR_NAME = 'ensemble'
-ENSEMBLE_DIR = os.path.join(OUTPUT_DIR, ENSEMBLE_DIR_NAME)
-ENSEMBLED_MODELS_PATH = os.path.join(ENSEMBLE_DIR, 'models_ensembled.txt')
-ENSEMBLE_PROB_DIR = os.path.join(ENSEMBLE_DIR, 'probs')
+# ENSEMBLE_DIR_NAME = 'ensemble'
+# ENSEMBLE_DIR = os.path.join(OUTPUT_DIR, ENSEMBLE_DIR_NAME)
+# ENSEMBLED_MODELS_PATH = os.path.join(ENSEMBLE_DIR, 'models_ensembled.txt')
+# ENSEMBLE_PROB_DIR = os.path.join(ENSEMBLE_DIR, 'probs')
 
 
 # Images are of size 1918 * 1280

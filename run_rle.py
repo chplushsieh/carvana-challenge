@@ -1,4 +1,5 @@
 import time
+import argparse
 
 import util.ensemble as ensemble
 import util.submit as submit
@@ -27,11 +28,18 @@ def apply_rle(rle_loader):
 
 
 if __name__ == "__main__":
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('pred_dir', nargs='?', default='PeterUnetInception2')
+    args = parser.parse_args()
 
-    exp_names = ensemble.get_models_ensembled()
+    pred_dir = args.pred_dir
+
+
+    exp_names = ensemble.get_models_ensembled(pred_dir)
     print('The predictions are ensemble by {}. '.format(exp_names))
 
-    # TODO print the augmentations as along as the models 
+    # TODO print the augmentations as along as the models
 
     rle_loader = rle_loader.get_rle_loader()
 

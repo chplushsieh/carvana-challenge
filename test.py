@@ -13,6 +13,7 @@ import util.tile as tile
 import util.crf as crf
 import util.ensemble as ensemble
 import util.augmentation as augmentation
+import util.get_time as get_time
 
 from dataloader import *
 import config
@@ -46,6 +47,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, te
             print('Predictions will be saved for later post processing. ')
             print('Make sure you have at least 250 GB free disk space. ')
             img_rles = None
+            ENSEMBLE_DIR = os.path.join(OUTPUT_DIR, get_time.get_current_time())
         else:
             print('Will generate submission.csv for submission. ')
             img_rles = {}
@@ -97,7 +99,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, te
             # merge tile predictions into image predictions
 
             func_start = time.time()
-            tile.merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles, is_ensemble=is_ensemble, reverse_test_time_aug=reverse_test_time_aug)
+            tile.merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles, is_ensemble=is_ensemble, ensemble_dir=ENSEMBLE_DIR, reverse_test_time_aug=reverse_test_time_aug)
             func_end = time.time()
             #print('merge_preds takes {:.2f} sec. '.format(func_end - func_start))
 

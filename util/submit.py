@@ -12,10 +12,9 @@ def get_pred_dir(exp_name):
     pred_dir = os.path.join(const.OUTPUT_DIR, exp_name, const.SAVED_PREDS_DIR_NAME)
     return pred_dir
 
-def save_prob_map(exp_name, img_name, img_prob):
+def save_prob_map(ensemble_dir, img_name, img_prob):
     '''
     input:
-      exp_name: a string, name of the experiemnt
       img_name: a string, name of the image
       img_prob: an numpy array of probability of each pixel being foreground(car)
     '''
@@ -23,25 +22,17 @@ def save_prob_map(exp_name, img_name, img_prob):
 
     assert img_prob.shape == const.img_size  # image shape: (1280, 1918)
 
-    exp.create_if_not_exist(const.ENSEMBLE_PROB_DIR)
-    save_path = os.path.join(const.ENSEMBLE_PROB_DIR, img_name + '.npy')
+    probs_dir = os.path.join(ensemble_dir, 'probs')
+
+    exp.create_if_not_exist(probs_dir)
+    save_path = os.path.join(probs_dir, img_name + '.npy')
 
     # convert from probability in percentage
     # ex: 0.92 -> 92(%)
     img_prob = np.multiply(img_prob, 100)
 
     if os.path.isfile(save_path):
-        saved_prob = np.load(save_path)
-
-        saved_prob_weight, img_prob_weight = ensemble.get_ensemble_weights()
-
-        # TODO For test time aug, only add the part which got predicted in the current aug to the saved saved prob
-        # Maybe use a mask to help achieve this?
-
-        weighted_saved_prob = np.multiply(saved_prob, saved_prob_weight)
-        weighted_img_prob = np.multiply(img_prob, img_prob_weight)
-
-        img_prob = np.add(weighted_img_prob, weighted_saved_prob)
+        print('Warning: {} already exists'.format(save_path))
 
     # img_prob.dtype == np.float64
     img_prob = img_prob.astype(np.int8) # which takes 0.014 sec while casting to np.float16 takes about 0.2 sec

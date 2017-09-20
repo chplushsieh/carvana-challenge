@@ -1,6 +1,8 @@
 import os
 import csv
 
+import numpy as np
+
 import util.const as const
 
 def create_file_if_not_exist(file_path):
@@ -11,10 +13,11 @@ def create_file_if_not_exist(file_path):
     return
 
 
-def get_models_ensembled():
+def get_models_ensembled(ensemble_dir):
     model_names = []
 
-    ensembled_models_path = const.ENSEMBLED_MODELS_PATH
+    ensembled_models_path = os.path.join(const.OUTPUT_DIR, ensemble_dir, 'models_ensembled.txt')
+
 
     create_file_if_not_exist(ensembled_models_path)
 
@@ -26,8 +29,8 @@ def get_models_ensembled():
 
     return model_names
 
-def mark_model_ensembled(exp_name, test_time_aug_name):
-    ensembled_models_path = const.ENSEMBLED_MODELS_PATH
+def mark_model_ensembled(ensemble_dir, exp_name, test_time_aug_name):
+    ensembled_models_path = os.path.join(const.OUTPUT_DIR, ensemble_dir, 'models_ensembled.txt')
 
     create_file_if_not_exist(ensembled_models_path)
 
@@ -37,10 +40,16 @@ def mark_model_ensembled(exp_name, test_time_aug_name):
 
     return
 
-def get_ensemble_weights():
-    ensembled_model_names = get_models_ensembled()
-    num_models_used = len(ensembled_model_names)
+def get_ensemble_weights(ensemble_dirs):
+    total_models = 0
+    weights = np.zeros(len(ensemble_dirs))
 
-    saved_prob_weight = num_models_used / (num_models_used + 1)
-    img_prob_weight   = 1 - saved_prob_weight
-    return saved_prob_weight, img_prob_weight
+    for i, ensemble_dir in enumerate(nsemble_dirs):
+        ensembled_model_names = get_models_ensembled(ensemble_dir)
+        num_models_used = len(ensembled_model_names)
+
+        total_models += num_models_used
+        weights[i] = num_models_used
+
+    weights = np.divide(weights, total_models)
+    return weights

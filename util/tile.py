@@ -204,7 +204,7 @@ def crop_tile(img, tile_pos, tile_size, tile_layout, tile_border):
 
     return cropped_img
 
-def merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles, is_ensemble=False, reverse_test_time_aug=None):
+def merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles, is_ensemble=False, ensemble_dir=None, reverse_test_time_aug=None):
     '''
     input:
       tile_probs: a dict of numpy arrays, with image tile names as keys and predicted probibility maps as values
@@ -214,6 +214,7 @@ def merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles, is_ensembl
     '''
     if is_ensemble:
         assert img_rles is None
+        assert ensemble_dir is not None
     else:
         assert img_rles is not None
         assert reverse_test_time_aug is None  # Never do Test Time augmentation right before submitting
@@ -253,7 +254,7 @@ def merge_preds_if_possible(exp_name, tile_probs, paddings, img_rles, is_ensembl
 
             if is_ensemble:
                 # save predictions
-                submit.save_prob_map(exp_name, img_name, img_prob)
+                submit.save_prob_map(ensemble_dir, img_name, img_prob)
             else:
                 # generate image mask from image probability map
                 img_mask = np.zeros(img_prob.shape)
