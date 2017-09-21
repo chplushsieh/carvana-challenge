@@ -7,7 +7,7 @@ import util.const as const
 
 import rle_loader
 
-def apply_rle(rle_loader):
+def apply_rle(pred_dir, rle_loader):
     img_rles = {}
 
     for i, (img_name, rle) in enumerate(rle_loader):
@@ -23,7 +23,7 @@ def apply_rle(rle_loader):
             print('Iter {} / {}, time spent: {} sec'.format(i, len(rle_loader), time.time() - iter_start))
 
     # save submission.csv
-    submit.save_predictions(const.ENSEMBLE_DIR_NAME, img_rles)
+    submit.save_predictions(pred_dir, img_rles)
     return
 
 
@@ -35,12 +35,11 @@ if __name__ == "__main__":
 
     pred_dir = args.pred_dir
 
-
     exp_names, test_time_aug_names = ensemble.get_models_ensembled(pred_dir)
-    print('The predictions are ensemble from {}. '.format(zip(exp_names, test_time_aug_names)))
+    print('The predictions are ensemble from {}. '.format(list(zip(exp_names, test_time_aug_names))))
 
     # TODO print the augmentations as along as the models
 
-    rle_loader = rle_loader.get_rle_loader()
+    rle_loader = rle_loader.get_rle_loader(pred_dir)
 
-    apply_rle(rle_loader)
+    apply_rle(pred_dir, rle_loader)

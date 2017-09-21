@@ -12,9 +12,11 @@ import util.run_length as run_length
 
 
 class RLErunner(torch.utils.data.dataset.Dataset):
-    def __init__(self):
-        self.pred_dir = const.ENSEMBLE_PROB_DIR
-        self.img_names = load.list_npy_in_dir(self.pred_dir)
+    def __init__(self, pred_dir):
+        self.pred_dir = pred_dir
+
+        pred_dir_path = os.path.join(const.OUTPUT_DIR, self.pred_dir, const.PROBS_DIR_NAME)
+        self.img_names = load.list_npy_in_dir(pred_dir_path)
         return
 
     def __len__(self):
@@ -24,7 +26,7 @@ class RLErunner(torch.utils.data.dataset.Dataset):
 
         img_name = self.img_names[idx]
 
-        pred_path = os.path.join(self.pred_dir, img_name + '.npy')
+        pred_path = os.path.join(const.OUTPUT_DIR, self.pred_dir, const.PROBS_DIR_NAME, img_name + '.npy')
         img_prob = np.load(pred_path)
         # TODO handle the case if file not found
 
@@ -38,9 +40,9 @@ class RLErunner(torch.utils.data.dataset.Dataset):
         return img_name, rle
 
 
-def get_rle_loader():
+def get_rle_loader(pred_dir):
 
-    dataset = RLErunner()
+    dataset = RLErunner(pred_dir)
 
     loader = torch.utils.data.dataloader.DataLoader(
                                 dataset,
