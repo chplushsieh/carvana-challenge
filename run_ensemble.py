@@ -34,8 +34,6 @@ if __name__ == "__main__":
         exp_names, test_time_aug_names = ensemble.get_models_ensembled(pred_dir)
         print('The predictions in {} are predicted by {}. '.format(pred_dir, list(zip(exp_names, test_time_aug_names))))
 
-        # TODO print the augmentations as along as the models
-
     ensemble_loader = ensemble_loader.get_ensemble_loader(pred_dirs)
 
     apply_ensemble(ensemble_loader)
