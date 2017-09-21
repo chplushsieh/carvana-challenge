@@ -31,8 +31,8 @@ if __name__ == "__main__":
     pred_dirs = args.pred_dirs
 
     for pred_dir in pred_dirs:
-        exp_names = ensemble.get_models_ensembled(pred_dir)
-        print('The predictions in {} are predicted by {}. '.format(pred_dir, exp_names))
+        exp_names, test_time_aug_names = ensemble.get_models_ensembled(pred_dir)
+        print('The predictions in {} are predicted by {}. '.format(pred_dir, zip(exp_names, test_time_aug_names)))
 
         # TODO print the augmentations as along as the models
 

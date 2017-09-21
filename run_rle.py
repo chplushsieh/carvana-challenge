@@ -28,7 +28,7 @@ def apply_rle(rle_loader):
 
 
 if __name__ == "__main__":
-    
+
     parser = argparse.ArgumentParser()
     parser.add_argument('pred_dir', nargs='?', default='PeterUnetInception2')
     args = parser.parse_args()
@@ -36,8 +36,8 @@ if __name__ == "__main__":
     pred_dir = args.pred_dir
 
 
-    exp_names = ensemble.get_models_ensembled(pred_dir)
-    print('The predictions are ensemble by {}. '.format(exp_names))
+    exp_names, test_time_aug_names = ensemble.get_models_ensembled(pred_dir)
+    print('The predictions are ensemble from {}. '.format(zip(exp_names, test_time_aug_names)))
 
     # TODO print the augmentations as along as the models
 
