@@ -30,7 +30,9 @@ class RLErunner(torch.utils.data.dataset.Dataset):
 
         # generate image mask
         img_mask = np.zeros(img_prob.shape)
-        img_mask[img_prob > 0.5] = 1
+        img_mask[img_prob > 50] = 1
+        # prob maps are saved in int8 with values ranging from 0 to 100
+        # The threshold for image mask is 50 instead of 0.5
 
         rle = run_length.encode(img_mask)
         return img_name, rle

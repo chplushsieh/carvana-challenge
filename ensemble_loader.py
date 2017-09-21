@@ -9,7 +9,7 @@ import util.const as const
 import util.load as load
 import util.ensemble as ensemble
 import util.submit as submit
-
+import util.get_time as get_time
 
 class EnsembleRunner(torch.utils.data.dataset.Dataset):
     def __init__(self, pred_dirs):
@@ -20,6 +20,9 @@ class EnsembleRunner(torch.utils.data.dataset.Dataset):
         # TODO verify same number of pred maps in each dir
         first_pred_dir_path = os.path.join(const.OUTPUT_DIR, self.pred_dirs[0])
         self.img_names = load.list_npy_in_dir(first_pred_dir_path)
+
+        self.ensemble_dir = get_time.get_current_time()
+
         return
 
     def __len__(self):
@@ -42,6 +45,9 @@ class EnsembleRunner(torch.utils.data.dataset.Dataset):
             # Maybe use a mask to help achieve this?
 
             # TODO delete saved prob maps that get ensembled?
+
+        # save into new output/ folder
+        submit.save_prob_map(self.ensemble_dir, img_name, ensembled)
 
         return img_name, ensembled
 

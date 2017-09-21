@@ -22,7 +22,7 @@ def save_prob_map(ensemble_dir, img_name, img_prob):
 
     assert img_prob.shape == const.img_size  # image shape: (1280, 1918)
 
-    probs_dir = os.path.join(ensemble_dir, 'probs')
+    probs_dir = os.path.join(const.OUTPUT_DIR, ensemble_dir, 'probs')
 
     exp.create_if_not_exist(probs_dir)
     save_path = os.path.join(probs_dir, img_name + '.npy')
