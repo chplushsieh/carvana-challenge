@@ -44,7 +44,7 @@ def get_ensemble_weights(ensemble_dirs):
     total_models = 0
     weights = np.zeros(len(ensemble_dirs))
 
-    for i, ensemble_dir in enumerate(nsemble_dirs):
+    for i, ensemble_dir in enumerate(ensemble_dirs):
         ensembled_model_names = get_models_ensembled(ensemble_dir)
         num_models_used = len(ensembled_model_names)
 
