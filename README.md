@@ -47,12 +47,9 @@ My Solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.c
 3. Run `python train.py`
 
 3. Run `python test.py <experiment_name>`
+   For example, running `python test.py PeterUnet3_dropout`
 
-   If you'd like to ensemble results from more than one experiemnts, simeply run `test.py` as many times as you want.
-
-   For example, running `python test.py PeterUnet3_dropout` and then `python test.py PeterUnet4` will automatically save average predictions of `PeterUnet3_dropout.yml` and `PeterUnet4.yml` in `./output/ensemble/prob`. And names of ensembled experiments will be listed in `./output/ensemble/models_ensembled.txt`
-
-   :warning: Before you run `test.py` the first time, make sure you have at least `500GB` free disk space to save prediction results. 
+   :warning: Before you run `test.py` the first time, make sure you have at least `250GB` free disk space to save prediction results.
 
 5. Run `python run_ensemble.py --pred_dirs <exp_output_dir_1> <exp_output_dir_2> ... <exp_output_dir_n>`
    For example, run `python run_ensemble.py 0921-05:59:53 0921-06:00:00  0921-06:00:05` to ensemble three predictions
