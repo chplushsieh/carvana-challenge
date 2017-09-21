@@ -24,7 +24,7 @@ def save_prob_map(ensemble_dir, img_name, img_prob):
 
     probs_dir = os.path.join(const.OUTPUT_DIR, ensemble_dir, const.PROBS_DIR_NAME)
 
-    exp.create_if_not_exist(probs_dir)
+    exp.create_dir_if_not_exist(probs_dir)
     save_path = os.path.join(probs_dir, img_name + '.npy')
 
     # convert from probability in percentage

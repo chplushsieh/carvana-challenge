@@ -4,6 +4,7 @@ import csv
 import numpy as np
 
 import util.const as const
+import util.exp as exp
 
 def create_file_if_not_exist(file_path):
     # create empty file if it doesn't exist
@@ -31,8 +32,10 @@ def get_models_ensembled(ensemble_dir):
     return model_names, test_time_aug_names
 
 def mark_model_ensembled(ensemble_dir, exp_name, test_time_aug_name):
-    ensembled_models_path = os.path.join(const.OUTPUT_DIR, ensemble_dir, 'models_ensembled.txt')
+    ensemble_dir_path = os.path.join(const.OUTPUT_DIR, ensemble_dir)
+    exp.create_dir_if_not_exist(ensemble_dir_path)
 
+    ensembled_models_path = os.path.join(ensemble_dir_path, 'models_ensembled.txt')
     create_file_if_not_exist(ensembled_models_path)
 
     # open file in 'append' mode
