@@ -11,6 +11,7 @@ import util.ensemble as ensemble
 import util.submit as submit
 import util.get_time as get_time
 import util.exp as exp
+import matplotlib.pyplot as plt
 
 class EnsembleRunner(torch.utils.data.dataset.Dataset):
     def __init__(self, pred_dirs):
@@ -55,6 +56,8 @@ class EnsembleRunner(torch.utils.data.dataset.Dataset):
 
         # save into new output/ folder
         submit.save_prob_map(self.ensemble_dir, img_name, ensembled)
+        #plt.imshow(ensembled)
+        #plt.show()
 
         return img_name, ensembled
 

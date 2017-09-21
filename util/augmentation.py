@@ -26,10 +26,11 @@ def get_TTA_funcs(is_TTA):
         scale_size = randrange(90, 110) / 100
         funcs = [
                     ("nothing",   None,                   None),
-                    ("color",     lambda x:color_enable(x),      None),
+                    ("color",     lambda x: color_enable(x),      None),
                     ("fancy_pca", lambda x: fancy_pca_enable(x), None),
-                    # ("shift",     lambda x: shift(x,hshift, vshift),     lambda x: shift(x,-hshift, -vshift)),
-                    # ("scale",     lambda x: scale_enable(x,scale_size),     lambda x: scale_enable(x,1/scale_size))
+                    ("hflip",     lambda x: hflip(x),        lambda x: hflip(x)),
+                    ("shift",     lambda x: shift(x , hshift, vshift),     lambda x: shift(x, -hshift, -vshift)),
+                    ("scale",     lambda x: scale_enable(x, scale_size),     lambda x: scale_enable(x,1/scale_size))
         ]
 
     return funcs
@@ -39,36 +40,70 @@ def color_enable(img):
     input:
       img: (3, height, width)
     '''
-    img = np.swapaxes(img, 0, 2)
+    #print(img.shape)
+    img = np.moveaxis(img, 0, 2)
     # img.shape: (height, width, 3)
 
     img = color.transform(img)
 
-    img = np.swapaxes(img, 0, 2)
-    # img.shape: (height, width, 3)
+    img = np.moveaxis(img, 2, 0)
+    # img.shape: (3, height, width)
 
     return img
 
 def fancy_pca_enable(img):
-    img = np.swapaxes(img, 0, 2)
+    #print(img.shape)
+    img = np.moveaxis(img, 0, 2)
     # img.shape: (height, width, 3)
 
     img = fancy_pca.rgb_shift(img)
 
-    img = np.swapaxes(img, 0, 2)
-    # img.shape: (height, width, 3)
+    img = np.moveaxis(img, 2, 0)
+    # img.shape: (3, height, width)
 
     return img
 
-def shift(img,hshift, vshift):
-    img = np.roll(img, hshift, axis=2).copy()
 
-    img = np.roll(img, vshift, axis=1).copy()
+
+def hflip(img):
+    if img.shape == (3, 1280, 1918):
+        img = np.swapaxes(img, 0, 2)  # img.shape: (width, height, num of channels)
+
+        img = np.flipud(img).copy()
+
+        img = np.swapaxes(img, 0, 2)
+    else:
+        assert img.shape == (1280,1918)
+        img = np.swapaxes(img, 0, 1)
+        img = np.flipud(img).copy()
+        img = np.swapaxes(img, 0, 1)
+
+    return img
+
+
+
+def shift(img,hshift, vshift):
+    if img.shape == (3,1280,1918):
+        img = np.roll(img, hshift, axis=2).copy()
+
+        img = np.roll(img, vshift, axis=1).copy()
+
+    else:
+        img = np.roll(img, hshift, axis=1).copy()
+
+        img = np.roll(img, vshift, axis=0).copy()
 
     return img
 
 def scale_enable(img, scale_size):
-    img = scale.resize_TTA(img, scale_size).copy()
+    if img.shape == (3,1280,1918):
+        img = scale.resize_TTA(img, scale_size).copy()
+
+    else:
+        img = np.expand_dims(img, axis=0)
+        img = scale.resize_TTA(img, scale_size).copy()
+        img = np.squeeze(img, axis=0)
+    
 
 
     return img
