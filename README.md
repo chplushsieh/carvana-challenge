@@ -47,11 +47,13 @@ My Solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.c
 3. Run `python train.py`
 
 3. Run `python test.py <experiment_name>`
+
    For example, running `python test.py PeterUnet3_dropout`
 
    :warning: Before you run `test.py` the first time, make sure you have at least `250GB` free disk space to save prediction results.
 
 5. Run `python run_ensemble.py --pred_dirs <exp_output_dir_1> <exp_output_dir_2> ... <exp_output_dir_n>`
+
    For example, run `python run_ensemble.py 0921-05:59:53 0921-06:00:00  0921-06:00:05` to ensemble three predictions
 
 6. Run `python run_rle.py <exp_output_dir>` to generate submission at `./output/<exp_output_dir>/submission.csv`
