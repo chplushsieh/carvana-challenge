@@ -28,8 +28,8 @@ def get_TTA_funcs(is_TTA):
                     ("nothing",   None,                   None),
                     ("color",     lambda x:color_enable(x),      None),
                     ("fancy_pca", lambda x: fancy_pca_enable(x), None),
-                    ("shift",     lambda x: shift(x,hshift, vshift),     lambda x: shift(x,-hshift, -vshift)),
-                    ("scale",     lambda x: scale_enable(x,scale_size),     lambda x: scale_enable(x,1/scale_size))
+                    # ("shift",     lambda x: shift(x,hshift, vshift),     lambda x: shift(x,-hshift, -vshift)),
+                    # ("scale",     lambda x: scale_enable(x,scale_size),     lambda x: scale_enable(x,1/scale_size))
         ]
 
     return funcs
