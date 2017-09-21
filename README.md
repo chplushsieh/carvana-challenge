@@ -46,7 +46,7 @@ My Solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.c
 
 3. Run `python train.py`
 
-3. Run `python test.py <experiment_name>`
+4. Run `python test.py <experiment_name>`
 
    For example, running `python test.py PeterUnet3_dropout`
 
