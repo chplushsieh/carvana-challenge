@@ -19,7 +19,7 @@ class EnsembleRunner(torch.utils.data.dataset.Dataset):
         self.weights = ensemble.get_ensemble_weights(self.pred_dirs)
 
         # TODO verify same number of pred maps in each dir
-        first_pred_dir_path = os.path.join(const.OUTPUT_DIR, self.pred_dirs[0], 'probs')
+        first_pred_dir_path = os.path.join(const.OUTPUT_DIR, self.pred_dirs[0], const.PROBS_DIR_NAME)
         self.img_names = load.list_npy_in_dir(first_pred_dir_path)
 
         self.ensemble_dir = get_time.get_current_time()
@@ -36,7 +36,7 @@ class EnsembleRunner(torch.utils.data.dataset.Dataset):
         ensembled = np.zeros(const.img_size)
 
         for i, pred_dir in enumerate(self.pred_dirs):
-            pred_path = os.path.join(const.OUTPUT_DIR, pred_dir, 'probs', img_name + '.npy')
+            pred_path = os.path.join(const.OUTPUT_DIR, pred_dir, const.PROBS_DIR_NAME, img_name + '.npy')
             img_prob = np.load(pred_path)
             # TODO handle the case if file not found
 
