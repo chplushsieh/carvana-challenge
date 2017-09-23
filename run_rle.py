@@ -22,7 +22,7 @@ def apply_rle(pred_dir, rle_loader):
         if (i % 1000) == 0:
             print('Iter {} / {}, time spent: {} sec'.format(i, len(rle_loader), time.time() - iter_start))
 
-    # save submission.csv
+    # save into submission.csv
     submit.save_predictions(pred_dir, img_rles)
     return
 
@@ -37,8 +37,6 @@ if __name__ == "__main__":
 
     exp_names, test_time_aug_names = ensemble.get_models_ensembled(pred_dir)
     print('The predictions are ensemble from {}. '.format(list(zip(exp_names, test_time_aug_names))))
-
-    # TODO print the augmentations as along as the models
 
     rle_loader = rle_loader.get_rle_loader(pred_dir)
 

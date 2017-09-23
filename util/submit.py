@@ -53,7 +53,10 @@ def save_predictions(exp_name, preds):
     '''
     func_start = time.time()
 
-    save_path = os.path.join(const.OUTPUT_DIR, exp_name, 'submission.csv')
+    exp_dir = os.path.join(const.OUTPUT_DIR, exp_name)
+    exp.create_dir_if_not_exist(exp_dir)
+    
+    save_path = os.path.join(exp_dir, 'submission.csv')
 
     preds=pd.DataFrame(list(preds.items()), columns=['img', 'rle_mask'])
     preds['img'] = preds['img'].apply(lambda x: x+'.jpg')
