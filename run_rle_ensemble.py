@@ -1,6 +1,9 @@
 import time
 import argparse
 
+import scipy
+import numpy as np
+
 import util.ensemble as ensemble
 import util.submit as submit
 import util.const as const
@@ -22,9 +25,9 @@ def load_submissions(pred_dirs):
 def rle_ensemble(submissions):
 
     ensembled_rles = {}
-    img_names = None # TODO
+    img_names = list(ensembled_rles.keys())
     for img_name in img_names:
-        masks = np.zeros()
+        masks = np.zeros(len(submissions), const.img_size[0], const.img_size[1])
 
         for i, submission in enumerate(submissions):
 
@@ -32,7 +35,7 @@ def rle_ensemble(submissions):
             mask = run_length.decode(rle)
             masks[i] = mask
 
-        ensembled_mask = None # TODO average of masks
+        ensembled_mask, _ = scipy.stats.mode(masks)
         ensembled_rle = run_length.encode(ensembled_mask)
         ensembled_rles[img_name] = ensembled_rle
     return ensembled_rles
