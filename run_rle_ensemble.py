@@ -10,37 +10,28 @@ import util.const as const
 import util.run_length as run_length
 import util.get_time as get_time
 
-def load_submissions(pred_dirs):
+import rle_ensemble_loader
 
-    submissions = []
-    for pred_dir in pred_dirs:
-        exp_names, test_time_aug_names = ensemble.get_models_ensembled(pred_dir)
-        print('The predictions in {} are predicted by {}. '.format(pred_dir, list(zip(exp_names, test_time_aug_names))))
-
-        rles = submit.load_predictions(pred_dir)
-        submissions.append(rles)
-
-    return submissions
-
-def rle_ensemble(submissions):
-
+def apply_ensemble(ensemble_loader):
+    output_dir = get_time.get_current_time()
     ensembled_rles = {}
-    img_names = list(submissions[0].keys())
-    for i, img_name in enumerate(img_names):
+
+    for i, (img_name, rle) in enumerate(ensemble_loader):
         iter_start = time.time()
-        masks = np.zeros((len(submissions), const.img_size[0], const.img_size[1]))
+        assert len(img_name) == 1
+        assert len(rle) == 1
 
-        for i, submission in enumerate(submissions):
+        img_name = img_name[0]
+        rle = rle[0]
 
-            rle = submission[img_name]
-            mask = run_length.decode(rle)
-            masks[i] = mask
+        ensembled_rles[img_name] = rle
 
-        ensembled_mask, _ = stats.mode(masks)
-        ensembled_rle = run_length.encode(ensembled_mask)
-        ensembled_rles[img_name] = ensembled_rle
-        print('{}/{} : {:.2f} sec '.format(i, len(img_names), time.time() - iter_start))
-    return ensembled_rles
+        if (i % 1000) == 0:
+            print('Iter {} / {}, time spent: {} sec'.format(i, len(ensemble_loader), time.time() - iter_start))
+
+    # save into submission.csv
+    submit.save_predictions(output_dir, ensembled_rles)
+    return
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -48,10 +39,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     pred_dirs = args.pred_dirs
-    output_dir = get_time.get_current_time()
 
-    submissions = load_submissions(pred_dirs)  # TODO load weightes from models.txt as well
-    ensembled_rles = rle_ensemble(submissions)
+    rle_ensemble_loader = rle_ensemble_loader.get_rle_ensemble_loader(pred_dirs)
 
-    # save into submission.csv
-    submit.save_predictions(output_dir, ensembled_rles)
+    apply_ensemble(rle_ensemble_loader)
