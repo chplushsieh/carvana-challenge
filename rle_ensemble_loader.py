@@ -2,16 +2,13 @@ import torch
 import torch.utils.data
 
 import os
-
+from scipy import stats
 import numpy as np
 
 import util.const as const
-import util.load as load
 import util.ensemble as ensemble
 import util.submit as submit
-import util.get_time as get_time
 import util.run_length as run_length
-import util.exp as exp
 import matplotlib.pyplot as plt
 
 def load_submissions(pred_dirs):
@@ -32,7 +29,7 @@ class RleEnsembleRunner(torch.utils.data.dataset.Dataset):
         self.submissions = load_submissions(pred_dirs)
 
         # TODO verify same number in each dir
-        img_names = list(submissions[0].keys())
+        img_names = list(self.submissions[0].keys())
 
         # TODO self.weights = ensemble.get_ensemble_weights(self.pred_dirs)
 
@@ -68,7 +65,7 @@ class RleEnsembleRunner(torch.utils.data.dataset.Dataset):
         return img_name, ensembled_rle
 
 
-def get_ensemble_loader(pred_dirs):
+def get_rle_ensemble_loader(pred_dirs):
 
     dataset = RleEnsembleRunner(pred_dirs)
 
