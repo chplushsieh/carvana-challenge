@@ -14,7 +14,7 @@ def load_submissions(pred_dirs):
         exp_names, test_time_aug_names = ensemble.get_models_ensembled(pred_dir)
         print('The predictions in {} are predicted by {}. '.format(pred_dir, list(zip(exp_names, test_time_aug_names))))
 
-        rles = None # TODO
+        rles = submit.load_predictions(pred_dir)
         submissions.append(rles)
 
     return submissions

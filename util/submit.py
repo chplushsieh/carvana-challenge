@@ -55,13 +55,47 @@ def save_predictions(exp_name, preds):
 
     exp_dir = os.path.join(const.OUTPUT_DIR, exp_name)
     exp.create_dir_if_not_exist(exp_dir)
-    
+
     save_path = os.path.join(exp_dir, 'submission.csv')
 
+    # TODO rewrite to not use pandas dataframe
     preds=pd.DataFrame(list(preds.items()), columns=['img', 'rle_mask'])
     preds['img'] = preds['img'].apply(lambda x: x+'.jpg')
     preds.to_csv(save_path, index= False )
 
     func_end = time.time()
-    print('{:.2f} sec spent saving into .csv file'.format(func_end - func_start))
+    print('{:.2f} sec spent saving into {}'.format(func_end - func_start, save_path))
     return
+
+def remove_extension(filename):
+    return os.path.splitext(filename)[0])
+
+def load_predictions(exp_name):
+    '''
+    input:
+      exp_name: a string which is the experiemnt name
+    output:
+      preds: a dict of strings, with image names as keys and predicted run-length-encoded masks as values
+    '''
+    func_start = time.time()
+
+    exp_dir = os.path.join(const.OUTPUT_DIR, exp_name)
+    load_path = os.path.join(exp_dir, 'submission.csv')
+
+    preds = {}
+    with open(load_path, newline='') as f:
+        reader = csv.reader(f)
+        for i, line in enumerate(reader):
+
+            # skip if it's the first line
+            if i == 0:
+                assert row[0] == 'img'
+                assert row[1] == 'rle_mask'
+                continue
+
+            img_name = remove_extension(row[0])
+            preds[img_name] = row[1]
+
+    func_end = time.time()
+    print('{:.2f} sec spent loading from {}'.format(func_end - func_start, load_path))
+    return preds
