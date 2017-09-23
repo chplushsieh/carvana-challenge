@@ -7,7 +7,7 @@ import numpy as np
 import util.ensemble as ensemble
 import util.submit as submit
 import util.const as const
-import util.run_length
+import util.run_length as run_length
 import util.get_time as get_time
 
 def load_submissions(pred_dirs):
@@ -53,4 +53,3 @@ if __name__ == "__main__":
 
     # save into submission.csv
     submit.save_predictions(output_dir, ensembled_rles)
-    return

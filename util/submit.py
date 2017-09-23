@@ -1,12 +1,12 @@
 import os
 import time
+import csv
 
 import numpy as np
 import pandas as pd
 
 import util.exp as exp
 import util.const as const
-import util.ensemble as ensemble
 
 def get_pred_dir(exp_name):
     pred_dir = os.path.join(const.OUTPUT_DIR, exp_name, const.SAVED_PREDS_DIR_NAME)
@@ -68,7 +68,7 @@ def save_predictions(exp_name, preds):
     return
 
 def remove_extension(filename):
-    return os.path.splitext(filename)[0])
+    return os.path.splitext(filename)[0]
 
 def load_predictions(exp_name):
     '''
@@ -85,7 +85,7 @@ def load_predictions(exp_name):
     preds = {}
     with open(load_path, newline='') as f:
         reader = csv.reader(f)
-        for i, line in enumerate(reader):
+        for i, row in enumerate(reader):
 
             # skip if it's the first line
             if i == 0:
