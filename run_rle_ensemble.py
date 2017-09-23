@@ -1,7 +1,7 @@
 import time
 import argparse
 
-import scipy
+from scipy import stats
 import numpy as np
 
 import util.ensemble as ensemble
@@ -25,9 +25,10 @@ def load_submissions(pred_dirs):
 def rle_ensemble(submissions):
 
     ensembled_rles = {}
-    img_names = list(ensembled_rles.keys())
-    for img_name in img_names:
-        masks = np.zeros(len(submissions), const.img_size[0], const.img_size[1])
+    img_names = list(submissions[0].keys())
+    for i, img_name in enumerate(img_names):
+        iter_start = time.time()
+        masks = np.zeros((len(submissions), const.img_size[0], const.img_size[1]))
 
         for i, submission in enumerate(submissions):
 
@@ -35,9 +36,10 @@ def rle_ensemble(submissions):
             mask = run_length.decode(rle)
             masks[i] = mask
 
-        ensembled_mask, _ = scipy.stats.mode(masks)
+        ensembled_mask, _ = stats.mode(masks)
         ensembled_rle = run_length.encode(ensembled_mask)
         ensembled_rles[img_name] = ensembled_rle
+        print('{}/{} : {:.2f} sec '.format(i, len(img_names), time.time() - iter_start))
     return ensembled_rles
 
 if __name__ == "__main__":
@@ -48,7 +50,7 @@ if __name__ == "__main__":
     pred_dirs = args.pred_dirs
     output_dir = get_time.get_current_time()
 
-    submissions = load_submissions(pred_dirs)
+    submissions = load_submissions(pred_dirs)  # TODO load weightes from models.txt as well
     ensembled_rles = rle_ensemble(submissions)
 
     # save into submission.csv

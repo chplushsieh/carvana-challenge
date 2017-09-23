@@ -1,6 +1,7 @@
 
 import numpy as np
-from PIL import Image
+
+import util.const as const
 
 '''
 Carvana competition uses Run Length encoding to reduce the size of submission:
