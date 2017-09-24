@@ -28,9 +28,10 @@ def apply_rle(pred_dir, rle_loader):
 
 
 if __name__ == "__main__":
+    program_start = time.time()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('pred_dir', nargs='?', default='PeterUnetInception2')
+    parser.add_argument('pred_dir', nargs='?', default='0922-03:34:53')
     args = parser.parse_args()
 
     pred_dir = args.pred_dir
@@ -41,3 +42,4 @@ if __name__ == "__main__":
     rle_loader = rle_loader.get_rle_loader(pred_dir)
 
     apply_rle(pred_dir, rle_loader)
+    print('Total time spent: {} sec = {} hours'.format(time.time() - program_start, (time.time() - program_start) / 3600))
