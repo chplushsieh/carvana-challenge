@@ -141,6 +141,7 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, te
 
 
 if __name__ == "__main__":
+    program_start = time.time()
 
     parser = argparse.ArgumentParser()
     parser.add_argument('exp_name', nargs='?', default='PeterUnet3_all_aug_1280')
@@ -153,9 +154,10 @@ if __name__ == "__main__":
     net, _, criterion, _ = exp.load_exp(exp_name)
 
     TTA_funcs = augmentation.get_TTA_funcs(cfg['test']['test_time_aug'])
+    print('{} test time augmentations to be run...'.format(len(TTA_funcs)))
 
     for aug_name, test_time_aug, reverse_test_time_aug in TTA_funcs:
-        print('Now running Test Tiem Augmentaion: {}'.format(aug_name))
+        print('\n\nNow running Test Tiem Augmentaion: {}'.format(aug_name))
 
         # data_loader, tile_borders = get_small_test_loader(
         data_loader, tile_borders = get_test_loader(
@@ -170,3 +172,4 @@ if __name__ == "__main__":
 
         # Note that CRF doesn't seem to improve results in previous experiments
     # for loop ends
+    print('Total time spent: {} secs = {} hours'.format(time.time - program_start, (time.time - program_start)/3600))
