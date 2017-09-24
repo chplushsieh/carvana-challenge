@@ -103,7 +103,8 @@ def tester(exp_name, data_loader, tile_borders, net, criterion, is_val=False, te
             #print('merge_preds takes {:.2f} sec. '.format(func_end - func_start))
 
             iter_end = time.time()
-            print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
+            if (i % 2000) == 0:
+                print('Iter {}/{}: {:.2f} sec spent'.format(i, len(data_loader), iter_end - iter_start))
 
         if DEBUG:
             # convert to numpy array
