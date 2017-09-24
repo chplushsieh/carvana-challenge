@@ -172,4 +172,4 @@ if __name__ == "__main__":
 
         # Note that CRF doesn't seem to improve results in previous experiments
     # for loop ends
-    print('Total time spent: {} secs = {} hours'.format(time.time - program_start, (time.time - program_start)/3600))
+    print('Total time spent: {} secs = {} hours'.format(time.time() - program_start, (time.time() - program_start)/3600))
