@@ -2,7 +2,6 @@ import torch
 import torch.utils.data
 
 import os
-from scipy import stats
 import numpy as np
 
 import util.const as const
@@ -44,21 +43,21 @@ class RleEnsembleRunner(torch.utils.data.dataset.Dataset):
 
         img_name = self.img_names[idx]
 
-
-        masks = np.zeros((len(self.submissions), const.img_size[0], const.img_size[1]))
+        ensembled_mask = np.zeros((const.img_size[0], const.img_size[1]))
 
         for i, submission in enumerate(self.submissions):
 
             rle = submission[img_name]
             mask = run_length.decode(rle)
-            masks[i] = mask
+            weighted_mask = np.multiply(mask, self.weights[i])
+            ensembled_mask = np.add(ensembled_mask, weighted_mask)
 
-            # TODO use self.weights
+        ensembled_mask[ ensembled_mask > 0.5 ] = 1
+        ensembled_mask[ ensembled_mask <= 0.5 ] = 0
 
-
-        ensembled_mask, _ = stats.mode(masks)
         # plt.imshow(ensembled_mask)
         # plt.show()
+
         ensembled_rle = run_length.encode(ensembled_mask)
 
         return img_name, ensembled_rle
