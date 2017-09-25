@@ -12,8 +12,7 @@ import util.get_time as get_time
 
 import rle_ensemble_loader
 
-def apply_ensemble(ensemble_loader):
-    output_dir = get_time.get_current_time()
+def apply_ensemble(ensemble_loader, ensemble_dir):
     ensembled_rles = {}
 
     iter_timer = time.time()
@@ -31,7 +30,7 @@ def apply_ensemble(ensemble_loader):
             iter_timer = time.time()
 
     # save into submission.csv
-    submit.save_predictions(output_dir, ensembled_rles)
+    submit.save_predictions(ensemble_dir, ensembled_rles)
     return
 
 if __name__ == "__main__":
@@ -41,6 +40,8 @@ if __name__ == "__main__":
 
     pred_dirs = args.pred_dirs
 
-    rle_ensemble_loader = rle_ensemble_loader.get_rle_ensemble_loader(pred_dirs)
+    ensemble_dir = get_time.get_current_time()
 
-    apply_ensemble(rle_ensemble_loader)
+    rle_ensemble_loader = rle_ensemble_loader.get_rle_ensemble_loader(pred_dirs, ensemble_dir)
+
+    apply_ensemble(rle_ensemble_loader, ensemble_dir)

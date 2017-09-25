@@ -25,12 +25,7 @@ class EnsembleRunner(torch.utils.data.dataset.Dataset):
 
         self.ensemble_dir = get_time.get_current_time()
 
-        # create self.ensemble_dir/models_ensembled.txt
-        for pred_dir in self.pred_dirs:
-            exp_names, test_time_aug_names = ensemble.get_models_ensembled(pred_dir)
-
-            for exp_name, test_time_aug_name in zip(exp_names, test_time_aug_names):
-                ensemble.mark_model_ensembled(self.ensemble_dir, exp_name, test_time_aug_name)
+        ensemble.create_models_ensembled(self.pred_dirs, self.ensemble_dir)
         return
 
     def __len__(self):

@@ -13,6 +13,16 @@ def create_file_if_not_exist(file_path):
 
     return
 
+def create_models_ensembled(pred_dirs, ensemble_dir):
+
+    # create self.ensemble_dir/models_ensembled.txt
+    for pred_dir in pred_dirs:
+        exp_names, test_time_aug_names = get_models_ensembled(pred_dir)
+
+        for exp_name, test_time_aug_name in zip(exp_names, test_time_aug_names):
+            mark_model_ensembled(ensemble_dir, exp_name, test_time_aug_name)
+    return 
+
 
 def get_models_ensembled(ensemble_dir):
     model_names = []

@@ -24,21 +24,17 @@ def load_submissions(pred_dirs):
     return submissions
 
 class RleEnsembleRunner(torch.utils.data.dataset.Dataset):
-    def __init__(self, pred_dirs):
+    def __init__(self, pred_dirs, ensemble_dir):
         self.pred_dirs = pred_dirs
         self.submissions = load_submissions(pred_dirs)
 
         # TODO verify same number in each dir
         self.img_names = list(self.submissions[0].keys())
 
-        # TODO self.weights = ensemble.get_ensemble_weights(self.pred_dirs)
+        self.weights = ensemble.get_ensemble_weights(self.pred_dirs)
 
-        # create self.ensemble_dir/models_ensembled.txt
-        # for pred_dir in self.pred_dirs:
-        #     exp_names, test_time_aug_names = ensemble.get_models_ensembled(pred_dir)
-        #
-        #     for exp_name, test_time_aug_name in zip(exp_names, test_time_aug_names):
-        #         ensemble.mark_model_ensembled(self.ensemble_dir, exp_name, test_time_aug_name)
+        self.ensemble_dir = ensemble_dir
+        ensemble.create_models_ensembled(self.pred_dirs, self.ensemble_dir)
         return
 
     def __len__(self):
@@ -57,6 +53,9 @@ class RleEnsembleRunner(torch.utils.data.dataset.Dataset):
             mask = run_length.decode(rle)
             masks[i] = mask
 
+            # TODO use self.weights
+
+
         ensembled_mask, _ = stats.mode(masks)
         # plt.imshow(ensembled_mask)
         # plt.show()
@@ -65,9 +64,9 @@ class RleEnsembleRunner(torch.utils.data.dataset.Dataset):
         return img_name, ensembled_rle
 
 
-def get_rle_ensemble_loader(pred_dirs):
+def get_rle_ensemble_loader(pred_dirs, ensemble_dir):
 
-    dataset = RleEnsembleRunner(pred_dirs)
+    dataset = RleEnsembleRunner(pred_dirs, ensemble_dir)
 
     loader = torch.utils.data.dataloader.DataLoader(
                                 dataset,
