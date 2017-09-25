@@ -16,8 +16,8 @@ def apply_ensemble(ensemble_loader):
     output_dir = get_time.get_current_time()
     ensembled_rles = {}
 
+    iter_timer = time.time()
     for i, (img_name, rle) in enumerate(ensemble_loader):
-        iter_start = time.time()
         assert len(img_name) == 1
         assert len(rle) == 1
 
@@ -27,7 +27,8 @@ def apply_ensemble(ensemble_loader):
         ensembled_rles[img_name] = rle
 
         if (i % 1000) == 0:
-            print('Iter {} / {}, time spent: {} sec'.format(i, len(ensemble_loader), time.time() - iter_start))
+            print('Iter {} / {}, time spent since last logging: {} sec'.format(i, len(ensemble_loader), time.time() - iter_timer))
+            iter_timer = time.time()
 
     # save into submission.csv
     submit.save_predictions(output_dir, ensembled_rles)

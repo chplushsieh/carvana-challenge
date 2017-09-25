@@ -9,8 +9,10 @@ import ensemble_loader
 
 def apply_ensemble(ensemble_loader):
 
+    iter_timer = time.time()
+
     for i, (img_name, img_prob) in enumerate(ensemble_loader):
-        iter_start = time.time()
+
         assert len(img_name) == 1
         assert len(img_prob) == 1
 
@@ -18,7 +20,8 @@ def apply_ensemble(ensemble_loader):
         img_name = img_prob[0]
 
         if (i % 1000) == 0:
-            print('Iter {} / {}, time spent: {} sec'.format(i, len(ensemble_loader), time.time() - iter_start))
+            print('Iter {} / {}, time spent since last logging: {} sec'.format(i, len(ensemble_loader), time.time() - iter_timer))
+            iter_timer = time.time()
 
     return
 
