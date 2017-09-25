@@ -65,7 +65,7 @@ def load_train_image(data_dir, img_name,
     img = load_image_file(data_dir, img_file_name, img_ext, rotate)
     # img.shape: (height, width, 3)
 
-    if is_color_trans:
+    if is_color_trans :
         img = color.transform(img)
     if is_fancy_pca_trans:
         img = fancy_pca.rgb_shift(img)
@@ -75,7 +75,7 @@ def load_train_image(data_dir, img_name,
     img = np.moveaxis(img, 2, 0)
     # img.shape: (3, height, width)
 
-    return preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, tile_size)
+    return preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, tile_size, test_time_aug)
 
 def load_train_mask(data_dir, img_name,
                     is_hflip=False, hshift=0, vshift=0, rotate=0, scale_size=0,
@@ -92,11 +92,14 @@ def load_train_mask(data_dir, img_name,
 
 # TODO switch to use funcs in augmentation.py for data aug
 
-def preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, tile_size):
+def preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, tile_size, test_time_aug=None):
     '''
     input:
       img: has shape (1, height, width) or (3, height, width)
     '''
+
+    if test_time_aug:
+        img = test_time_aug(img)
 
     if is_hflip:
         img = np.swapaxes(img, 0, 2) # img.shape: (width, height, num of channels)
