@@ -24,6 +24,8 @@ def apply_ensemble(ensemble_loader):
 
 
 if __name__ == "__main__":
+    program_start = time.time()
+
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--pred_dirs', nargs='+')
     args = parser.parse_args()
@@ -37,3 +39,4 @@ if __name__ == "__main__":
     ensemble_loader = ensemble_loader.get_ensemble_loader(pred_dirs)
 
     apply_ensemble(ensemble_loader)
+    print('Total time spent: {} sec = {} hours'.format(time.time() - program_start, (time.time() - program_start) / 3600))
