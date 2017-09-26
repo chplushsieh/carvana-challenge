@@ -44,6 +44,39 @@ def save_prob_map(ensemble_dir, img_name, img_prob):
     # print('Saving probability map takes {:.4f} sec. '.format(func_end - func_start))
     return
 
+def save_ensembled_prob_map(ensemble_dir, img_name, img_prob):
+    '''
+    input:
+      img_name: a string, name of the image
+      img_prob: an numpy array of probability of each pixel being foreground(car)
+    '''
+    # func_start = time.time()
+
+    assert img_prob.shape == const.img_size  # image shape: (1280, 1918)
+
+    probs_dir = os.path.join(const.OUTPUT_DIR, ensemble_dir, const.PROBS_DIR_NAME)
+
+    exp.create_dir_if_not_exist(probs_dir)
+    save_path = os.path.join(probs_dir, img_name + '.npy')
+
+    # convert from probability in percentage
+    # ex: 0.92 -> 92(%)
+    #img_prob = np.multiply(img_prob, 100)
+
+    if os.path.isfile(save_path):
+        print('Warning: {} already exists'.format(save_path))
+
+    # img_prob.dtype == np.float64
+    img_prob = img_prob.astype(np.int8) # which takes 0.014 sec while casting to np.float16 takes about 0.2 sec
+    # One int8 1280x1918 image takes about 2.5 MB storage
+    # while One float16 1280x1918 image takes about 4.9 MB storage
+
+    np.save(save_path, img_prob)
+    # func_end = time.time()
+    # print('Saving probability map takes {:.4f} sec. '.format(func_end - func_start))
+    return
+
+
 
 def save_predictions(exp_name, preds):
     '''
