@@ -17,7 +17,7 @@ def apply_ensemble(ensemble_loader):
         assert len(img_prob) == 1
 
         img_name = img_name[0]
-        img_name = img_prob[0]
+        img_prob = img_prob[0]
 
         if (i % 1000) == 0:
             print('Iter {} / {}, time spent since last logging: {} sec'.format(i, len(ensemble_loader), time.time() - iter_timer))
