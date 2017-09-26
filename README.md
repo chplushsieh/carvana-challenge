@@ -58,9 +58,9 @@ My Solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.c
 
 6. Run `python run_rle.py <exp_output_dir>` to generate submission at `./output/<exp_output_dir>/submission.csv`
 
-7. [Optional] Run `python ensemble_rle.py --pred_dirs <exp_output_dir_1> <exp_output_dir_2> ... <exp_output_dir_n>` to ensemble run-length encoded submission.csv files.
+7. [Optional] Run `python run_rle_ensemble.py --pred_dirs <exp_output_dir_1> <exp_output_dir_2> ... <exp_output_dir_n>` to ensemble run-length encoded submission.csv files.
 
-   For example, run `python ensemble_rle.py --pred_dirs 0923-05:59:53 0921-06:00:00` to ensemble two predictions
+   For example, run `python run_rle_ensemble.py --pred_dirs 0923-05:59:53 0921-06:00:00` to ensemble two predictions
 
 ### Other Scripts
 
