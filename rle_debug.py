@@ -4,6 +4,7 @@ import numpy as np  # linear algebra
 import pandas as pd  # data processing, CSV file I/O (e.g. pd.read_csv)
 import time
 import matplotlib.pyplot as plt
+from util.run_length import decode as rle_decode
 
 
 # ref.: https://www.kaggle.com/stainsby/fast-tested-rle
@@ -21,7 +22,7 @@ def rle_encode(img):
 
 
 # Time Test
-masks = pd.read_csv('./output/ensemble/submission.csv')
+masks = pd.read_csv('./output/0921-18:30:23/submission.csv')
 #masks = pd.read_csv('./output/PeterUnet3DUC/submission.csv')
 num_masks = masks.shape[0]
 print('Total masks to encode/decode =', num_masks)
@@ -31,9 +32,9 @@ time_dec = 0.0  # seconds
 
 for r in masks.itertuples():
     t0 = time.clock()
-    mask = rle_decode(r.rle_mask, (1280, 1918))
-    #plt.imshow(mask)
-    #plt.show()
+    mask = rle_decode(r.rle_mask)
+    plt.imshow(mask)
+    plt.show()
     time_dec += time.clock() - t0
     t0 = time.clock()
     mask_rle = rle_encode(mask)
