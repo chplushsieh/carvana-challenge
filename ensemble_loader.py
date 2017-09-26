@@ -42,7 +42,7 @@ class EnsembleRunner(torch.utils.data.dataset.Dataset):
             # TODO handle the case if file not found
 
             weighted_img_prob = np.multiply(img_prob, self.weights[i])
-            # weighted_img_prob[weighted_img_prob < 0 ] = np.multiply(ensembled, self.weights[i])
+            weighted_img_prob[weighted_img_prob < 0 ] = np.multiply(ensembled[weighted_img_prob < 0 ], self.weights[i])
             ensembled = np.add(ensembled, weighted_img_prob)
             # TODO For test time aug, only add the part which got predicted in the current aug to the saved saved prob
             # Maybe use a mask to help achieve this?

@@ -99,7 +99,14 @@ def preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, ti
     '''
 
     if test_time_aug:
+        #plt.figure()
+        #plt.subplot(1, 2, 1)
+        #plt.imshow(np.swapaxes(img, 0, 2))
         img = test_time_aug(img)
+        #print(img.shape)
+        #plt.subplot(1, 2, 2)
+        #plt.imshow(np.swapaxes(img, 0, 2))
+        #plt.show()
 
     if is_hflip:
         img = np.swapaxes(img, 0, 2) # img.shape: (width, height, num of channels)

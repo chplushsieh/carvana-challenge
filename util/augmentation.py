@@ -22,8 +22,10 @@ def get_TTA_funcs(is_TTA):
         funcs = [ ("nothing", None, None),  ]
     else:
         # TODO add more test time augs
-        vshift, hshift = randrange(-120, 120), randrange(-25, 25)
-        scale_size = randrange(90, 110) / 100
+        #vshift, hshift = randrange(-120, 120), randrange(-25, 25)
+        vshift, hshift = 70, 15
+        #scale_size = randrange(90, 110) / 100
+        scale_size = 108/100
         funcs = [
                     ("nothing",   None,                   None),
                     ("color",     lambda x: color_enable(x),      None),
