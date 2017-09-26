@@ -25,7 +25,7 @@ def get_TTA_funcs(is_TTA):
         #vshift, hshift = randrange(-120, 120), randrange(-25, 25)
         vshift, hshift = 70, 15
         #scale_size = randrange(90, 110) / 100
-        scale_size = 108/100
+        scale_size = 92/100
         funcs = [
                     ("nothing",   None,                   None),
                     ("color",     lambda x: color_enable(x),      None),
@@ -104,7 +104,7 @@ def scale_enable(img, scale_size):
     else:
         img = np.expand_dims(img, axis=0)
         img = scale.resize_TTA(img, scale_size).copy()
-        img = np.squeeze(img, axis=0)
+        #img = np.squeeze(img, axis=0)
     
 
 
