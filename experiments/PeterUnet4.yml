@@ -24,7 +24,7 @@ train:
   edge_enh: False
 
 test:
-  batch_size: 10
+  batch_size: 20
   paddings:  !!python/tuple [0, 1]
   tile_size: !!python/tuple [1280, 1280] # (height, width)
   test_time_aug: True
