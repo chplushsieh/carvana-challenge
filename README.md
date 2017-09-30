@@ -17,13 +17,17 @@ There are 100064 test images.
 
 ## Solution Overview
 
-Our solution is an ensemble of 5 modified U-Net models using 1280x1280 image patch as input, along with test time augmentation. We used a combination loss function of soft DICE loss and Binary Cross Entropy loss. During train, we used data augmentations, including flipping, shifting, scaling, HSV color augmentation, and fancy PCA. 
+Our solution is an ensemble of 5 modified U-Net models using 1280x1280 image patch as input, along with test time augmentation. We used a combination loss function of soft DICE loss and Binary Cross Entropy loss. During train, we used data augmentations, including flipping, shifting, scaling, HSV color augmentation, and fancy PCA.
 
 Training of one single model takes about 45-50 hours on a single GPU P5000 machine. Testing takes about 6-8 hours.
 
 ### Our best performing single model
 
 TODO paste network architecture image here
+
+## Result
+
+TODO
 
 ## Requirements
 * python 3.6
@@ -35,10 +39,7 @@ TODO paste network architecture image here
 * scikit-image
 * [pydensecrf](https://github.com/lucasb-eyer/pydensecrf)
     * `pip install cython` and then `pip install pydensecrf`
-
-## Result
-
-TODO
+    
 
 ## Usage
 
