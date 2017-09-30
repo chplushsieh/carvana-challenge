@@ -1,9 +1,9 @@
 # carvana-challenge
-Our Solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.com/c/carvana-image-masking-challenge) ranked 31th place on Private Leaderboard and 9th place on Public Leaderboard. It is made by [Chia-Hao Hsieh](https://github.com/chplushsieh) and [Shao-Wen Lai](https://github.com/judichunt).
+Out of 737 teams, our Solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.com/c/carvana-image-masking-challenge) ranked 9th place (top 1.2%) on Public Leaderboard and 31th place (top 4.2%) on Private Leaderboard. It is made by [Chia-Hao Hsieh](https://github.com/chplushsieh) and [Shao-Wen Lai](https://github.com/judichunt).
 
 ## Problem
 
-TODO
+> In this competition, you’re challenged to develop an algorithm that automatically removes the photo studio background. This will allow Carvana to superimpose cars on a variety of backgrounds.
 
 ## Solution Overview
 
