@@ -2,6 +2,7 @@
 Out of 737 teams, our solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.com/c/carvana-image-masking-challenge) ranked 9th place (top 1.2%) on Public Leaderboard and 31th place (top 4.2%) on Private Leaderboard. It is made by [Chia-Hao Hsieh](https://github.com/chplushsieh) and [Shao-Wen Lai](https://github.com/judichunt).
 
 ## Problem
+### Problem
 
 ![Problem: remove background from car image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/problem.png "Problem")
 
