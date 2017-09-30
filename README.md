@@ -5,6 +5,11 @@ Out of 737 teams, our Solution for [Carvana Image Masking Challenge on Kaggle](h
 
 > In this competition, you’re challenged to develop an algorithm that automatically removes the photo studio background. This will allow Carvana to superimpose cars on a variety of backgrounds.
 
+### Train Data
+
+![Train Data contains 5088 pairs of train image and label. ](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/data.png "Train Data")
+
+
 ## Solution Overview
 
 TODO
