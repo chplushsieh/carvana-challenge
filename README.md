@@ -11,10 +11,17 @@ Out of 737 teams, our solution for [Carvana Image Masking Challenge on Kaggle](h
 
 ![Train Data contains 5088 pairs of train image and label. ](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/data.png "Train Data")
 
+### Test Data
+
+There are 100064 test images.
 
 ## Solution Overview
 
-TODO
+Our solution is an ensemble of 5 modified U-Net models using 1280x1280 image patch as input, along with test time augmentation. We used a combination loss function of soft DICE loss and Binary Cross Entropy loss. Training of one single model takes about 45-50 hours on a single GPU P5000 machine. Testing takes about 6-8 hours. 
+
+### Our best performing single model
+
+TODO paste network architecture image here
 
 ## Requirements
 * python 3.6
@@ -27,6 +34,9 @@ TODO
 * [pydensecrf](https://github.com/lucasb-eyer/pydensecrf)
     * `pip install cython` and then `pip install pydensecrf`
 
+## Result
+
+TODO
 
 ## Usage
 
