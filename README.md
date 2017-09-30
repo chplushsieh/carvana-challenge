@@ -1,5 +1,13 @@
 # carvana-challenge
-My Solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.com/c/carvana-image-masking-challenge)
+Our Solution for [Carvana Image Masking Challenge on Kaggle](https://www.kaggle.com/c/carvana-image-masking-challenge) ranked 31th place on Private Leaderboard and 9th place on Public Leaderboard. It is made by [Chia-Hao Hsieh](https://github.com/chplushsieh) and [Shao-Wen Lai](https://github.com/judichunt).
+
+## Problem
+
+TODO
+
+## Solution Overview
+
+TODO
 
 ## Requirements
 * python 3.6
