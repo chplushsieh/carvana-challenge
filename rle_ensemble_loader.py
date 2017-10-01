@@ -27,7 +27,6 @@ class RleEnsembleRunner(torch.utils.data.dataset.Dataset):
         self.pred_dirs = pred_dirs
         self.submissions = load_submissions(pred_dirs)
 
-        # TODO verify same number in each dir
         self.img_names = list(self.submissions[0].keys())
 
         self.weights = ensemble.get_ensemble_weights(self.pred_dirs)

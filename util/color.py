@@ -3,8 +3,6 @@ from PIL import Image
 import numpy as np
 import cv2
 
-
-
 def transform(image):
     '''
     input:
@@ -30,13 +28,4 @@ def transform(image):
         transformed = cv2.merge((h, s, v))
         transformed = cv2.cvtColor(transformed, cv2.COLOR_HSV2BGR)
 
-    DEBUG=0
-    if DEBUG:
-        plt.subplot(1,2,1)
-        plt.imshow(transformed)
-        plt.subplot(1, 2, 2)
-        plt.imshow(image)
-        plt.show()
-
     return transformed
-

@@ -28,7 +28,6 @@ class RLErunner(torch.utils.data.dataset.Dataset):
 
         pred_path = os.path.join(const.OUTPUT_DIR, self.pred_dir, const.PROBS_DIR_NAME, img_name + '.npy')
         img_prob = np.load(pred_path)
-        # TODO handle the case if file not found
 
         # generate image mask
         img_mask = np.zeros(img_prob.shape)

@@ -20,6 +20,9 @@ from skimage import io, transform
 import csv
 import cv2
 
+# TODO refactor (or delete)
+
+
 def multi_color_aug(img):
     FrequencyNoise = iaa.FrequencyNoiseAlpha(
         exponent=(-4, 0),
@@ -145,14 +148,3 @@ if __name__ == "__main__":
     plt.subplot(2, 2, 4)
     plt.imshow(images_aug6)
     plt.show()
-
-
-
-
-
-
-
-
-
-
-

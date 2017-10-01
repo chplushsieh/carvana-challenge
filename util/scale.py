@@ -3,6 +3,7 @@ from PIL import Image
 import numpy as np
 import cv2
 
+# TODO refactor
 
 
 def resize_image(im, sz):

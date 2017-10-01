@@ -91,7 +91,6 @@ def save_predictions(exp_name, preds):
 
     save_path = os.path.join(exp_dir, 'submission.csv')
 
-    # TODO rewrite to not use pandas dataframe
     preds=pd.DataFrame(list(preds.items()), columns=['img', 'rle_mask'])
     preds['img'] = preds['img'].apply(lambda x: x+'.jpg')
     preds.to_csv(save_path, index= False )

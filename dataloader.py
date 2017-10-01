@@ -20,6 +20,7 @@ __all__ = [
     'get_test_loader',
 ]
 
+# TODO refactor
 
 class LargeDataset(torch.utils.data.dataset.Dataset):
     def __init__(self, data_dir, ids=None, mask_dir=None,
@@ -99,8 +100,6 @@ class LargeDataset(torch.utils.data.dataset.Dataset):
             scale_size = randrange(90,110)/100
         else:
             scale_size = 0
-
-        # TODO refactor these data aug to use functions in util.augmentation.py
 
         img = load.load_train_image(
             self.data_dir, img_name,
@@ -210,4 +209,3 @@ def get_small_loader(batch_size, paddings, tile_size, hflip, shift, color, rotat
 def get_small_test_loader(batch_size, paddings, tile_size, test_time_aug):
     small_imgs = load.load_small_imageset()
     return get_trainval_loader(batch_size, small_imgs, paddings, tile_size, hflip_enabled=False, shift_enabled=False, color_enabled=False, rotate_enabled=False, scale_enabled=False, fancy_pca_enabled=False, edge_enh_enabled=False, test_time_aug=test_time_aug)
-

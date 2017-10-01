@@ -9,6 +9,8 @@ import config
 import model.unet as unet
 import model.loss as loss
 
+# TODO refactor
+
 def create_dir_if_not_exist(dir):
     if not os.path.exists(dir):
         os.makedirs(dir)

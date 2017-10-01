@@ -5,6 +5,7 @@ from skimage import io,transform
 import csv
 import cv2
 
+# TODO refactor
 
 
 def rgb_shift(img):

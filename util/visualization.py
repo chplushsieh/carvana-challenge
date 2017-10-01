@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
 
+# TODO refactor
+
 def visualize(image, pred, target=None):
     '''
     input:

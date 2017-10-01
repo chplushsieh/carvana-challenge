@@ -39,15 +39,9 @@ class EnsembleRunner(torch.utils.data.dataset.Dataset):
         for i, pred_dir in enumerate(self.pred_dirs):
             pred_path = os.path.join(const.OUTPUT_DIR, pred_dir, const.PROBS_DIR_NAME, img_name + '.npy')
             img_prob = np.load(pred_path)
-            # TODO handle the case if file not found
 
             weighted_img_prob = np.multiply(img_prob, self.weights[i])
-            #weighted_img_prob[weighted_img_prob < 0 ] = np.multiply(ensembled[weighted_img_prob < 0 ], self.weights[i])
             ensembled = np.add(ensembled, weighted_img_prob)
-            # TODO For test time aug, only add the part which got predicted in the current aug to the saved saved prob
-            # Maybe use a mask to help achieve this?
-
-            # TODO delete saved prob maps that get ensembled?
 
         # save into new output/ folder
         submit.save_ensembled_prob_map(self.ensemble_dir, img_name, ensembled)

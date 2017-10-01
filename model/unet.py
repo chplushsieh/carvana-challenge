@@ -10,7 +10,7 @@ import torch.cuda
 import torch.nn as nn
 import torch.nn.functional as F
 
-
+# TODO refactor
 
 
 class BaseNet(nn.Module):
@@ -384,11 +384,6 @@ class InceptiondUpModule(nn.Module):
         x = self.l1(x)
 
         return x
-
-
-
-
-
 
 
 class InceptiondDownModule2(nn.Module):

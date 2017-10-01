@@ -17,6 +17,9 @@ import util.fancy_pca as fancy_pca
 import cv2
 from random import randrange
 
+
+# TODO refactor
+
 def get_car_ids(img_names):
     car_ids = [ img_name.split('_')[0] for img_name in img_names ]
     car_ids = list(set(car_ids))
@@ -90,7 +93,6 @@ def load_train_mask(data_dir, img_name,
 
     return preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, tile_size)
 
-# TODO switch to use funcs in augmentation.py for data aug
 
 def preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, tile_size, test_time_aug=None):
     '''

@@ -6,6 +6,9 @@ import numpy as np
 import util.const as const
 import util.exp as exp
 
+# TODO refactor
+
+
 def create_file_if_not_exist(file_path):
     # create empty file if it doesn't exist
     if not os.path.isfile(file_path):
@@ -21,7 +24,7 @@ def create_models_ensembled(pred_dirs, ensemble_dir):
 
         for exp_name, test_time_aug_name in zip(exp_names, test_time_aug_names):
             mark_model_ensembled(ensemble_dir, exp_name, test_time_aug_name)
-    return 
+    return
 
 
 def get_models_ensembled(ensemble_dir):
