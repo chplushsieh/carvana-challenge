@@ -6,17 +6,20 @@ import numpy as np
 import util.const as const
 import util.exp as exp
 
-# TODO refactor
-
 
 def create_file_if_not_exist(file_path):
-    # create empty file if it doesn't exist
+    '''
+    create empty file if it doesn't exist
+    '''
     if not os.path.isfile(file_path):
         open(file_path, 'a').close()
 
     return
 
 def create_models_ensembled(pred_dirs, ensemble_dir):
+    '''
+    create ./output/<ensemble_dir>/models_ensembled.txt
+    '''
 
     # create self.ensemble_dir/models_ensembled.txt
     for pred_dir in pred_dirs:
@@ -28,6 +31,9 @@ def create_models_ensembled(pred_dirs, ensemble_dir):
 
 
 def get_models_ensembled(ensemble_dir):
+    '''
+    return ensembled models along with their test time augmentations by reading ./output/<ensemble_dir>/models_ensembled.txt
+    '''
     model_names = []
     test_time_aug_names = []
 
@@ -45,6 +51,9 @@ def get_models_ensembled(ensemble_dir):
     return model_names, test_time_aug_names
 
 def mark_model_ensembled(ensemble_dir, exp_name, test_time_aug_name):
+    '''
+    add newly ensembled model as a new line to ./output/<ensemble_dir>/models_ensembled.txt
+    '''
     ensemble_dir_path = os.path.join(const.OUTPUT_DIR, ensemble_dir)
     exp.create_dir_if_not_exist(ensemble_dir_path)
 
@@ -58,6 +67,9 @@ def mark_model_ensembled(ensemble_dir, exp_name, test_time_aug_name):
     return
 
 def get_ensemble_weights(ensemble_dirs):
+    '''
+    return ensembling weightes by reading ./output/<ensemble_dir>/models_ensembled.txt
+    '''
     total_models = 0
     weights = np.zeros(len(ensemble_dirs))
 
