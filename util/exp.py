@@ -9,15 +9,20 @@ import config
 import model.unet as unet
 import model.loss as loss
 
-# TODO refactor
 
 def create_dir_if_not_exist(dir):
+    '''
+    create directory if it doesn't exist
+    '''
     if not os.path.exists(dir):
         os.makedirs(dir)
     return dir
 
 
 def get_network(exp_name):
+    '''
+    get the first part in experiment name as model name
+    '''
     model_name = exp_name.split('_')[0]
 
     model_type = getattr(unet, model_name)
@@ -26,6 +31,9 @@ def get_network(exp_name):
     return model
 
 def get_optimizer(model, exp_name):
+    '''
+    create oprimizer based on parameters loaded from config
+    '''
 
     cfg = config.load_config_file(exp_name)
 
@@ -43,6 +51,9 @@ def get_optimizer(model, exp_name):
 
 
 def get_criterion(exp_name):
+    '''
+    create loss function based on parameters loaded from config
+    '''
 
     cfg = config.load_config_file(exp_name)
 
@@ -54,6 +65,9 @@ def get_criterion(exp_name):
 
 
 def save_checkpoint(exp_name, epoch, model_state_dict, optimizer_state_dict):
+    '''
+    save the trained model as checkpoint
+    '''
 
     state = {
         'exp_name': exp_name,
@@ -69,6 +83,9 @@ def save_checkpoint(exp_name, epoch, model_state_dict, optimizer_state_dict):
     return
 
 def get_latest_ckpt(save_dir):
+    '''
+    find the .pth ckeckpoint file with latest epoch
+    '''
     ckpts = os.listdir(save_dir)
     ckpt_names = [ckpt.split('.')[0] for ckpt in ckpts if ckpt.endswith('.pth.tar')]
 
@@ -86,6 +103,9 @@ def get_latest_ckpt(save_dir):
     return latest_path
 
 def load_exp(exp_name):
+    '''
+    load the latest previously saved model for this experiment
+    '''
     save_dir = os.path.join(const.OUTPUT_DIR, exp_name)
 
     if not os.path.isdir(save_dir):
@@ -98,6 +118,9 @@ def load_exp(exp_name):
     return model, optimizer, criterion, start_epoch
 
 def load_checkpoint(exp_name, ckpt_path):
+    '''
+    load previously saved model
+    '''
     if ckpt_path is not None and os.path.isfile(ckpt_path):
         print("=> loading checkpoint '{}'".format(ckpt_path))
         checkpoint = torch.load(ckpt_path)
@@ -126,6 +149,9 @@ def load_checkpoint(exp_name, ckpt_path):
 
 
 def setup_crayon(use_tensorboard, CrayonClient,exp_name):
+    '''
+    create Crayon client
+    '''
     # tensorboad
     experiment = None
     use_tensorboard = (use_tensorboard) and (CrayonClient is not None)
