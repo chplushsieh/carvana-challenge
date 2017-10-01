@@ -10,8 +10,6 @@ import torch.cuda
 import torch.nn as nn
 import torch.nn.functional as F
 
-# TODO refactor
-
 
 class BaseNet(nn.Module):
     def __init__(self, n_channels=3, n_classes=1, dropout=0.0, bn=1, activation='relu'):
@@ -89,8 +87,6 @@ class Dilation_Conv3BN(nn.Module):
             x = self.bn(x)
         return x
 
-#---------------
-
 class BasicConv2d(nn.Module):
     def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0):
         super().__init__()
@@ -105,29 +101,6 @@ class BasicConv2d(nn.Module):
         x = self.bn(x)
         x = self.relu(x)
         return x
-
-class InceptionModule(nn.Module):
-    def __init__(self, in_: int, out: int, bn, activation):
-        super().__init__()
-        out_1 = out * 3 // 8
-        out_2 = out * 2 // 8
-        self.conv1x1 = BasicConv2d(in_, out_1, kernel_size=1)
-        self.conv3x3_pre = BasicConv2d(in_, in_ // 2, kernel_size=1)
-        self.conv3x3 = BasicConv2d(in_ // 2, out_1, kernel_size=3, padding=1)
-        self.conv5x5_pre = BasicConv2d(in_, in_ // 2, kernel_size=1)
-        self.conv5x5 = BasicConv2d(in_ // 2, out_2, kernel_size=5, padding=2)
-        #assert hps.bn
-        #assert hps.activation == 'relu'
-
-    def forward(self, x):
-        return torch.cat([
-            self.conv1x1(x),
-            self.conv3x3(self.conv3x3_pre(x)),
-            self.conv5x5(self.conv5x5_pre(x)),
-        ], 1)
-
-
-#---------------
 
 class UNetDownBlock(nn.Module):
     def __init__(self, in_: int, out: int, *, bn=True, activation='relu'):
@@ -351,9 +324,25 @@ class DilationUpBlock124(nn.Module):
         return x
 
 
+class InceptionModule(nn.Module):
+    def __init__(self, in_: int, out: int, bn, activation):
+        super().__init__()
+        out_1 = out * 3 // 8
+        out_2 = out * 2 // 8
+        self.conv1x1 = BasicConv2d(in_, out_1, kernel_size=1)
+        self.conv3x3_pre = BasicConv2d(in_, in_ // 2, kernel_size=1)
+        self.conv3x3 = BasicConv2d(in_ // 2, out_1, kernel_size=3, padding=1)
+        self.conv5x5_pre = BasicConv2d(in_, in_ // 2, kernel_size=1)
+        self.conv5x5 = BasicConv2d(in_ // 2, out_2, kernel_size=5, padding=2)
+        #assert hps.bn
+        #assert hps.activation == 'relu'
 
-
-
+    def forward(self, x):
+        return torch.cat([
+            self.conv1x1(x),
+            self.conv3x3(self.conv3x3_pre(x)),
+            self.conv5x5(self.conv5x5_pre(x)),
+        ], 1)
 
 class InceptiondDownModule(nn.Module):
     def __init__(self, in_: int, out: int, *, bn=True, activation='relu'):
@@ -382,45 +371,6 @@ class InceptiondUpModule(nn.Module):
         x = torch.cat([up, skip], 1)
 
         x = self.l1(x)
-
-        return x
-
-
-class InceptiondDownModule2(nn.Module):
-    def __init__(self, in_: int, out: int, *, bn=True, activation='relu'):
-        super().__init__()
-        self.l1 = InceptionModule(in_, out, bn, activation)
-        self.l2 = InceptionModule(out, out, bn, activation)
-
-    # self.l3 = InceptionModule(out, out, bn, activation)
-
-    def forward(self, x):
-        x = self.l1(x)
-        x = self.l2(x)
-        # x = self.l3(x)
-        return x
-
-
-class InceptiondUpModule2(nn.Module):
-    def __init__(self, in_: int, out: int, *, bn=True, activation='relu', up='upsample'):
-        super().__init__()
-        self.l1 = InceptionModule(in_, out, bn, activation)
-        self.l2 = InceptionModule(out, out, bn, activation)
-        # self.l3 = InceptionModule(out, out, bn, activation)
-
-        if up == 'upconv':
-            self.up = nn.ConvTranspose2d(in_, out, 2, stride=2)
-        elif up == 'upsample':
-            self.up = nn.Upsample(scale_factor=2)
-
-
-    def forward(self, skip, x):
-        up = self.up(x)
-        x = torch.cat([up, skip], 1)
-
-        x = self.l1(x)
-        x = self.l2(x)
-        # x = self.l3(x)
 
         return x
 
@@ -624,100 +574,6 @@ class DynamicUnet(BaseNet):
         out =  self.classify(x)
         return F.sigmoid(out)
 
-def AndresUnet():
-    return DynamicUnet(nums_filters = [32, 64, 128, 256, 512])
-
-def AndresUnet_without_bn():
-    UNetDownBlock_without_bn = lambda x, y: UNetDownBlock(x, y, bn=False)
-    UNetUpBlock_without_bn   = lambda x, y: UNetUpBlock(x, y, bn=False)
-    return DynamicUnet(DownBlock=UNetDownBlock_without_bn, UpBlock=UNetUpBlock_without_bn, nums_filters = [32, 64, 128, 256, 512])
-
-def PeterUnet():
-    '''
-    https://github.com/petrosgk/Kaggle-Carvana-Image-Masking-Challenge/blob/master/model/u_net.py#L404
-    '''
-    return DynamicUnet(nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
-
-def PeterUnet3():
-    return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock3, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
-
-def PeterUnet3_dropout():
-    return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock3, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024], dropout=0.5)
-
-def PeterUnet4():
-    return DynamicUnet(DownBlock=UNetDownBlock4, UpBlock=UNetUpBlock4, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
-
-def PeterUnet4DUC():
-    return DynamicUnet(DownBlock=UNetDownBlock4, UpBlock=UNetUpBlock4DUC, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
-
-def PeterUnet5():
-    return DynamicUnet(DownBlock=UNetDownBlock5, UpBlock=UNetUpBlock5, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
-
-def PeterUnet4_dropout():
-    return DynamicUnet(DownBlock=UNetDownBlock4, UpBlock=UNetUpBlock4, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024], dropout=0.5)
-
-def PeterUnet34():
-    return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock4, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
-
-def PeterUnet34DUC():
-    return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock4DUC, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
-
-def PeterUnet3DUC():
-    return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock3DUC, nums_filters=[8, 16, 32, 64, 128, 256, 512, 1024])
-
-def PeterUnetInception2():
-    return DynamicUnet(DownBlock=InceptiondDownModule2, UpBlock=InceptiondUpModule2, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
-
-def PeterUnetInception():
-    return DynamicUnet(DownBlock=InceptiondDownModule, UpBlock=InceptiondUpModule, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
-
-class SmallerUpsamplingUnet(BaseNet):
-    def __init__(self):
-        super().__init__()
-
-        self.down1 = UNetDownBlock(self.n_channels,  64)
-        self.down2 = UNetDownBlock(             64, 128)
-        self.down3 = UNetDownBlock(            128, 256)
-        self.down4 = UNetDownBlock(            256, 512)
-        self.down5 = UNetDownBlock(            512, 512)
-
-        self.pool1 = nn.MaxPool2d(2)
-        self.pool2 = nn.MaxPool2d(2)
-        self.pool3 = nn.MaxPool2d(2)
-        self.pool4 = nn.MaxPool2d(2)
-
-        self.up4 = UNetUpBlock(1024, 256, up='upsample')
-        self.up3 = UNetUpBlock( 512, 128, up='upsample')
-        self.up2 = UNetUpBlock( 256,  64, up='upsample')
-        self.up1 = UNetUpBlock(  128, 32, up='upsample')
-
-        self.classify = nn.Conv2d(32, self.n_classes, 1)
-        return
-
-    def forward(self, x):
-
-        down1 = self.down1(x)
-        x = self.pool1(down1)
-
-        down2 = self.down2(x)
-        x = self.pool2(down2)
-
-        down3 = self.down3(x)
-        x = self.pool3(down3)
-
-        down4 = self.down4(x)
-        x = self.pool4(down4)
-
-        down5 = self.down5(x)
-
-        up4 = self.up4(down4, down5)
-        up3 = self.up3(down3, up4)
-        up2 = self.up2(down2, up3)
-        up1 = self.up1(down1, up2)
-
-        out =  self.classify(up1)
-        return F.sigmoid(out)
-
 
 class DenseLayer(nn.Module):
     def __init__(self, in_, out, *, bn, activation):
@@ -786,6 +642,41 @@ class DenseUpBlock(nn.Module):
         x = self.l1(x)
         return x
 
+def PeterUnet():
+    '''
+    https://github.com/petrosgk/Kaggle-Carvana-Image-Masking-Challenge/blob/master/model/u_net.py#L404
+    '''
+    return DynamicUnet(nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
+def PeterUnet3():
+    return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock3, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
+def PeterUnet3_dropout():
+    return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock3, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024], dropout=0.5)
+
+def PeterUnet4():
+    return DynamicUnet(DownBlock=UNetDownBlock4, UpBlock=UNetUpBlock4, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
+def PeterUnet4DUC():
+    return DynamicUnet(DownBlock=UNetDownBlock4, UpBlock=UNetUpBlock4DUC, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
+def PeterUnet5():
+    return DynamicUnet(DownBlock=UNetDownBlock5, UpBlock=UNetUpBlock5, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
+def PeterUnet4_dropout():
+    return DynamicUnet(DownBlock=UNetDownBlock4, UpBlock=UNetUpBlock4, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024], dropout=0.5)
+
+def PeterUnet34():
+    return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock4, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
+def PeterUnet34DUC():
+    return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock4DUC, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
+
+def PeterUnet3DUC():
+    return DynamicUnet(DownBlock=UNetDownBlock3, UpBlock=UNetUpBlock3DUC, nums_filters=[8, 16, 32, 64, 128, 256, 512, 1024])
+
+def PeterUnetInception():
+    return DynamicUnet(DownBlock=InceptiondDownModule, UpBlock=InceptiondUpModule, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
 
 def DenseUnet():
     return DynamicUnet(DownBlock=DenseDownBlock, UpBlock=DenseUpBlock, nums_filters = [8, 16, 32, 64, 128, 256, 512, 1024])
