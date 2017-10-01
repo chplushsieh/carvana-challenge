@@ -23,8 +23,8 @@ Training of one single model takes about 45-50 hours on a single GPU P5000 machi
 
 ### Our best performing single model
 
-![U-net image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/U-net%20Structure%20(1).png "U-net")
-![Blocks image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Blocks1.png "Blocks")
+![U-net image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/U-net%20Structure.png "U-net")
+![Blocks image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Blocks.png "Blocks")
 
 
 ## Result
