@@ -25,9 +25,14 @@ Training of one single model takes about 45-50 hours on a single GPU P5000 machi
 
 TODO paste network architecture image here
 
+## Evaluation
+
+TODO add a simple intro to DICE: https://www.kaggle.com/c/carvana-image-masking-challenge#evaluation
+
 ## Result
 
-TODO
+TODO add sample output image mask
+TODO add our model DICE score
 
 ## Requirements
 * python 3.6
@@ -39,7 +44,7 @@ TODO
 * scikit-image
 * [pydensecrf](https://github.com/lucasb-eyer/pydensecrf)
     * `pip install cython` and then `pip install pydensecrf`
-    
+
 
 ## Usage
 
