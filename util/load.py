@@ -18,15 +18,19 @@ import cv2
 from random import randrange
 
 
-# TODO refactor
-
 def get_car_ids(img_names):
+    '''
+    parse car ids from full image names
+    '''
     car_ids = [ img_name.split('_')[0] for img_name in img_names ]
     car_ids = list(set(car_ids))
     print("There are {} car ids out of {} images. ".format(len(car_ids), len(img_names)))
     return car_ids
 
 def get_img_names_from_car_ids(car_ids):
+    '''
+    generate image names from car ids
+    '''
     img_names = []
 
     for car_id in car_ids:
@@ -37,6 +41,9 @@ def get_img_names_from_car_ids(car_ids):
     return img_names
 
 def load_imageset(imageset_path):
+    '''
+    get a list of img names from the csv file at <imageset_path>
+    '''
     img_names = []
     with open(imageset_path, newline='') as f:
         reader = csv.reader(f)
@@ -47,9 +54,15 @@ def load_imageset(imageset_path):
     return img_names
 
 def load_train_imageset():
+    '''
+    get the list of img names for train split
+    '''
     return load_imageset(const.TRAIN_IMAGESET_PATH)
 
 def load_val_imageset():
+    '''
+    get the list of img names for validation split
+    '''
     return load_imageset(const.VAL_IMAGESET_PATH)
 
 def load_small_imageset():
@@ -63,6 +76,9 @@ def load_train_image(data_dir, img_name,
                      is_hflip=False, hshift=0, vshift=0, rotate=0, scale_size=0,
                      is_color_trans=False, is_fancy_pca_trans=False, is_edge_enh_trans=False,
                      test_time_aug=None, paddings=None, tile_size=None):
+    '''
+    load a train image
+    '''
     img_file_name = tile.get_img_name(img_name)
     img_ext = 'jpg'
     img = load_image_file(data_dir, img_file_name, img_ext, rotate)
@@ -83,6 +99,9 @@ def load_train_image(data_dir, img_name,
 def load_train_mask(data_dir, img_name,
                     is_hflip=False, hshift=0, vshift=0, rotate=0, scale_size=0,
                     test_time_aug=None, paddings=None, tile_size=None):
+    '''
+    load a train image mask
+    '''
     img_file_name = tile.get_img_name(img_name) + '_mask'
     img_ext = 'gif'
     img = load_image_file(data_dir, img_file_name, img_ext, rotate)
@@ -98,6 +117,8 @@ def preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, ti
     '''
     input:
       img: has shape (1, height, width) or (3, height, width)
+
+    preprocess both image and label
     '''
 
     if test_time_aug:
@@ -137,6 +158,9 @@ def preprocess(img, img_name, is_hflip, hshift, vshift, scale_size, paddings, ti
     return img
 
 def load_image_file(data_dir, img_name, img_ext, rotate):
+    '''
+    load image file (.gif or .jpg)
+    '''
     img_path = os.path.join(data_dir, img_name + '.' + img_ext)
     img = Image.open(img_path).rotate(rotate)
 
@@ -145,26 +169,41 @@ def load_image_file(data_dir, img_name, img_ext, rotate):
     return img
 
 def get_filename(path):
+    '''
+    get only file name from file path
+    '''
     base = os.path.basename(path)
     filename, ext = os.path.splitext(base)[0], os.path.splitext(base)[1]
     return filename, ext
 
 def list_img_in_dir(dir):
+    '''
+    get a list of file names of all images in the directory
+    '''
     onlyfiles = [ f for f in listdir(dir) if isfile(join(dir, f))]
     onlyjpgs = [os.path.splitext(f)[0] for f in onlyfiles if os.path.splitext(f)[1] == '.jpg']
     return onlyjpgs
 
 def list_csv_in_dir(dir):
+    '''
+    get a list of file names of all csv files in the directory
+    '''
     onlyfiles = [ f for f in listdir(dir) if isfile(join(dir, f))]
     onlycsvs = [os.path.splitext(f)[0] for f in onlyfiles if os.path.splitext(f)[1] == '.csv']
     return onlycsvs
 
 def list_npy_in_dir(dir):
+    '''
+    get a list of file names of all .npy files in the directory
+    '''
     onlyfiles = [ f for f in listdir(dir) if isfile(join(dir, f))]
     onlynpys = [os.path.splitext(f)[0] for f in onlyfiles if os.path.splitext(f)[1] == '.npy']
     return onlynpys
 
 def get_img_shape(image_path):
+    '''
+    get the size of a image file
+    '''
     im = Image.open(image_path)
     width, height =  im.size
     return (height, width)
