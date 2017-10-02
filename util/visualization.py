@@ -2,8 +2,6 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
 
-# TODO refactor
-
 def visualize(image, pred, target=None):
     '''
     input:
@@ -17,11 +15,9 @@ def visualize(image, pred, target=None):
         img=np.swapaxes(img,0,2)
         img=np.swapaxes(img,0,1)
         return img
+
     image=change_index_ord(image)
     pred=np.squeeze(change_index_ord(pred) , axis=2)
-    #print(image.shape)
-    #print(pred.shape)
-
 
     assert image.shape[:-1] == pred.shape
 
@@ -55,15 +51,6 @@ def visualize(image, pred, target=None):
 
         plt.subplot(2, 2, 4)
         plt.imshow((pred+target*0.5), 'Accent', interpolation='none')
+
     plt.show()
     return
-
-# example
-# input_path='/home/judichunt/Downloads/'
-# target = np.array(Image.open(input_path+'train_masks/00087a6bd4dc_01_mask.gif'), dtype=np.uint8)
-# image = np.array(Image.open(input_path+'train/00087a6bd4dc_01.jpg'), dtype=np.uint8)
-# pred = np.array(Image.open(input_path+'train_masks/0cdf5b5d0ce1_01_mask.gif'), dtype=np.uint8)
-# visualize(image, pred, target)
-
-    # image, target, image overlaied with target
-    # like so: https://kaggle2.blob.core.windows.net/forum-message-attachments/208218/6916/starter-kit.png

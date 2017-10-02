@@ -8,9 +8,11 @@ import cv2
 
 def resize_image(im, sz):
   im = np.swapaxes(im, 0, 2)
+
   h = im.shape[0]
   w = im.shape[1]
   c = im.shape[2]
+
   if c == 3:
     I_out = np.zeros((h, w, 3), dtype = np.float)
   else :
