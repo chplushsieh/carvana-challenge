@@ -28,8 +28,16 @@ Training of one single model takes about 45-50 hours on a single GPU P5000 machi
 
 
 ## Result
+![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-1.png "2*2")
+![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-2.png "2*2")
+![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-3.png "2*2")
+![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-4.png "2*2")
+![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-5.png "2*2")
+![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-6.png "2*2")
+![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-7.png "2*2")
+![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-8.png "2*2")
+![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-9.png "2*2")
 
-TODO
 
 ## Requirements
 * python 3.6
