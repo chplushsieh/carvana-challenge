@@ -36,7 +36,7 @@ Training of one single model takes about 60-80 hours on a single GPU P5000 machi
 
 Our best ensembled model scored 0.997191 mean Dice coefficient on Private Leaderboard and 0.996899 on Public Leaderboard.
 
-Here are some of the results by our best single model:
+Here are some results by our best single model:
 
 ![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/result_01.png "2*2")
 ![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/result_02.png "2*2")
