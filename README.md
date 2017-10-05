@@ -15,6 +15,14 @@ Out of 737 teams, our solution for [Carvana Image Masking Challenge on Kaggle](h
 
 There are 100064 test images.
 
+### Evaluation
+
+> This competition is evaluated on the mean Dice coefficient. The Dice coefficient can be used to compare the pixel-wise agreement between a predicted segmentation and its corresponding ground truth. The formula is given by:
+
+> ```2 * |X∩Y| / (|X|+|Y|)```
+
+> where X is the predicted set of pixels and Y is the ground truth. The Dice coefficient is defined to be 1 when both X and Y are empty. The leaderboard score is the mean of the Dice coefficients for each image in the test set.
+
 ## Solution Overview
 
 Our solution is an ensemble of 5 modified U-Net models using 1280x1280 image patch as input, along with test time augmentation. We used a combination loss function of soft DICE loss and Binary Cross Entropy loss. During train, we used data augmentations, including flipping, shifting, scaling, HSV color augmentation, and fancy PCA.
@@ -26,8 +34,12 @@ Training of one single model takes about 45-50 hours on a single GPU P5000 machi
 ![U-net image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/U-net%20Structure.png "U-net")
 ![Blocks image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Blocks.png "Blocks")
 
+### Result
 
-## Result
+Our best ensembled model scored 0.997191 mean Dice coefficient on Private Leaderboard and 0.996899 on Public Leaderboard.
+
+Here are some of the results by our best single model:
+
 ![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/result_01.png "2*2")
 
 
