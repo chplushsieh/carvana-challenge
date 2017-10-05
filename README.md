@@ -18,9 +18,7 @@ There are 100064 test images.
 ### Evaluation
 
 > This competition is evaluated on the mean Dice coefficient. The Dice coefficient can be used to compare the pixel-wise agreement between a predicted segmentation and its corresponding ground truth. The formula is given by:
-
 > ```2 * |X ∩ Y| / (|X|+|Y|)```
-
 > where `X` is the predicted set of pixels and `Y` is the ground truth. The Dice coefficient is defined to be 1 when both `X` and `Y` are empty. The leaderboard score is the mean of the Dice coefficients for each image in the test set.
 
 ## Solution Overview
