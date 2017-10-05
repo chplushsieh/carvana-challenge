@@ -25,7 +25,7 @@ There are 100064 test images.
 
 Our solution is an ensemble of 5 modified U-Net models using 1280x1280 image patch as input, along with test time augmentation. We used a combination loss function of soft DICE loss and Binary Cross Entropy loss. During training, we used data augmentations, including flipping, shifting, scaling, HSV color augmentation, and fancy PCA.
 
-Training of one single model takes about 45-50 hours on a single GPU P5000 machine. Testing takes about 6-8 hours.
+Training of one single model takes about 60-80 hours on a single GPU P5000 machine. Testing takes about 6-8 hours.
 
 ### Our best performing single model
 
