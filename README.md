@@ -88,7 +88,7 @@ Here are some of the results by our best single model:
 
 4. Run `python test.py <experiment_name>`
 
-   For example, running `python test.py PeterUnet3_dropout`
+   For example, run `python test.py PeterUnet3_dropout`
 
    :warning: Before you run `test.py` the first time, make sure you have at least `250GB` free disk space to save prediction results.
 
