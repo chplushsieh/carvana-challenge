@@ -5,7 +5,7 @@ Out of 737 teams, our solution for [Carvana Image Masking Challenge on Kaggle](h
 
 ![Problem: remove background from car image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/problem.png "Problem")
 
-> In this competition, you’re challenged to develop an algorithm that automatically removes the photo studio background. 
+> In this competition, you’re challenged to develop an algorithm that automatically removes the photo studio background.
 
 ### Train Data
 
@@ -28,15 +28,7 @@ Training of one single model takes about 45-50 hours on a single GPU P5000 machi
 
 
 ## Result
-![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-1.png "2*2")
-![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-2.png "2*2")
-![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-3.png "2*2")
-![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-4.png "2*2")
-![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-5.png "2*2")
-![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-6.png "2*2")
-![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-7.png "2*2")
-![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-8.png "2*2")
-![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/Figure_1-9.png "2*2")
+![Result image](https://github.com/chplushsieh/carvana-challenge/blob/master/figures/result_01.png "2*2")
 
 
 ## Requirements
@@ -49,7 +41,7 @@ Training of one single model takes about 45-50 hours on a single GPU P5000 machi
 * scikit-image
 * [pydensecrf](https://github.com/lucasb-eyer/pydensecrf)
     * `pip install cython` and then `pip install pydensecrf`
-    
+
 
 ## Usage
 
@@ -129,11 +121,6 @@ Training of one single model takes about 45-50 hours on a single GPU P5000 machi
 - [x] complete util/submit.py
 - [x] add data augmentation: random shift
 - [x] add boundary weighted loss
-- [ ] experimenting with UNet parameters and architectures/modules
-    - [ ] larger UNets
-    - [ ] different UNet mos
-    - [ ] try Adam or other optimizers
-    - [ ] try different losses
+- [x] experimenting with UNet parameters and architectures/modules
 - [x] add CRF
     - it didn't help
-- [ ] try a memory-efficient DenseNet
